@@ -4,10 +4,10 @@
     <img src="https://img.shields.io/badge/platform-macOS%2013%2B-black" alt="macOS 13+" />
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" />
     <img src="https://img.shields.io/badge/Swift-SwiftUI-orange" alt="Swift" />
-    <a href="https://github.com/ntd4996/agentpet/actions"><img src="https://github.com/ntd4996/agentpet/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-    <a href="https://github.com/ntd4996/agentpet"><img src="https://img.shields.io/github/stars/ntd4996/agentpet?style=social" alt="GitHub stars" /></a>
+    <a href="https://github.com/techgocodingnow/agentbuddy/actions"><img src="https://github.com/techgocodingnow/agentbuddy/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+    <a href="https://github.com/techgocodingnow/agentbuddy"><img src="https://img.shields.io/github/stars/techgocodingnow/agentbuddy?style=social" alt="GitHub stars" /></a>
   </p>
-  <p><b>If AgentPet helps your workflow, please <a href="https://github.com/ntd4996/agentpet">give it a star</a> — it really helps!</b></p>
+  <p><b>If AgentPet helps your workflow, please <a href="https://github.com/techgocodingnow/agentbuddy">give it a star</a> — it really helps!</b></p>
   <p>
     <b>English</b> ·
     <a href="docs/readme/README.vi.md">Tiếng Việt</a> ·
@@ -59,18 +59,18 @@ Running multiple agents in parallel means constantly switching windows to check 
 ### Homebrew
 
 ```bash
-brew install --cask ntd4996/tap/agentpet
+brew install --cask techgocodingnow/tap/agentbuddy
 ```
 
 ### Direct download
 
-Grab the latest `AgentPet.dmg` from [Releases](https://github.com/ntd4996/agentpet/releases), open it, and drag AgentPet to Applications.
+Grab the latest `AgentPet.dmg` from [Releases](https://github.com/techgocodingnow/agentbuddy/releases), open it, and drag AgentPet to Applications.
 
 ### Build from source
 
 ```bash
-git clone https://github.com/ntd4996/agentpet.git
-cd agentpet
+git clone https://github.com/techgocodingnow/agentbuddy.git
+cd agentbuddy
 ./scripts/build-app.sh release
 open build/AgentPet.app
 ```
@@ -126,10 +126,12 @@ Swift + SwiftUI, a Unix-socket daemon for agent events, and a tiny CLI helper, a
 
 If AgentPet saves you some tab-hunting, here's how to help:
 
-- ⭐ **[Star the repo](https://github.com/ntd4996/agentpet)** so more people find it.
-- ☕ **[Buy me a coffee](https://buymeacoffee.com/ntd4996)** if you'd like to fuel more features.
+- **[Star the repo](https://github.com/techgocodingnow/agentbuddy)** so more people find it.
+- **[Report issues](https://github.com/techgocodingnow/agentbuddy/issues)** with clear reproduction steps.
 
-Built by **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996)**.
+Maintained by **[GoCodingNow](https://github.com/techgocodingnow)**.
+
+Original project by **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996/agentpet)**. This fork keeps the original MIT license and attribution.
 
 ## Acknowledgements
 

@@ -4,9 +4,9 @@
     <img src="https://img.shields.io/badge/platform-macOS%2013%2B-black" alt="macOS 13+" />
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" />
     <img src="https://img.shields.io/badge/Swift-SwiftUI-orange" alt="Swift" />
-    <a href="https://github.com/ntd4996/agentpet"><img src="https://img.shields.io/github/stars/ntd4996/agentpet?style=social" alt="GitHub stars" /></a>
+    <a href="https://github.com/techgocodingnow/agentbuddy"><img src="https://img.shields.io/github/stars/techgocodingnow/agentbuddy?style=social" alt="GitHub stars" /></a>
   </p>
-  <p><b>Nếu AgentPet giúp ích cho bạn, hãy <a href="https://github.com/ntd4996/agentpet">tặng một sao</a> nhé!</b></p>
+  <p><b>Nếu AgentPet giúp ích cho bạn, hãy <a href="https://github.com/techgocodingnow/agentbuddy">tặng một sao</a> nhé!</b></p>
   <p>
     <a href="../../README.md">English</a> ·
     <b>Tiếng Việt</b> ·
@@ -58,18 +58,18 @@ Chạy nhiều agent song song nghĩa là phải liên tục đổi cửa sổ �
 ### Homebrew
 
 ```bash
-brew install --cask ntd4996/tap/agentpet
+brew install --cask techgocodingnow/tap/agentbuddy
 ```
 
 ### Tải trực tiếp
 
-Tải `AgentPet.dmg` mới nhất ở [Releases](https://github.com/ntd4996/agentpet/releases), mở ra và kéo AgentPet vào Applications.
+Tải `AgentPet.dmg` mới nhất ở [Releases](https://github.com/techgocodingnow/agentbuddy/releases), mở ra và kéo AgentPet vào Applications.
 
 ### Build từ mã nguồn
 
 ```bash
-git clone https://github.com/ntd4996/agentpet.git
-cd agentpet
+git clone https://github.com/techgocodingnow/agentbuddy.git
+cd agentbuddy
 ./scripts/build-app.sh release
 open build/AgentPet.app
 ```
@@ -118,10 +118,12 @@ Swift + SwiftUI, một daemon Unix-socket cho sự kiện agent, và một CLI h
 
 Nếu AgentPet giúp bạn đỡ phải lật terminal, đây là cách giúp lại:
 
-- ⭐ **[Tặng sao cho repo](https://github.com/ntd4996/agentpet)** để nhiều người biết tới hơn.
-- ☕ **[Mời mình một ly cà phê](https://buymeacoffee.com/ntd4996)** nếu bạn muốn tiếp thêm động lực.
+- **[Tặng sao cho repo](https://github.com/techgocodingnow/agentbuddy)** để nhiều người biết tới hơn.
+- **[Báo lỗi](https://github.com/techgocodingnow/agentbuddy/issues)** với các bước tái hiện rõ ràng.
 
-Thực hiện bởi **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996)**.
+Được duy trì bởi **[GoCodingNow](https://github.com/techgocodingnow)**.
+
+Dự án gốc bởi **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996/agentpet)**. Fork này giữ giấy phép MIT và ghi nhận tác giả gốc.
 
 ## Ghi nhận
 

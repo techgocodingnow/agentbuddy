@@ -4,9 +4,9 @@
     <img src="https://img.shields.io/badge/platform-macOS%2013%2B-black" alt="macOS 13+" />
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" />
     <img src="https://img.shields.io/badge/Swift-SwiftUI-orange" alt="Swift" />
-    <a href="https://github.com/ntd4996/agentpet"><img src="https://img.shields.io/github/stars/ntd4996/agentpet?style=social" alt="GitHub stars" /></a>
+    <a href="https://github.com/techgocodingnow/agentbuddy"><img src="https://img.shields.io/github/stars/techgocodingnow/agentbuddy?style=social" alt="GitHub stars" /></a>
   </p>
-  <p><b>如果 AgentPet 对你有帮助，欢迎 <a href="https://github.com/ntd4996/agentpet">点个 Star</a>！</b></p>
+  <p><b>如果 AgentPet 对你有帮助，欢迎 <a href="https://github.com/techgocodingnow/agentbuddy">点个 Star</a>！</b></p>
   <p>
     <a href="../../README.md">English</a> ·
     <a href="README.vi.md">Tiếng Việt</a> ·
@@ -58,18 +58,18 @@
 ### Homebrew
 
 ```bash
-brew install --cask ntd4996/tap/agentpet
+brew install --cask techgocodingnow/tap/agentbuddy
 ```
 
 ### 直接下载
 
-从 [Releases](https://github.com/ntd4996/agentpet/releases) 下载最新的 `AgentPet.dmg`，打开后将 AgentPet 拖入 Applications。
+从 [Releases](https://github.com/techgocodingnow/agentbuddy/releases) 下载最新的 `AgentPet.dmg`，打开后将 AgentPet 拖入 Applications。
 
 ### 从源码构建
 
 ```bash
-git clone https://github.com/ntd4996/agentpet.git
-cd agentpet
+git clone https://github.com/techgocodingnow/agentbuddy.git
+cd agentbuddy
 ./scripts/build-app.sh release
 open build/AgentPet.app
 ```
@@ -118,10 +118,12 @@ Swift + SwiftUI，一个用于智能体事件的 Unix-socket 守护进程，以�
 
 如果 AgentPet 帮你少切了几次终端，可以这样支持：
 
-- ⭐ **[给仓库点 Star](https://github.com/ntd4996/agentpet)**，让更多人发现它。
-- ☕ **[请我喝杯咖啡](https://buymeacoffee.com/ntd4996)**，为更多功能加油。
+- **[给仓库点 Star](https://github.com/techgocodingnow/agentbuddy)**，让更多人发现它。
+- **[报告问题](https://github.com/techgocodingnow/agentbuddy/issues)**，请附上清晰的复现步骤。
 
-由 **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996)** 开发。
+由 **[GoCodingNow](https://github.com/techgocodingnow)** 维护。
+
+原项目由 **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996/agentpet)** 开发。本 fork 保留原 MIT 许可和署名。
 
 ## 致谢
 

@@ -4,9 +4,9 @@
     <img src="https://img.shields.io/badge/platform-macOS%2013%2B-black" alt="macOS 13+" />
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" />
     <img src="https://img.shields.io/badge/Swift-SwiftUI-orange" alt="Swift" />
-    <a href="https://github.com/ntd4996/agentpet"><img src="https://img.shields.io/github/stars/ntd4996/agentpet?style=social" alt="GitHub stars" /></a>
+    <a href="https://github.com/techgocodingnow/agentbuddy"><img src="https://img.shields.io/github/stars/techgocodingnow/agentbuddy?style=social" alt="GitHub stars" /></a>
   </p>
-  <p><b>AgentPet が役に立ったら、ぜひ <a href="https://github.com/ntd4996/agentpet">スター</a> をお願いします！</b></p>
+  <p><b>AgentPet が役に立ったら、ぜひ <a href="https://github.com/techgocodingnow/agentbuddy">スター</a> をお願いします！</b></p>
   <p>
     <a href="../../README.md">English</a> ·
     <a href="README.vi.md">Tiếng Việt</a> ·
@@ -58,18 +58,18 @@
 ### Homebrew
 
 ```bash
-brew install --cask ntd4996/tap/agentpet
+brew install --cask techgocodingnow/tap/agentbuddy
 ```
 
 ### 直接ダウンロード
 
-[Releases](https://github.com/ntd4996/agentpet/releases) から最新の `AgentPet.dmg` を入手し、開いて AgentPet を Applications にドラッグします。
+[Releases](https://github.com/techgocodingnow/agentbuddy/releases) から最新の `AgentPet.dmg` を入手し、開いて AgentPet を Applications にドラッグします。
 
 ### ソースからビルド
 
 ```bash
-git clone https://github.com/ntd4996/agentpet.git
-cd agentpet
+git clone https://github.com/techgocodingnow/agentbuddy.git
+cd agentbuddy
 ./scripts/build-app.sh release
 open build/AgentPet.app
 ```
@@ -118,10 +118,12 @@ Swift + SwiftUI、エージェントイベント用の Unix ソケットデー�
 
 AgentPet がターミナル探しを減らせたなら、こんな応援ができます:
 
-- ⭐ **[リポジトリにスター](https://github.com/ntd4996/agentpet)** して、より多くの人に届けてください。
-- ☕ **[コーヒーをおごる](https://buymeacoffee.com/ntd4996)** と、さらなる機能開発の励みになります。
+- **[リポジトリにスター](https://github.com/techgocodingnow/agentbuddy)** して、より多くの人に届けてください。
+- **[Issue を報告](https://github.com/techgocodingnow/agentbuddy/issues)** するときは、再現手順を添えてください。
 
-開発: **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996)**
+メンテナンス: **[GoCodingNow](https://github.com/techgocodingnow)**
+
+元プロジェクト: **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996/agentpet)**。この fork は元の MIT ライセンスと帰属表示を保持しています。
 
 ## 謝辞
 

@@ -2,9 +2,9 @@
 # Builds, Developer ID-signs, notarizes, and staples a distributable DMG.
 #
 # One-time setup (your Apple credentials, run it yourself):
-#   xcrun notarytool store-credentials agentpet \
+#   xcrun notarytool store-credentials agentbuddy \
 #     --apple-id "<your-apple-id-email>" \
-#     --team-id 9D7HY2JCGN \
+#     --team-id "<your-team-id>" \
 #     --password "<app-specific-password>"
 # Create the app-specific password at https://appleid.apple.com → Sign-In & Security.
 set -euo pipefail
@@ -12,8 +12,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 APP="$ROOT/build/AgentPet.app"
-IDENTITY="Developer ID Application: Dat Nguyen (9D7HY2JCGN)"
-PROFILE="${NOTARY_PROFILE:-agentpet}"
+IDENTITY="${SIGN_IDENTITY:?Set SIGN_IDENTITY to your Developer ID signing identity}"
+PROFILE="${NOTARY_PROFILE:-agentbuddy}"
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' scripts/AppInfo.plist)"
 
 echo "==> Building AgentPet.app"
@@ -106,7 +106,7 @@ cat <<EOF
             <sparkle:version>$VERSION</sparkle:version>
             <sparkle:shortVersionString>$VERSION</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/ntd4996/agentpet/releases/download/v$VERSION/AgentPet-$VERSION.dmg"
+            <enclosure url="https://github.com/techgocodingnow/agentbuddy/releases/download/v$VERSION/AgentPet-$VERSION.dmg"
                        $ED_ATTRS type="application/octet-stream" />
         </item>
 EOF

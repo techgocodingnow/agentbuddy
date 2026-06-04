@@ -2,88 +2,8 @@
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
     <channel>
         <title>AgentPet</title>
-        <link>https://ntd4996.github.io/agentpet/appcast.xml</link>
+        <link>https://techgocodingnow.github.io/agentbuddy/appcast.xml</link>
         <description>Updates for AgentPet</description>
         <language>en</language>
-        <item>
-            <title>1.1.6</title>
-            <sparkle:version>1.1.6</sparkle:version>
-            <sparkle:shortVersionString>1.1.6</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/ntd4996/agentpet/releases/download/v1.1.6/AgentPet-1.1.6.dmg"
-                       sparkle:edSignature="wt6CYrcrF/I+4L1rNljh50Fw14IOvgzTQw7qkIiLBKXlPwowbGpUlsAJBthKte17qEYLr+16pRsaqvPIKsfzCQ==" length="2757887" type="application/octet-stream" />
-        </item>
-        <item>
-            <title>1.1.5</title>
-            <sparkle:version>1.1.5</sparkle:version>
-            <sparkle:shortVersionString>1.1.5</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/ntd4996/agentpet/releases/download/v1.1.5/AgentPet-1.1.5.dmg"
-                       sparkle:edSignature="wL9H6AvBnd8aulUxN64lguQKlRBmQsxiygbLxQm+aKcTzgbY2y5DsSeirZBt6Ac0Iffv0Qixe89CITLjlFaWCw==" length="2753507" type="application/octet-stream" />
-        </item>
-        <item>
-            <title>1.1.4</title>
-            <sparkle:version>1.1.4</sparkle:version>
-            <sparkle:shortVersionString>1.1.4</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/ntd4996/agentpet/releases/download/v1.1.4/AgentPet-1.1.4.dmg"
-                       sparkle:edSignature="gbeZC9Hc1xMH1WeEq404acipSOkyhYwWe10SsfoCcpFbELiBsN5QkYrXgtF0iPRZQ3Md7edHTJonpgt2zgnEAg==" length="2753550" type="application/octet-stream" />
-        </item>
-        <item>
-            <title>1.1.3</title>
-            <sparkle:version>1.1.3</sparkle:version>
-            <sparkle:shortVersionString>1.1.3</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/ntd4996/agentpet/releases/download/v1.1.3/AgentPet-1.1.3.dmg"
-                       sparkle:edSignature="axvs50OXNLLoqTUFGEqL9Cl39mi4yPzT1ySz7MwmGDqaFiEt7773dZsOvbSGBt5CC5WFiUn9s8qDuJMoPbp1BA==" length="2753268" type="application/octet-stream" />
-        </item>
-        <item>
-            <title>1.1.2</title>
-            <sparkle:version>1.1.2</sparkle:version>
-            <sparkle:shortVersionString>1.1.2</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/ntd4996/agentpet/releases/download/v1.1.2/AgentPet-1.1.2.dmg"
-                       sparkle:edSignature="QYXw8qRBciKzXy2iIOjs7mIcXvJeQryOKfsT5O08OXyzF6omsSOLn0fMoqIBt/900j4HTmN1+5ds9G/s1o9EAQ==" length="2750978" type="application/octet-stream" />
-        </item>
-        <item>
-            <title>1.1.1</title>
-            <sparkle:version>1.1.1</sparkle:version>
-            <sparkle:shortVersionString>1.1.1</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/ntd4996/agentpet/releases/download/v1.1.1/AgentPet-1.1.1.dmg"
-                       sparkle:edSignature="46UJzacgf8M1lAnRCvAz7kKAxGne5Sm+Tmde46Fi4asBM/mmCLKAk6fVOcsVO7yYj/rlgnpd6owaIhXGuGzeDA==" length="2750063" type="application/octet-stream" />
-        </item>
-        <item>
-            <title>1.1.0</title>
-            <sparkle:version>1.1.0</sparkle:version>
-            <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/ntd4996/agentpet/releases/download/v1.1.0/AgentPet-1.1.0.dmg"
-                       sparkle:edSignature="syeFSimJHOWpkvU6rJmr+e7ZMS1wm4JXjuJ/6knLpcEV9iCh6FeF1vqzYbtUbwkdchlVaCyXs3qBjRa1rNplCQ==" length="2179171" type="application/octet-stream" />
-        </item>
-        <item>
-            <title>1.0.2</title>
-            <sparkle:version>1.0.2</sparkle:version>
-            <sparkle:shortVersionString>1.0.2</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/ntd4996/agentpet/releases/download/v1.0.2/AgentPet-1.0.2.dmg"
-                       sparkle:edSignature="jfuOkNYNbzoixTZVmDa56hiGcRTiqMNOC+OK0wCOjrbasanC90Tc6SU7jB6TLNeH+TyhtcYzvFT6cHAQji8nCA==" length="2166241" type="application/octet-stream" />
-        </item>
-        <item>
-            <title>1.0.1</title>
-            <sparkle:version>1.0.1</sparkle:version>
-            <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/ntd4996/agentpet/releases/download/v1.0.1/AgentPet-1.0.1.dmg"
-                       sparkle:edSignature="bhT/HvSXLROgWsH1/fed7v0e88yCt/rbEZIXAiaVdWttVxMaKZkGSyZImgwNM9mazlIrOG1BxQpWpwir2OB3Dg==" length="2165562" type="application/octet-stream" />
-        </item>
-        <item>
-            <title>1.0.0</title>
-            <sparkle:version>1.0.0</sparkle:version>
-            <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/ntd4996/agentpet/releases/download/v1.0.0/AgentPet-1.0.0.dmg"
-                       sparkle:edSignature="tZluSpvghLRcaXHO9ht+pclixRb4bIk3OcnA/Apeq12OHjtKWMZac/ZQiFdBsDuwyr9hQN1eWNDIEaClKumtCg==" length="2165854" type="application/octet-stream" />
-        </item>
     </channel>
 </rss>

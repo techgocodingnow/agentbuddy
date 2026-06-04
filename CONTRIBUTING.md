@@ -5,8 +5,8 @@ Thanks for your interest in improving AgentPet! Contributions of all sizes are w
 ## Getting started
 
 ```bash
-git clone https://github.com/ntd4996/agentpet.git
-cd agentpet
+git clone https://github.com/techgocodingnow/agentbuddy.git
+cd agentbuddy
 swift build          # build
 swift test           # run the test suite
 ./scripts/build-app.sh release   # produce AgentPet.app

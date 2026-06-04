@@ -77,9 +77,9 @@ private struct TabButton: View {
 private struct AboutTab: View {
     @Environment(\.openURL) private var openURL
 
-    private let repo = URL(string: "https://github.com/ntd4996/agentpet")!
-    private let profile = URL(string: "https://github.com/ntd4996")!
-    private let coffee = URL(string: "https://buymeacoffee.com/ntd4996")!
+    private let repo = URL(string: "https://github.com/techgocodingnow/agentbuddy")!
+    private let profile = URL(string: "https://github.com/techgocodingnow")!
+    private let upstream = URL(string: "https://github.com/ntd4996/agentpet")!
 
     var body: some View {
         Form {
@@ -104,8 +104,8 @@ private struct AboutTab: View {
                 .tint(Color.systemAccent)
                 .controlSize(.large)
 
-                Button { openURL(coffee) } label: {
-                    Label("Buy me a coffee", systemImage: "cup.and.saucer.fill")
+                Button { openURL(repo) } label: {
+                    Label("Report an issue", systemImage: "exclamationmark.bubble.fill")
                         .frame(maxWidth: .infinity)
                 }
                 .controlSize(.large)
@@ -113,12 +113,15 @@ private struct AboutTab: View {
                 Text("If AgentPet helps your workflow, a star means a lot. Thank you!")
             }
 
-            Section("Author") {
+            Section("Project") {
                 Link(destination: profile) {
-                    Label("Nguyễn Thành Đạt (@ntd4996)", systemImage: "person.crop.circle")
+                    Label("GoCodingNow", systemImage: "person.crop.circle")
                 }
                 Link(destination: repo) {
-                    Label("github.com/ntd4996/agentpet", systemImage: "chevron.left.forwardslash.chevron.right")
+                    Label("github.com/techgocodingnow/agentbuddy", systemImage: "chevron.left.forwardslash.chevron.right")
+                }
+                Link(destination: upstream) {
+                    Label("Original project: ntd4996/agentpet", systemImage: "arrow.triangle.branch")
                 }
             }
 
