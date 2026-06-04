@@ -129,8 +129,8 @@ extension AgentState {
     /// Higher means more deserving of the user's attention.
     var attentionPriority: Int {
         switch self {
-        case .working: return 4
-        case .waiting: return 3
+        case .waiting: return 4
+        case .working: return 3
         case .done: return 2
         case .registered: return 1
         case .idle: return 0

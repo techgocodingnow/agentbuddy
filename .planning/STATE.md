@@ -1,17 +1,17 @@
 # Project State
 
-**Status:** Ready to execute
+**Status:** Ready to plan
 **Project:** AgentPet Multi-Session Companion
 **Current Milestone:** v1 - Compact Multi-Session Pet Summary
-**Current Phase:** Phase 1 - Core Aggregation and Summary Model
-**Updated:** 2026-06-04T10:49:14Z
+**Current Phase:** Phase 2 - Pet and Menu Bar UX Wiring
+**Updated:** 2026-06-04T10:54:13Z
 
 ## Project Reference
 
 See: `.planning/PROJECT.md` (updated 2026-06-04)
 
 **Core value:** One ambient pet should tell the user when any coding agent needs attention without forcing them to inspect every terminal.
-**Current focus:** Build deterministic aggregation and compact multi-session summary logic.
+**Current focus:** Plan pet/menu UI wiring for the compact summary, stacked session cards, and Reply affordance.
 
 ## Active Context
 
@@ -33,10 +33,10 @@ This is a brownfield enhancement. The existing codebase already has:
 
 ## Current Plan
 
-1. Run `$gsd-execute-phase 1`.
-2. Implement core aggregation and summary model from `.planning/phases/01-core-aggregation-and-summary-model/01-PLAN.md`.
-3. Wire UI surfaces in later phases.
-4. Verify with Swift tests and app smoke checks.
+1. Run `$gsd-plan-phase 2`.
+2. Wire UI surfaces to consume `AgentSessionSummary.compact(for:)`.
+3. Build the pet-adjacent stacked session card surface and Reply affordance.
+4. Verify with Swift tests and app smoke checks in later phases.
 
 ## Decisions
 
@@ -45,6 +45,7 @@ This is a brownfield enhancement. The existing codebase already has:
 | 2026-06-04 | Use one pet for all sessions | Avoids visual clutter and matches the approved companion concept. |
 | 2026-06-04 | Compact summary belongs in pet/menu status | Makes the pet useful as a glanceable multi-agent status surface. |
 | 2026-06-04 | Waiting outranks working | User attention should prioritize blocked sessions. |
+| 2026-06-04 | Compact summaries use only agent kind and state | Avoids leaking project paths, prompts, hook messages, or terminal output into pet/status text. |
 
 ## Blockers
 
@@ -52,8 +53,8 @@ None.
 
 ## Notes for Next Agent
 
-- Read `.planning/phases/01-core-aggregation-and-summary-model/01-RESEARCH.md` and `.planning/phases/01-core-aggregation-and-summary-model/01-PLAN.md` before executing Phase 1.
-- Keep core summary logic pure and testable in `AgentPetCore`.
+- Phase 1 is complete. Read `.planning/phases/01-core-aggregation-and-summary-model/01-SUMMARY.md` before planning Phase 2.
+- Reuse `AgentSessionSummary.compact(for:)` instead of duplicating summary ordering/filtering in app UI.
 - Do not touch unrelated untracked local/tooling files unless the user explicitly asks for cleanup.
 
 ---

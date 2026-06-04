@@ -128,6 +128,6 @@ final class SessionStoreTests: XCTestCase {
         store.apply(event("Notification", session: "waiting"), now: t0)
         store.apply(event("Stop", session: "done"), now: t0)
         let order = store.sorted.map(\.id)
-        XCTAssertEqual(order, ["working", "waiting", "done"])
+        XCTAssertEqual(order, ["waiting", "working", "done"])
     }
 }
