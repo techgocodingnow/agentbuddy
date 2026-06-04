@@ -1,6 +1,6 @@
-# Contributing to AgentPet
+# Contributing to AgentBuddy
 
-Thanks for your interest in improving AgentPet! Contributions of all sizes are welcome.
+Thanks for your interest in improving AgentBuddy! Contributions of all sizes are welcome.
 
 ## Getting started
 
@@ -9,8 +9,8 @@ git clone https://github.com/techgocodingnow/agentbuddy.git
 cd agentbuddy
 swift build          # build
 swift test           # run the test suite
-./scripts/build-app.sh release   # produce AgentPet.app
-open build/AgentPet.app
+./scripts/build-app.sh release   # produce AgentBuddy.app
+open build/AgentBuddy.app
 ```
 
 Requires macOS 13+ and a recent Swift toolchain (Swift 6 / Xcode 15+).
@@ -34,7 +34,7 @@ The split keeps logic (Core) independent of UI so it stays unit-testable.
 
 ## Pets
 
-AgentPet bundles no pet art. Pets use the open Codex pet-pack format
+AgentBuddy bundles no pet art. Pets use the open Codex pet-pack format
 (`pet.json` + an 8×9 spritesheet) and are added at runtime via Browse or import.
 Please do not commit pet assets to this repository.
 

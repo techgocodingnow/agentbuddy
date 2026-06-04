@@ -1,12 +1,12 @@
 <div align="center">
-  <img src="../../assets/banner.png" alt="AgentPet" width="100%" />
+  <img src="../../assets/banner.png" alt="AgentBuddy" width="100%" />
   <p>
     <img src="https://img.shields.io/badge/platform-macOS%2013%2B-black" alt="macOS 13+" />
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" />
     <img src="https://img.shields.io/badge/Swift-SwiftUI-orange" alt="Swift" />
     <a href="https://github.com/techgocodingnow/agentbuddy"><img src="https://img.shields.io/github/stars/techgocodingnow/agentbuddy?style=social" alt="GitHub stars" /></a>
   </p>
-  <p><b>如果 AgentPet 对你有帮助，欢迎 <a href="https://github.com/techgocodingnow/agentbuddy">点个 Star</a>！</b></p>
+  <p><b>如果 AgentBuddy 对你有帮助，欢迎 <a href="https://github.com/techgocodingnow/agentbuddy">点个 Star</a>！</b></p>
   <p>
     <a href="../../README.md">English</a> ·
     <a href="README.vi.md">Tiếng Việt</a> ·
@@ -15,11 +15,11 @@
   </p>
 </div>
 
-同时运行多个编程智能体（Claude Code、Codex 等），AgentPet 让你一眼看清哪个**正在运行**、哪个**已完成**、哪个**正在等待你的输入**，不必再在多个终端之间来回切换。一只小宠物会漂浮在桌面上，对这一切作出反应。
+同时运行多个编程智能体（Claude Code、Codex 等），AgentBuddy 让你一眼看清哪个**正在运行**、哪个**已完成**、哪个**正在等待你的输入**，不必再在多个终端之间来回切换。一只小宠物会漂浮在桌面上，对这一切作出反应。
 
 ## 为什么需要它
 
-并行运行多个智能体意味着要不停切换窗口去看谁需要你。AgentPet 把这些信息呈现在两个地方：
+并行运行多个智能体意味着要不停切换窗口去看谁需要你。AgentBuddy 把这些信息呈现在两个地方：
 
 - **菜单栏监视器**展示细节：每个运行中的智能体、其状态、正在做什么，以及实时计时。
 - **桌面宠物**提供一种轻量的提示，让你无需打断工作就能感知。
@@ -63,7 +63,7 @@ brew install --cask techgocodingnow/tap/agentbuddy
 
 ### 直接下载
 
-从 [Releases](https://github.com/techgocodingnow/agentbuddy/releases) 下载最新的 `AgentPet.dmg`，打开后将 AgentPet 拖入 Applications。
+从 [Releases](https://github.com/techgocodingnow/agentbuddy/releases) 下载最新的 `AgentBuddy.dmg`，打开后将 AgentBuddy 拖入 Applications。
 
 ### 从源码构建
 
@@ -71,12 +71,12 @@ brew install --cask techgocodingnow/tap/agentbuddy
 git clone https://github.com/techgocodingnow/agentbuddy.git
 cd agentbuddy
 ./scripts/build-app.sh release
-open build/AgentPet.app
+open build/AgentBuddy.app
 ```
 
 > **注意：** 当前版本已用 Developer ID 签名但**尚未公证**，因此 macOS 首次启动可能会拦截。执行一次以移除隔离标记：
 > ```bash
-> xattr -dr com.apple.quarantine "/Applications/AgentPet.app"
+> xattr -dr com.apple.quarantine "/Applications/AgentBuddy.app"
 > ```
 > 完整公证版（无警告）即将推出。
 
@@ -84,7 +84,7 @@ open build/AgentPet.app
 
 ## 使用
 
-**Claude Code**（推荐）：在设置中安装 hook。AgentPet 会反映每个会话的真实状态（包括“等待输入”）。
+**Claude Code**（推荐）：在设置中安装 hook。AgentBuddy 会反映每个会话的真实状态（包括“等待输入”）。
 
 **其他 CLI 智能体**：用包装器运行。
 
@@ -102,7 +102,7 @@ agentpet run -- <你的智能体命令>     # 例如：agentpet run -- aider
 - **映射动画**：为每个状态选择播放哪段动画。
 - **删除**不再需要的宠物。
 
-首次启动会自动安装一个初始宠物。AgentPet 不内置任何宠物美术资源；宠物在运行时添加。
+首次启动会自动安装一个初始宠物。AgentBuddy 不内置任何宠物美术资源；宠物在运行时添加。
 
 ## 路线图
 
@@ -116,7 +116,7 @@ Swift + SwiftUI，一个用于智能体事件的 Unix-socket 守护进程，以�
 
 ## 支持
 
-如果 AgentPet 帮你少切了几次终端，可以这样支持：
+如果 AgentBuddy 帮你少切了几次终端，可以这样支持：
 
 - **[给仓库点 Star](https://github.com/techgocodingnow/agentbuddy)**，让更多人发现它。
 - **[报告问题](https://github.com/techgocodingnow/agentbuddy/issues)**，请附上清晰的复现步骤。
@@ -127,7 +127,7 @@ Swift + SwiftUI，一个用于智能体事件的 Unix-socket 守护进程，以�
 
 ## 致谢
 
-Codex 宠物包格式与在线宠物库由 **[Petdex](https://github.com/crafter-station/petdex)**（MIT）提供。AgentPet 是一个独立的互操作客户端：读取 Petdex 格式的宠物包，并允许从 Petdex 的公开 API 下载。AgentPet 不内置宠物美术资源；每个宠物资源由其提交者按其自有许可拥有。若你拥有某角色的权利，请向 Petdex 提交下架请求。
+Codex 宠物包格式与在线宠物库由 **[Petdex](https://github.com/crafter-station/petdex)**（MIT）提供。AgentBuddy 是一个独立的互操作客户端：读取 Petdex 格式的宠物包，并允许从 Petdex 的公开 API 下载。AgentBuddy 不内置宠物美术资源；每个宠物资源由其提交者按其自有许可拥有。若你拥有某角色的权利，请向 Petdex 提交下架请求。
 
 ## 许可证
 

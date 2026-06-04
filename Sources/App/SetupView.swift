@@ -87,7 +87,7 @@ private struct AboutTab: View {
                 VStack(spacing: 10) {
                     Image(systemName: "pawprint.fill")
                         .font(.system(size: 40)).foregroundStyle(Color.systemAccent)
-                    Text("AgentPet").font(.title2.bold())
+                    Text("AgentBuddy").font(.title2.bold())
                     Text("A desktop pet that watches your AI coding agents.")
                         .font(.callout).foregroundStyle(.secondary).multilineTextAlignment(.center)
                 }
@@ -110,7 +110,7 @@ private struct AboutTab: View {
                 }
                 .controlSize(.large)
             } footer: {
-                Text("If AgentPet helps your workflow, a star means a lot. Thank you!")
+                Text("If AgentBuddy helps your workflow, a star means a lot. Thank you!")
             }
 
             Section("Project") {
@@ -191,7 +191,7 @@ private struct GeneralTab: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Launch at login")
-                        Text("AgentPet starts automatically when you sign in.")
+                        Text("AgentBuddy starts automatically when you sign in.")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -293,7 +293,7 @@ private struct GeneralTab: View {
             }
 
             Section {
-                Button("Quit AgentPet") { NSApplication.shared.terminate(nil) }
+                Button("Quit AgentBuddy") { NSApplication.shared.terminate(nil) }
             }
         }
         .formStyle(.grouped)
@@ -326,7 +326,7 @@ private struct GeneralTab: View {
 
     private var notificationDetail: String {
         switch model.notificationState {
-        case .unavailable: return "Available once installed as AgentPet.app"
+        case .unavailable: return "Available once installed as AgentBuddy.app"
         case .denied: return "Turn on in System Settings to get alerts"
         case .enabled: return model.notificationsEnabled
             ? "Alerts when an agent finishes or needs input"

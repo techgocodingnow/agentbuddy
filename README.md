@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/banner.png" alt="AgentPet" width="100%" />
+  <img src="assets/banner.png" alt="AgentBuddy" width="100%" />
   <p>
     <img src="https://img.shields.io/badge/platform-macOS%2013%2B-black" alt="macOS 13+" />
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" />
@@ -7,7 +7,7 @@
     <a href="https://github.com/techgocodingnow/agentbuddy/actions"><img src="https://github.com/techgocodingnow/agentbuddy/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
     <a href="https://github.com/techgocodingnow/agentbuddy"><img src="https://img.shields.io/github/stars/techgocodingnow/agentbuddy?style=social" alt="GitHub stars" /></a>
   </p>
-  <p><b>If AgentPet helps your workflow, please <a href="https://github.com/techgocodingnow/agentbuddy">give it a star</a> — it really helps!</b></p>
+  <p><b>If AgentBuddy helps your workflow, please <a href="https://github.com/techgocodingnow/agentbuddy">give it a star</a> — it really helps!</b></p>
   <p>
     <b>English</b> ·
     <a href="docs/readme/README.vi.md">Tiếng Việt</a> ·
@@ -16,11 +16,11 @@
   </p>
 </div>
 
-Run several coding agents at once (Claude Code, Codex, ...) and AgentPet tells you, at a glance, which one is **working**, which one is **done**, and which one is **waiting for your input**, so you stop tab-hunting across terminals. A little pet floats on your desktop and reacts to it all.
+Run several coding agents at once (Claude Code, Codex, ...) and AgentBuddy tells you, at a glance, which one is **working**, which one is **done**, and which one is **waiting for your input**, so you stop tab-hunting across terminals. A little pet floats on your desktop and reacts to it all.
 
 ## Why
 
-Running multiple agents in parallel means constantly switching windows to check who needs you. AgentPet surfaces that in two places:
+Running multiple agents in parallel means constantly switching windows to check who needs you. AgentBuddy surfaces that in two places:
 
 - **Menu bar monitor** for the details: every running agent, its state, what it's doing, and a live timer.
 - **Desktop pet** for an ambient signal you can read without breaking focus.
@@ -64,7 +64,7 @@ brew install --cask techgocodingnow/tap/agentbuddy
 
 ### Direct download
 
-Grab the latest `AgentPet.dmg` from [Releases](https://github.com/techgocodingnow/agentbuddy/releases), open it, and drag AgentPet to Applications.
+Grab the latest `AgentBuddy.dmg` from [Releases](https://github.com/techgocodingnow/agentbuddy/releases), open it, and drag AgentBuddy to Applications.
 
 ### Build from source
 
@@ -72,27 +72,27 @@ Grab the latest `AgentPet.dmg` from [Releases](https://github.com/techgocodingno
 git clone https://github.com/techgocodingnow/agentbuddy.git
 cd agentbuddy
 ./scripts/build-app.sh release
-open build/AgentPet.app
+open build/AgentBuddy.app
 ```
 
-Builds are Developer ID-signed and notarized by Apple, so they open without a Gatekeeper warning. AgentPet also updates itself: it checks for new versions automatically, and you can update in-app from the menu bar **Updates** button.
+Builds are Developer ID-signed and notarized by Apple, so they open without a Gatekeeper warning. AgentBuddy also updates itself: it checks for new versions automatically, and you can update in-app from the menu bar **Updates** button.
 
 On first launch, open **Settings → General** and click **Install** next to Claude Code, then **Enable** notifications.
 
 ### Uninstall
 
-1. In **Settings → General**, click **Remove** next to each agent you connected (this strips AgentPet's hooks from the agents' config so they don't error after the app is gone).
+1. In **Settings → General**, click **Remove** next to each agent you connected (this strips AgentBuddy's hooks from the agents' config so they don't error after the app is gone).
 2. Remove the app and its data:
 
 ```bash
-brew uninstall --cask agentpet          # or drag /Applications/AgentPet.app to Trash
+brew uninstall --cask agentbuddy          # or drag /Applications/AgentBuddy.app to Trash
 rm -rf ~/.agentpet                       # downloaded pets + state
-rm -f  ~/Library/Preferences/com.agentpet.app.plist
+rm -f  ~/Library/Preferences/com.agentbuddy.app.plist
 ```
 
 ## Usage
 
-**Claude Code** (recommended): install the hook from Settings. AgentPet then reflects each session's real state (including "waiting for input").
+**Claude Code** (recommended): install the hook from Settings. AgentBuddy then reflects each session's real state (including "waiting for input").
 
 **Any other CLI agent**: wrap it.
 
@@ -110,7 +110,7 @@ Pets use the open Codex pet-pack format (`pet.json` + an 8×9 spritesheet). You 
 - **Map animations**: pick which sheet animation plays for each state.
 - **Delete** pets you no longer want.
 
-A starter pet is installed automatically on first launch. AgentPet bundles no pet art; packs are added at runtime.
+A starter pet is installed automatically on first launch. AgentBuddy bundles no pet art; packs are added at runtime.
 
 ## Roadmap
 
@@ -124,7 +124,7 @@ Swift + SwiftUI, a Unix-socket daemon for agent events, and a tiny CLI helper, a
 
 ## Support
 
-If AgentPet saves you some tab-hunting, here's how to help:
+If AgentBuddy saves you some tab-hunting, here's how to help:
 
 - **[Star the repo](https://github.com/techgocodingnow/agentbuddy)** so more people find it.
 - **[Report issues](https://github.com/techgocodingnow/agentbuddy/issues)** with clear reproduction steps.
@@ -136,9 +136,9 @@ Original project by **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd
 ## Acknowledgements
 
 The Codex pet-pack format and the online pet library are provided by
-**[Petdex](https://github.com/crafter-station/petdex)** (MIT). AgentPet is an
+**[Petdex](https://github.com/crafter-station/petdex)** (MIT). AgentBuddy is an
 independent, interop client: it reads packs in Petdex's format and lets you
-download them from Petdex's public API. AgentPet bundles no pet art; every pet
+download them from Petdex's public API. AgentBuddy bundles no pet art; every pet
 asset is owned by its respective submitter under their own license. If you hold
 rights to a character, please direct takedowns to Petdex.
 

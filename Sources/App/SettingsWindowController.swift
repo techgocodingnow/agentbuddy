@@ -30,7 +30,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             styleMask: [.titled, .closable],
             backing: .buffered, defer: false
         )
-        window.title = "AgentPet"
+        window.title = "AgentBuddy"
         window.delegate = self
         window.isReleasedWhenClosed = false
         window.contentView = host
@@ -75,7 +75,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             contentRect: NSRect(x: 0, y: 0, width: 560, height: 640),
             styleMask: [.titled, .closable], backing: .buffered, defer: false
         )
-        window.title = "Welcome to AgentPet"
+        window.title = "Welcome to AgentBuddy"
         window.delegate = self
         window.isReleasedWhenClosed = false
         window.contentView = host

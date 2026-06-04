@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Assembles AgentPet.app from a release build so it runs as a proper menu bar
+# Assembles AgentBuddy.app from a release build so it runs as a proper menu bar
 # app (bundle id, LSUIElement, working notifications). Ad-hoc signed for local
 # testing. Notarization + DMG + Homebrew are issue #13.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
-APP="$ROOT/build/AgentPet.app"
+APP="$ROOT/build/AgentBuddy.app"
 CONFIG="${1:-release}"
 
 # Build a universal binary (Apple Silicon + Intel) so the app runs on both.

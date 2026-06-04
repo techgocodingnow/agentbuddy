@@ -104,7 +104,7 @@ final class StatusBarController: NSObject, ObservableObject {
     /// as a centered row (both centered vertically by their bounding boxes, so the
     /// digit never sits high or low relative to the icon).
     private static func menuBarImage(count: Int?, waiting: Bool) -> NSImage? {
-        guard let paw = NSImage(systemSymbolName: "pawprint.fill", accessibilityDescription: "AgentPet") else { return nil }
+        guard let paw = NSImage(systemSymbolName: "pawprint.fill", accessibilityDescription: "AgentBuddy") else { return nil }
 
         guard let count else {
             paw.isTemplate = true

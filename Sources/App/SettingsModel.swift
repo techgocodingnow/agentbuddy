@@ -87,7 +87,7 @@ final class SettingsModel: ObservableObject {
         }
     }
 
-    /// Opens System Settings to AgentPet's notification pane (used when denied).
+    /// Opens System Settings to AgentBuddy's notification pane (used when denied).
     func openSystemNotificationSettings() {
         if let url = URL(string: "x-apple.systempreferences:com.apple.preference.notifications") {
             NSWorkspace.shared.open(url)

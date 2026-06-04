@@ -5,7 +5,7 @@ import UserNotifications
 ///
 /// `UNUserNotificationCenter` requires a bundled, identified app; when run as a
 /// bare binary (`swift run`) there is no bundle id, so we no-op to avoid a
-/// crash. Notifications work once launched as `AgentPet.app`.
+/// crash. Notifications work once launched as `AgentBuddy.app`.
 @MainActor
 final class NotificationManager {
     static let shared = NotificationManager()

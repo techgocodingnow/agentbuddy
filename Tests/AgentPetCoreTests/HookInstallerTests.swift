@@ -2,7 +2,7 @@ import XCTest
 @testable import AgentPetCore
 
 final class HookInstallerTests: XCTestCase {
-    private let cmd = "\"/Applications/AgentPet.app/Contents/MacOS/agentpet\" hook"
+    private let cmd = "\"/Applications/AgentBuddy.app/Contents/MacOS/agentpet\" hook"
 
     private func groups(_ settings: [String: Any], _ event: String) -> [[String: Any]] {
         (settings["hooks"] as? [String: Any])?[event] as? [[String: Any]] ?? []

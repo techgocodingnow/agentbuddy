@@ -2,7 +2,7 @@ import XCTest
 @testable import AgentPetCore
 
 final class MultiAgentHookTests: XCTestCase {
-    private let cmd = "\"/Applications/AgentPet.app/Contents/MacOS/agentpet\" hook --agent cursor"
+    private let cmd = "\"/Applications/AgentBuddy.app/Contents/MacOS/agentpet\" hook --agent cursor"
 
     // MARK: - Cursor flat shape
 
@@ -48,8 +48,8 @@ final class MultiAgentHookTests: XCTestCase {
 
     func testOpencodeBinaryPathExtraction() {
         XCTAssertEqual(
-            HookInstaller.binaryPath(fromCommand: "\"/Applications/AgentPet.app/Contents/MacOS/agentpet\" hook --agent opencode"),
-            "/Applications/AgentPet.app/Contents/MacOS/agentpet")
+            HookInstaller.binaryPath(fromCommand: "\"/Applications/AgentBuddy.app/Contents/MacOS/agentpet\" hook --agent opencode"),
+            "/Applications/AgentBuddy.app/Contents/MacOS/agentpet")
     }
 
     func testOpencodePluginContent() {
@@ -132,7 +132,7 @@ final class MultiAgentHookTests: XCTestCase {
         for (kind, file) in cases {
             let spec = AgentHooks.spec(for: kind)!
             let path = tmp + file
-            let command = "\"/Applications/AgentPet.app/Contents/MacOS/agentpet\" hook --agent \(kind.rawValue)"
+            let command = "\"/Applications/AgentBuddy.app/Contents/MacOS/agentpet\" hook --agent \(kind.rawValue)"
             XCTAssertFalse(HookInstaller.isInstalledOnDisk(path: path, events: spec.events, style: spec.style), "\(kind) clean")
             try HookInstaller.installToDisk(command: command, path: path, events: spec.events, style: spec.style)
             XCTAssertTrue(HookInstaller.isInstalledOnDisk(path: path, events: spec.events, style: spec.style), "\(kind) installed")

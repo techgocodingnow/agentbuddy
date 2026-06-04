@@ -46,7 +46,7 @@ struct OnboardingView: View {
                 RoundedRectangle(cornerRadius: 9, style: .continuous)
                     .fill(Color.systemAccent).frame(width: 34, height: 34)
                     .overlay(Image(systemName: "pawprint.fill").font(.system(size: 17)).foregroundStyle(.white))
-                Text("Welcome to AgentPet").font(.title2.bold()).foregroundStyle(.white)
+                Text("Welcome to AgentBuddy").font(.title2.bold()).foregroundStyle(.white)
             }
             Text("A desktop pet that watches your AI coding agents. Two quick steps to get going.")
                 .font(.callout).foregroundStyle(.white.opacity(0.7))
@@ -89,7 +89,7 @@ struct OnboardingView: View {
     private var agentStep: some View {
         VStack(alignment: .leading, spacing: 12) {
             stepLabel(2, "Connect an agent")
-            Text("Install a hook so AgentPet can see when an agent works, finishes, or needs you.")
+            Text("Install a hook so AgentBuddy can see when an agent works, finishes, or needs you.")
                 .font(.caption).foregroundStyle(.white.opacity(0.6))
             ForEach(model.agents) { agent in
                 HStack {

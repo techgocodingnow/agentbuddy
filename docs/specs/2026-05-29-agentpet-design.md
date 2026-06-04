@@ -1,11 +1,11 @@
-# AgentPet, Design Spec
+# AgentBuddy, Design Spec
 
 Ngày: 2026-05-29
 Trạng thái: Approved (brainstorm)
 
 ## 1. Tóm tắt
 
-AgentPet là app menu bar macOS native (Swift/SwiftUI): một con pet sống trên desktop phản ứng theo trạng thái các AI coding agent đang chạy (Claude Code, Codex, ...). App cho biết agent nào đang chạy, con nào đã xong, con nào đang chờ người dùng nhập input. Mục tiêu: vừa vui và dễ lan truyền (như Petdex), vừa là tiện ích thật cho dev chạy nhiều agent song song. Dự án open-source, định hướng kéo sao GitHub.
+AgentBuddy là app menu bar macOS native (Swift/SwiftUI): một con pet sống trên desktop phản ứng theo trạng thái các AI coding agent đang chạy (Claude Code, Codex, ...). App cho biết agent nào đang chạy, con nào đã xong, con nào đang chờ người dùng nhập input. Mục tiêu: vừa vui và dễ lan truyền (như Petdex), vừa là tiện ích thật cho dev chạy nhiều agent song song. Dự án open-source, định hướng kéo sao GitHub.
 
 Quyết định nền tảng (chốt trong brainstorm):
 - macOS only, native thật (Swift/SwiftUI).

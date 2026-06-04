@@ -11,12 +11,12 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
-APP="$ROOT/build/AgentPet.app"
+APP="$ROOT/build/AgentBuddy.app"
 IDENTITY="${SIGN_IDENTITY:?Set SIGN_IDENTITY to your Developer ID signing identity}"
 PROFILE="${NOTARY_PROFILE:-agentbuddy}"
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' scripts/AppInfo.plist)"
 
-echo "==> Building AgentPet.app"
+echo "==> Building AgentBuddy.app"
 ./scripts/build-app.sh release
 
 echo "==> Signing with Developer ID (hardened runtime)"
@@ -44,24 +44,24 @@ codesign --force --options runtime --timestamp --sign "$IDENTITY" "$APP/Contents
 codesign --force --options runtime --timestamp --sign "$IDENTITY" "$APP"
 codesign --verify --deep --strict --verbose=2 "$APP"
 
-DMG="$ROOT/build/AgentPet-$VERSION.dmg"
+DMG="$ROOT/build/AgentBuddy-$VERSION.dmg"
 STAGE="$ROOT/build/dmg"
 
 make_dmg() {
     rm -f "$DMG"; rm -rf "$STAGE"; mkdir -p "$STAGE"
     # ditto preserves the stapled notarization ticket inside the app bundle.
-    ditto "$APP" "$STAGE/AgentPet.app"
+    ditto "$APP" "$STAGE/AgentBuddy.app"
     # create-dmg lays out a branded install window: custom background, the app on
     # the left, an arrow, and the Applications drop target on the right.
     create-dmg \
-        --volname "AgentPet" \
+        --volname "AgentBuddy" \
         --background "$ROOT/scripts/dmg-background.tiff" \
         --window-pos 200 120 \
         --window-size 660 420 \
         --icon-size 120 \
-        --icon "AgentPet.app" 180 206 \
+        --icon "AgentBuddy.app" 180 206 \
         --app-drop-link 480 206 \
-        --hide-extension "AgentPet.app" \
+        --hide-extension "AgentBuddy.app" \
         --no-internet-enable \
         "$DMG" "$STAGE" >/dev/null
 }
@@ -76,7 +76,7 @@ else
     # left every distributed copy un-stapled, so Gatekeeper had to verify online
     # and blocked the app whenever that check lagged.
     echo "==> Notarizing the app (this can take a few minutes)"
-    ZIP="$ROOT/build/AgentPet-$VERSION-app.zip"
+    ZIP="$ROOT/build/AgentBuddy-$VERSION-app.zip"
     rm -f "$ZIP"
     ditto -c -k --keepParent "$APP" "$ZIP"
     xcrun notarytool submit "$ZIP" --keychain-profile "$PROFILE" --wait
@@ -106,7 +106,7 @@ cat <<EOF
             <sparkle:version>$VERSION</sparkle:version>
             <sparkle:shortVersionString>$VERSION</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/techgocodingnow/agentbuddy/releases/download/v$VERSION/AgentPet-$VERSION.dmg"
+            <enclosure url="https://github.com/techgocodingnow/agentbuddy/releases/download/v$VERSION/AgentBuddy-$VERSION.dmg"
                        $ED_ATTRS type="application/octet-stream" />
         </item>
 EOF

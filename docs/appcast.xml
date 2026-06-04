@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
     <channel>
-        <title>AgentPet</title>
+        <title>AgentBuddy</title>
         <link>https://techgocodingnow.github.io/agentbuddy/appcast.xml</link>
-        <description>Updates for AgentPet</description>
+        <description>Updates for AgentBuddy</description>
         <language>en</language>
     </channel>
 </rss>

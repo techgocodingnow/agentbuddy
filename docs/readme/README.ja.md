@@ -1,12 +1,12 @@
 <div align="center">
-  <img src="../../assets/banner.png" alt="AgentPet" width="100%" />
+  <img src="../../assets/banner.png" alt="AgentBuddy" width="100%" />
   <p>
     <img src="https://img.shields.io/badge/platform-macOS%2013%2B-black" alt="macOS 13+" />
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" />
     <img src="https://img.shields.io/badge/Swift-SwiftUI-orange" alt="Swift" />
     <a href="https://github.com/techgocodingnow/agentbuddy"><img src="https://img.shields.io/github/stars/techgocodingnow/agentbuddy?style=social" alt="GitHub stars" /></a>
   </p>
-  <p><b>AgentPet が役に立ったら、ぜひ <a href="https://github.com/techgocodingnow/agentbuddy">スター</a> をお願いします！</b></p>
+  <p><b>AgentBuddy が役に立ったら、ぜひ <a href="https://github.com/techgocodingnow/agentbuddy">スター</a> をお願いします！</b></p>
   <p>
     <a href="../../README.md">English</a> ·
     <a href="README.vi.md">Tiếng Việt</a> ·
@@ -15,11 +15,11 @@
   </p>
 </div>
 
-複数のコーディングエージェント（Claude Code、Codex など）を同時に動かすと、AgentPet がどれが**作業中**で、どれが**完了**し、どれが**あなたの入力待ち**かを一目で教えてくれます。ターミナルを行き来する必要はもうありません。小さなペットがデスクトップに浮かび、すべてに反応します。
+複数のコーディングエージェント（Claude Code、Codex など）を同時に動かすと、AgentBuddy がどれが**作業中**で、どれが**完了**し、どれが**あなたの入力待ち**かを一目で教えてくれます。ターミナルを行き来する必要はもうありません。小さなペットがデスクトップに浮かび、すべてに反応します。
 
 ## なぜ
 
-複数のエージェントを並行して動かすと、誰が自分を必要としているか確認するためにウィンドウを切り替え続けることになります。AgentPet はそれを 2 か所で可視化します:
+複数のエージェントを並行して動かすと、誰が自分を必要としているか確認するためにウィンドウを切り替え続けることになります。AgentBuddy はそれを 2 か所で可視化します:
 
 - **メニューバーのモニター**で詳細を: 実行中の各エージェント、その状態、何をしているか、リアルタイムのタイマー。
 - **デスクトップのペット**で、作業を中断せずに把握できるさりげない合図を。
@@ -63,7 +63,7 @@ brew install --cask techgocodingnow/tap/agentbuddy
 
 ### 直接ダウンロード
 
-[Releases](https://github.com/techgocodingnow/agentbuddy/releases) から最新の `AgentPet.dmg` を入手し、開いて AgentPet を Applications にドラッグします。
+[Releases](https://github.com/techgocodingnow/agentbuddy/releases) から最新の `AgentBuddy.dmg` を入手し、開いて AgentBuddy を Applications にドラッグします。
 
 ### ソースからビルド
 
@@ -71,12 +71,12 @@ brew install --cask techgocodingnow/tap/agentbuddy
 git clone https://github.com/techgocodingnow/agentbuddy.git
 cd agentbuddy
 ./scripts/build-app.sh release
-open build/AgentPet.app
+open build/AgentBuddy.app
 ```
 
 > **注意:** 現在のビルドは Developer ID 署名済みですが**まだ公証されていません**。そのため macOS が初回起動をブロックする場合があります。一度だけ隔離フラグを削除してください:
 > ```bash
-> xattr -dr com.apple.quarantine "/Applications/AgentPet.app"
+> xattr -dr com.apple.quarantine "/Applications/AgentBuddy.app"
 > ```
 > 完全に公証されたビルド（警告なし）は近日公開予定です。
 
@@ -84,7 +84,7 @@ open build/AgentPet.app
 
 ## 使い方
 
-**Claude Code**（推奨）: 設定から hook をインストールします。AgentPet は各セッションの実際の状態（「入力待ち」を含む）を反映します。
+**Claude Code**（推奨）: 設定から hook をインストールします。AgentBuddy は各セッションの実際の状態（「入力待ち」を含む）を反映します。
 
 **その他の CLI エージェント**: ラップして実行します。
 
@@ -102,7 +102,7 @@ agentpet run -- <あなたのエージェントコマンド>     # 例: agentpet
 - **アニメーションの割り当て**: 各状態でどのアニメーションを再生するか選択。
 - 不要なペットを**削除**。
 
-初回起動時にスターターペットが自動でインストールされます。AgentPet はペット素材を同梱しません。ペットは実行時に追加されます。
+初回起動時にスターターペットが自動でインストールされます。AgentBuddy はペット素材を同梱しません。ペットは実行時に追加されます。
 
 ## ロードマップ
 
@@ -116,7 +116,7 @@ Swift + SwiftUI、エージェントイベント用の Unix ソケットデー�
 
 ## 応援
 
-AgentPet がターミナル探しを減らせたなら、こんな応援ができます:
+AgentBuddy がターミナル探しを減らせたなら、こんな応援ができます:
 
 - **[リポジトリにスター](https://github.com/techgocodingnow/agentbuddy)** して、より多くの人に届けてください。
 - **[Issue を報告](https://github.com/techgocodingnow/agentbuddy/issues)** するときは、再現手順を添えてください。
@@ -127,7 +127,7 @@ AgentPet がターミナル探しを減らせたなら、こんな応援がで�
 
 ## 謝辞
 
-Codex ペットパック形式とオンラインペットライブラリは **[Petdex](https://github.com/crafter-station/petdex)**（MIT）が提供しています。AgentPet は独立した相互運用クライアントで、Petdex 形式のパックを読み込み、Petdex の公開 API からダウンロードできます。AgentPet はペット素材を同梱しません。各ペット素材は提出者が各自のライセンスで保有します。あるキャラクターの権利をお持ちの場合は、テイクダウン要請を Petdex までお願いします。
+Codex ペットパック形式とオンラインペットライブラリは **[Petdex](https://github.com/crafter-station/petdex)**（MIT）が提供しています。AgentBuddy は独立した相互運用クライアントで、Petdex 形式のパックを読み込み、Petdex の公開 API からダウンロードできます。AgentBuddy はペット素材を同梱しません。各ペット素材は提出者が各自のライセンスで保有します。あるキャラクターの権利をお持ちの場合は、テイクダウン要請を Petdex までお願いします。
 
 ## ライセンス
 

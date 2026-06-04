@@ -1,12 +1,12 @@
 <div align="center">
-  <img src="../../assets/banner.png" alt="AgentPet" width="100%" />
+  <img src="../../assets/banner.png" alt="AgentBuddy" width="100%" />
   <p>
     <img src="https://img.shields.io/badge/platform-macOS%2013%2B-black" alt="macOS 13+" />
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" />
     <img src="https://img.shields.io/badge/Swift-SwiftUI-orange" alt="Swift" />
     <a href="https://github.com/techgocodingnow/agentbuddy"><img src="https://img.shields.io/github/stars/techgocodingnow/agentbuddy?style=social" alt="GitHub stars" /></a>
   </p>
-  <p><b>Nếu AgentPet giúp ích cho bạn, hãy <a href="https://github.com/techgocodingnow/agentbuddy">tặng một sao</a> nhé!</b></p>
+  <p><b>Nếu AgentBuddy giúp ích cho bạn, hãy <a href="https://github.com/techgocodingnow/agentbuddy">tặng một sao</a> nhé!</b></p>
   <p>
     <a href="../../README.md">English</a> ·
     <b>Tiếng Việt</b> ·
@@ -15,11 +15,11 @@
   </p>
 </div>
 
-Chạy nhiều agent lập trình cùng lúc (Claude Code, Codex, ...) và AgentPet cho bạn biết ngay con nào **đang chạy**, con nào **đã xong**, con nào **đang chờ bạn nhập liệu**, để khỏi phải lật qua lại giữa các terminal. Một chú pet nhỏ nổi trên màn hình và phản ứng theo tất cả.
+Chạy nhiều agent lập trình cùng lúc (Claude Code, Codex, ...) và AgentBuddy cho bạn biết ngay con nào **đang chạy**, con nào **đã xong**, con nào **đang chờ bạn nhập liệu**, để khỏi phải lật qua lại giữa các terminal. Một chú pet nhỏ nổi trên màn hình và phản ứng theo tất cả.
 
 ## Vì sao
 
-Chạy nhiều agent song song nghĩa là phải liên tục đổi cửa sổ để xem con nào cần mình. AgentPet hiển thị điều đó ở hai nơi:
+Chạy nhiều agent song song nghĩa là phải liên tục đổi cửa sổ để xem con nào cần mình. AgentBuddy hiển thị điều đó ở hai nơi:
 
 - **Trình theo dõi ở menu bar** cho chi tiết: mọi agent đang chạy, trạng thái, đang làm gì, và bộ đếm thời gian trực tiếp.
 - **Pet trên desktop** cho tín hiệu nhẹ nhàng, đọc được mà không phải dứt khỏi công việc.
@@ -63,7 +63,7 @@ brew install --cask techgocodingnow/tap/agentbuddy
 
 ### Tải trực tiếp
 
-Tải `AgentPet.dmg` mới nhất ở [Releases](https://github.com/techgocodingnow/agentbuddy/releases), mở ra và kéo AgentPet vào Applications.
+Tải `AgentBuddy.dmg` mới nhất ở [Releases](https://github.com/techgocodingnow/agentbuddy/releases), mở ra và kéo AgentBuddy vào Applications.
 
 ### Build từ mã nguồn
 
@@ -71,12 +71,12 @@ Tải `AgentPet.dmg` mới nhất ở [Releases](https://github.com/techgocoding
 git clone https://github.com/techgocodingnow/agentbuddy.git
 cd agentbuddy
 ./scripts/build-app.sh release
-open build/AgentPet.app
+open build/AgentBuddy.app
 ```
 
 > **Lưu ý:** bản hiện tại đã ký Developer ID nhưng **chưa notarize**, nên macOS có thể chặn lần mở đầu. Gỡ cờ quarantine một lần:
 > ```bash
-> xattr -dr com.apple.quarantine "/Applications/AgentPet.app"
+> xattr -dr com.apple.quarantine "/Applications/AgentBuddy.app"
 > ```
 > Bản notarize đầy đủ (không cảnh báo) sắp có.
 
@@ -84,7 +84,7 @@ Lần đầu mở, vào **Settings → General**, bấm **Install** cạnh Claud
 
 ## Cách dùng
 
-**Claude Code** (khuyến nghị): cài hook từ Settings. AgentPet sẽ phản ánh đúng trạng thái thật của từng phiên (kể cả "đang chờ nhập liệu").
+**Claude Code** (khuyến nghị): cài hook từ Settings. AgentBuddy sẽ phản ánh đúng trạng thái thật của từng phiên (kể cả "đang chờ nhập liệu").
 
 **Agent CLI khác**: bọc nó lại.
 
@@ -102,7 +102,7 @@ Pet dùng định dạng pet-pack mở của Codex (`pet.json` + spritesheet lư
 - **Gán animation**: chọn animation nào chạy cho từng trạng thái.
 - **Xóa** pet không dùng nữa.
 
-Một pet khởi đầu được cài tự động lần đầu chạy. AgentPet không đóng gói sẵn art pet nào; pet được thêm lúc chạy.
+Một pet khởi đầu được cài tự động lần đầu chạy. AgentBuddy không đóng gói sẵn art pet nào; pet được thêm lúc chạy.
 
 ## Lộ trình
 
@@ -116,7 +116,7 @@ Swift + SwiftUI, một daemon Unix-socket cho sự kiện agent, và một CLI h
 
 ## Ủng hộ
 
-Nếu AgentPet giúp bạn đỡ phải lật terminal, đây là cách giúp lại:
+Nếu AgentBuddy giúp bạn đỡ phải lật terminal, đây là cách giúp lại:
 
 - **[Tặng sao cho repo](https://github.com/techgocodingnow/agentbuddy)** để nhiều người biết tới hơn.
 - **[Báo lỗi](https://github.com/techgocodingnow/agentbuddy/issues)** với các bước tái hiện rõ ràng.
@@ -127,7 +127,7 @@ Dự án gốc bởi **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/nt
 
 ## Ghi nhận
 
-Định dạng pet-pack Codex và thư viện pet trực tuyến do **[Petdex](https://github.com/crafter-station/petdex)** (MIT) cung cấp. AgentPet là một client interop độc lập: đọc pack theo định dạng của Petdex và cho phép tải pet từ API công khai của Petdex. AgentPet không đóng gói art pet; mỗi asset pet thuộc về người đóng góp theo giấy phép riêng của họ. Nếu bạn giữ bản quyền một nhân vật, vui lòng gửi yêu cầu gỡ tới Petdex.
+Định dạng pet-pack Codex và thư viện pet trực tuyến do **[Petdex](https://github.com/crafter-station/petdex)** (MIT) cung cấp. AgentBuddy là một client interop độc lập: đọc pack theo định dạng của Petdex và cho phép tải pet từ API công khai của Petdex. AgentBuddy không đóng gói art pet; mỗi asset pet thuộc về người đóng góp theo giấy phép riêng của họ. Nếu bạn giữ bản quyền một nhân vật, vui lòng gửi yêu cầu gỡ tới Petdex.
 
 ## Giấy phép
 
