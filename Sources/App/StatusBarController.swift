@@ -70,6 +70,12 @@ final class StatusBarController: NSObject, ObservableObject {
         }
     }
 
+    func showPopoverFromStatusItem() {
+        guard let button = statusItem?.button else { return }
+        if popover.isShown { popover.performClose(nil) }
+        popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+    }
+
     /// Reflects live agent state in the menu bar: a count of running agents, or
     /// an orange count when some need input, so it reads at a glance.
     func updateStatus(_ sessions: [AgentSession]) {
@@ -134,7 +140,8 @@ final class StatusBarController: NSObject, ObservableObject {
     private var lastShownChat = ""
 
     private func refreshChatBubble() {
-        let chat = PetController.shared.chatLine
+        let pet = PetController.shared
+        let chat = pet.compactSummary.isEmpty ? pet.chatLine : pet.compactSummary
         guard showChatOnMenuBar, !chat.isEmpty else {
             hideChatBubble()
             return

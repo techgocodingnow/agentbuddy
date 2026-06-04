@@ -9,6 +9,8 @@ final class PetController: ObservableObject {
 
     @Published private(set) var mood: PetMood = .idle
     @Published private(set) var chatLine: String = ""
+    @Published private(set) var compactSummary: String = ""
+    @Published private(set) var activeSessions: [AgentSession] = []
 
     @Published var selectedPetID: String? {
         didSet { UserDefaults.standard.set(selectedPetID, forKey: Self.petKey) }
@@ -26,13 +28,25 @@ final class PetController: ObservableObject {
 
     static let minPoint: Double = 60
     static let maxPoint: Double = 240
+    static let maxFloatingCards = 3
     static let presets: [(String, Double)] = [("S", 84), ("M", 120), ("L", 168)]
 
     /// Floating window size for a sprite point size (room for the bubble above).
-    static func windowSize(forPoint point: Double) -> CGSize {
-        CGSize(width: point + 110, height: point + 64)
+    static func windowSize(forPoint point: Double, activeCount: Int = 0) -> CGSize {
+        guard activeCount > 0 else {
+            return CGSize(width: point + 110, height: point + 64)
+        }
+
+        let cardWidth: Double = 330
+        let cardHeight: Double = 68
+        let visibleCards = min(activeCount, maxFloatingCards)
+        let overflowHeight = activeCount > maxFloatingCards ? 30.0 : 0.0
+        let cardStackHeight = (cardHeight * Double(visibleCards)) + overflowHeight + 16
+        return CGSize(width: max(point + 110, cardWidth + 28), height: point + cardStackHeight + 34)
     }
-    var windowSize: CGSize { Self.windowSize(forPoint: petPoint) }
+    var windowSize: CGSize { Self.windowSize(forPoint: petPoint, activeCount: activeSessions.count) }
+    var visibleSessions: [AgentSession] { Array(activeSessions.prefix(Self.maxFloatingCards)) }
+    var hiddenSessionCount: Int { max(0, activeSessions.count - Self.maxFloatingCards) }
 
     private var lastResolved: PetMood = .idle
     private var latestSessions: [AgentSession] = []
@@ -90,6 +104,7 @@ final class PetController: ObservableObject {
     /// Called by the daemon whenever the session list changes.
     func update(sessions: [AgentSession]) {
         latestSessions = sessions
+        refreshSessionPresentation(sessions)
         let resolved = MoodResolver.aggregate(sessions)
         defer { lastResolved = resolved }
 
@@ -118,14 +133,20 @@ final class PetController: ObservableObject {
     }
 
     private func refreshChat() {
+        let summary = compactSummary
         let pool = ChatSettings.shared.lines(for: mood)
-        guard showChat, mood != .idle, !pool.isEmpty else {
+        guard showChat, mood != .idle else {
             chatLine = ""
             StatusBarController.shared.refreshTitle()
             return
         }
-        chatLine = pool.randomElement() ?? ""
+        chatLine = !summary.isEmpty ? summary : (pool.randomElement() ?? "")
         StatusBarController.shared.refreshTitle()
+    }
+
+    private func refreshSessionPresentation(_ sessions: [AgentSession]) {
+        compactSummary = AgentSessionSummary.compact(for: sessions) ?? ""
+        activeSessions = sessions.filter { $0.state != .idle && $0.state != .registered }
     }
 }
 

@@ -14,6 +14,7 @@ final class PetWindowController: ObservableObject {
 
     private var panel: NSPanel?
     private var sizeCancellable: AnyCancellable?
+    private var sessionsCancellable: AnyCancellable?
     private var rightClickMonitor: Any?
     private var screenObserver: Any?
 
@@ -40,7 +41,13 @@ final class PetWindowController: ObservableObject {
 
         // On size change, resize in place (keep the pet where the user put it).
         sizeCancellable = PetController.shared.$petPoint.sink { [weak self] point in
-            self?.resizeInPlace(to: PetController.windowSize(forPoint: point))
+            let activeCount = PetController.shared.activeSessions.count
+            self?.resizeInPlace(to: PetController.windowSize(forPoint: point, activeCount: activeCount))
+        }
+
+        // Active session cards also affect the floating panel size.
+        sessionsCancellable = PetController.shared.$activeSessions.sink { [weak self] sessions in
+            self?.resizeInPlace(to: PetController.windowSize(forPoint: PetController.shared.petPoint, activeCount: sessions.count))
         }
 
         // If displays change (e.g. a monitor is unplugged), keep the pet on screen.

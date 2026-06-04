@@ -1,17 +1,17 @@
 # Project State
 
-**Status:** Ready to execute
+**Status:** Ready to plan
 **Project:** AgentPet Multi-Session Companion
 **Current Milestone:** v1 - Compact Multi-Session Pet Summary
-**Current Phase:** Phase 2 - Pet and Menu Bar UX Wiring
-**Updated:** 2026-06-04T10:59:21Z
+**Current Phase:** Phase 3 - Verification and Polish
+**Updated:** 2026-06-04T11:10:51Z
 
 ## Project Reference
 
 See: `.planning/PROJECT.md` (updated 2026-06-04)
 
 **Core value:** One ambient pet should tell the user when any coding agent needs attention without forcing them to inspect every terminal.
-**Current focus:** Execute pet/menu UI wiring for the compact summary, stacked session cards, and Reply affordance.
+**Current focus:** Plan app-level smoke verification and polish for stacked cards, Reply, and menu behavior.
 
 ## Active Context
 
@@ -33,10 +33,10 @@ This is a brownfield enhancement. The existing codebase already has:
 
 ## Current Plan
 
-1. Run `$gsd-execute-phase 2`.
-2. Wire UI surfaces to consume `AgentSessionSummary.compact(for:)`.
-3. Build the pet-adjacent stacked session card surface and Reply affordance.
-4. Verify with Swift tests/build and leave manual smoke targets for Phase 3.
+1. Run `$gsd-plan-phase 3`.
+2. Verify stacked session cards, Reply, and menu behavior in the running app.
+3. Polish any layout or documentation gaps found during smoke testing.
+4. Complete milestone verification.
 
 ## Decisions
 
@@ -46,6 +46,7 @@ This is a brownfield enhancement. The existing codebase already has:
 | 2026-06-04 | Compact summary belongs in pet/menu status | Makes the pet useful as a glanceable multi-agent status surface. |
 | 2026-06-04 | Waiting outranks working | User attention should prioritize blocked sessions. |
 | 2026-06-04 | Compact summaries use only agent kind and state | Avoids leaking project paths, prompts, hook messages, or terminal output into pet/status text. |
+| 2026-06-04 | Reply is an explicit action boundary | Current sessions lack reliable terminal targeting, so v1 copies session context and opens the detailed popover. |
 
 ## Blockers
 
@@ -53,9 +54,8 @@ None.
 
 ## Notes for Next Agent
 
-- Phase 1 is complete. Read `.planning/phases/01-core-aggregation-and-summary-model/01-SUMMARY.md` before executing Phase 2.
-- Read `.planning/phases/02-pet-and-menu-bar-ux-wiring/02-RESEARCH.md` and `02-PLAN.md` before implementation.
-- Reuse `AgentSessionSummary.compact(for:)` instead of duplicating summary ordering/filtering in app UI.
+- Phase 1 and Phase 2 are complete. Read `.planning/phases/02-pet-and-menu-bar-ux-wiring/02-SUMMARY.md` before planning Phase 3.
+- Phase 3 should smoke-test floating card layout, Reply behavior, overflow, menu rows, and empty state.
 - Do not touch unrelated untracked local/tooling files unless the user explicitly asks for cleanup.
 
 ---

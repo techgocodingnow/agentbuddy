@@ -9,6 +9,7 @@ struct MenuContentView: View {
     @ObservedObject private var petWindow = PetWindowController.shared
     @ObservedObject private var statusBar = StatusBarController.shared
     @ObservedObject private var pet = PetController.shared
+    @ObservedObject private var reply = SessionReplyController.shared
     var dismiss: () -> Void
 
     /// Show agents that are doing something or just finished. Idle and merely
@@ -46,7 +47,7 @@ struct MenuContentView: View {
                 .overlay(Image(systemName: "pawprint.fill").font(.system(size: 13)).foregroundStyle(.white))
             VStack(alignment: .leading, spacing: 1) {
                 Text("AgentPet").font(.system(size: 14, weight: .bold)).foregroundStyle(.white)
-                Text(subtitle).font(.system(size: 11)).foregroundStyle(.white.opacity(0.5))
+                Text(subtitle).font(.system(size: 11)).foregroundStyle(.white.opacity(0.5)).lineLimit(1)
             }
             Spacer()
         }
@@ -56,9 +57,8 @@ struct MenuContentView: View {
     private var subtitle: String {
         let total = agents.count
         if total == 0 { return "No agents running" }
-        let running = agents.filter { $0.state == .working }.count
-        let label = "\(total) agent\(total == 1 ? "" : "s")"
-        return running > 0 ? "\(label) · \(running) running" : label
+        if !pet.compactSummary.isEmpty { return pet.compactSummary }
+        return "\(total) agent\(total == 1 ? "" : "s")"
     }
 
     // MARK: Agents
@@ -82,7 +82,11 @@ struct MenuContentView: View {
                     .padding(.horizontal, 14).padding(.bottom, 12)
             } else {
                 ForEach(agents) { session in
-                    AgentRow(session: session, onClear: { daemon.removeSession(session.id) })
+                    AgentRow(
+                        session: session,
+                        onReply: { reply.reply(to: session) },
+                        onClear: { daemon.removeSession(session.id) }
+                    )
                 }
                 .padding(.bottom, 6)
             }
@@ -176,6 +180,7 @@ private struct FooterButton: View {
 
 private struct AgentRow: View {
     let session: AgentSession
+    var onReply: () -> Void = {}
     var onClear: () -> Void = {}
     @State private var hovering = false
 
@@ -189,7 +194,18 @@ private struct AgentRow: View {
                     .lineLimit(1).truncationMode(.tail)
             }
             Spacer(minLength: 8)
-            if hovering {
+            if session.state == .waiting {
+                Button("Reply", action: onReply)
+                    .buttonStyle(.plain)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.orange)
+                if hovering {
+                    Button(action: onClear) {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(.white.opacity(0.45))
+                    }
+                    .buttonStyle(.plain)
+                }
+            } else if hovering {
                 Button(action: onClear) {
                     Image(systemName: "xmark.circle.fill").foregroundStyle(.white.opacity(0.45))
                 }
