@@ -18,8 +18,8 @@
 rtk swift test
 rtk swift build
 rtk ./scripts/build-app.sh debug
-rtk open build/AgentPet.app
-BIN="$(rtk swift build --show-bin-path)/agentpet"
+rtk open build/AgentBuddy.app
+BIN="$(rtk swift build --show-bin-path)/agentbuddy"
 rtk "$BIN" hook --agent codex --event PermissionRequest --session smoke-codex --project "$PWD" --message "Create gsd new project"
 rtk "$BIN" hook --agent claude --event UserPromptSubmit --session smoke-claude --project "$PWD" --message "Update README credits"
 rtk "$BIN" hook --agent cli --event working --session smoke-cli --project "$PWD" --message "Checking release notes"
@@ -28,9 +28,9 @@ rtk "$BIN" hook --agent gemini --event Notification --session smoke-gemini --pro
 
 ## Screenshots
 
-- `/tmp/agentpet-smoke-2.png`
-- `/tmp/agentpet-smoke-final.png`
-- `/tmp/agentpet-smoke-cleanup.png`
+- `/tmp/agentbuddy-smoke-2.png`
+- `/tmp/agentbuddy-smoke-final.png`
+- `/tmp/agentbuddy-smoke-cleanup.png`
 
 ## Residual Risk
 

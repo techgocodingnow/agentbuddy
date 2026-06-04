@@ -1,5 +1,5 @@
 import Foundation
-import AgentPetCore
+import AgentBuddyCore
 
 /// User choice of chat messages: the built-in system set, or custom lines the
 /// user types per mood.
@@ -17,8 +17,8 @@ final class ChatSettings: ObservableObject {
         didSet { save() }
     }
 
-    private static let sourceKey = "agentpet.chatSource"
-    private static let customKey = "agentpet.chatCustom"
+    private static let sourceKey = "agentbuddy.chatSource"
+    private static let customKey = "agentbuddy.chatCustom"
 
     /// Moods the user can write messages for (idle has no bubble).
     static let editableMoods: [PetMood] = [.working, .waiting, .done, .celebrate]

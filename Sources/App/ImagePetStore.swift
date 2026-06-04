@@ -1,7 +1,7 @@
 import AppKit
-import AgentPetCore
+import AgentBuddyCore
 
-/// Loads and imports spritesheet pet packs from `~/.agentpet/pets/`.
+/// Loads and imports spritesheet pet packs from `~/.agentbuddy/pets/`.
 @MainActor
 final class ImagePetStore: ObservableObject {
     static let shared = ImagePetStore()
@@ -9,7 +9,7 @@ final class ImagePetStore: ObservableObject {
     @Published private(set) var packs: [ImagePetPack] = []
 
     private var petsDir: URL {
-        URL(fileURLWithPath: AgentPetPaths.baseDir).appendingPathComponent("pets")
+        URL(fileURLWithPath: AgentBuddyPaths.baseDir).appendingPathComponent("pets")
     }
 
     func pack(id: String) -> ImagePetPack? {

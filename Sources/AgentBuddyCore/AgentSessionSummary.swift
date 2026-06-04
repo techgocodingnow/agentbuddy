@@ -59,11 +59,19 @@ public extension AgentSession {
         "\(agentKind.displayName) \(state.rawValue)"
     }
 
-    /// The agent's own message worth speaking in a bubble (e.g. its final
-    /// reply on `done`, or a permission prompt on `waiting`). Trimmed; `nil`
-    /// when empty so callers can fall back to status/personality text.
+    /// Pet-facing status text. Working sessions prefer the compact task
+    /// summary; waiting/done sessions prefer the agent's direct message.
     var displayMessage: String? {
-        guard let text = message?.trimmingCharacters(in: .whitespacesAndNewlines),
+        let candidate: String?
+        switch state {
+        case .working:
+            candidate = taskSummary ?? message
+        case .waiting, .done:
+            candidate = message ?? taskSummary
+        case .registered, .idle:
+            candidate = nil
+        }
+        guard let text = candidate?.trimmingCharacters(in: .whitespacesAndNewlines),
               !text.isEmpty else { return nil }
         return text
     }

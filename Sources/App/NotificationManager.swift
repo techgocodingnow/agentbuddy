@@ -12,7 +12,7 @@ final class NotificationManager {
 
     /// UserDefaults key for the in-app "show notifications" toggle (independent
     /// of the macOS permission): users who granted permission can still mute.
-    static let enabledKey = "agentpet.notificationsEnabled"
+    static let enabledKey = "agentbuddy.notificationsEnabled"
 
     /// `UNUserNotificationCenter` needs a real bundle id; false under `swift run`.
     var isAvailable: Bool { Bundle.main.bundleIdentifier != nil }

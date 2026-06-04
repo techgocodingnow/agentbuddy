@@ -1,6 +1,6 @@
 import Foundation
 
-/// The JSON Cursor writes to a hook's stdin (only the fields AgentPet needs).
+/// The JSON Cursor writes to a hook's stdin (only the fields AgentBuddy needs).
 public struct CursorHookPayload: Decodable, Equatable {
     public let conversationId: String?
     public let hookEventName: String?

@@ -1,5 +1,5 @@
 import Foundation
-import AgentPetCore
+import AgentBuddyCore
 
 struct RemotePet: Decodable, Identifiable {
     let slug: String
@@ -23,7 +23,7 @@ private struct Lenient<T: Decodable>: Decodable {
     }
 }
 
-/// Loads the online pet library and downloads packs into `~/.agentpet/pets/`.
+/// Loads the online pet library and downloads packs into `~/.agentbuddy/pets/`.
 @MainActor
 final class PetBrowser: ObservableObject {
     @Published var pets: [RemotePet] = []

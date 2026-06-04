@@ -54,11 +54,20 @@ public final class SessionStore {
             return nil
         }
         if var existing = byID[event.sessionId] {
-            if existing.state != state { existing.stateSince = now }
+            let stateChanged = existing.state != state
+            if stateChanged { existing.stateSince = now }
             existing.state = state
             existing.updatedAt = now
             if let project = event.project { existing.project = project }
-            existing.message = event.message
+            if let message = event.message {
+                existing.message = message
+                existing.taskSummary = TaskSummary.compact(from: message)
+            } else if stateChanged {
+                existing.message = nil
+                if state == .registered || state == .idle {
+                    existing.taskSummary = nil
+                }
+            }
             byID[event.sessionId] = existing
             return existing
         }
@@ -68,6 +77,7 @@ public final class SessionStore {
             project: event.project,
             state: state,
             message: event.message,
+            taskSummary: TaskSummary.compact(from: event.message),
             source: .hook,
             updatedAt: now
         )

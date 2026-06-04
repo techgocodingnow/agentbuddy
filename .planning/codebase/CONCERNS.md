@@ -36,17 +36,17 @@
 
 **Hook config writes into user home directories:**
 - Risk: Incorrect install/remove logic could corrupt existing agent hook config.
-- Files: `Sources/AgentPetCore/HookInstaller.swift`, `Sources/AgentPetCore/AgentHooks.swift`.
-- Current mitigation: install/uninstall transforms identify AgentPet entries by command string and preserve foreign hooks; transform behavior is covered by tests.
+- Files: `Sources/AgentBuddyCore/HookInstaller.swift`, `Sources/AgentBuddyCore/AgentHooks.swift`.
+- Current mitigation: install/uninstall transforms identify AgentBuddy entries by command string and preserve foreign hooks; transform behavior is covered by tests.
 - Recommendations: Keep tests for every supported hook shape when adding agents or events.
 
 **opencode plugin generation embeds a binary path into JavaScript:**
 - Risk: bad escaping could generate invalid or unsafe plugin source.
-- File: `Sources/AgentPetCore/HookInstaller.swift`.
+- File: `Sources/AgentBuddyCore/HookInstaller.swift`.
 - Current mitigation: `jsString(_:)` JSON-encodes the binary path before embedding.
 - Recommendations: Preserve JSON encoding and test special-character paths if path handling changes.
 
-**`agentpet run` executes arbitrary user commands:**
+**`agentbuddy run` executes arbitrary user commands:**
 - Risk: wrapper executes exactly what the user passes through `/usr/bin/env`.
 - File: `Sources/App/RunCLI.swift`.
 - Current mitigation: it is an explicit local wrapper command; it does not interpret shell syntax itself.
@@ -62,7 +62,7 @@
 
 **Main-actor session/UI refresh on every event:**
 - Problem: every incoming event triggers session apply, optional notification, full sorted session refresh, pet update, and status bar update.
-- Files: `Sources/App/AppDaemon.swift`, `Sources/AgentPetCore/SessionStore.swift`.
+- Files: `Sources/App/AppDaemon.swift`, `Sources/AgentBuddyCore/SessionStore.swift`.
 - Measurement: no performance numbers captured.
 - Cause: simple in-memory design, appropriate for modest session counts.
 - Improvement path: if many agents/events are tracked, debounce UI refreshes or make `SessionStore` updates more incremental.
@@ -78,14 +78,14 @@
 
 **Unix socket path and queue reliability:**
 - Why fragile: local socket path length, stale socket files, and queue drain ordering affect event delivery.
-- Files: `Sources/AgentPetCore/EventSocketServer.swift`, `Sources/AgentPetCore/EventSender.swift`, `Sources/App/AppDaemon.swift`.
+- Files: `Sources/AgentBuddyCore/EventSocketServer.swift`, `Sources/AgentBuddyCore/EventSender.swift`, `Sources/App/AppDaemon.swift`.
 - Common failures: bind failure, path too long, daemon not running, stale queued events.
 - Safe modification: preserve queue fallback and add tests when changing socket/queue format.
 - Test coverage: socket receive and queue drain are tested; app-level daemon startup failure is not directly tested.
 
 **Agent event mapping tables:**
 - Why fragile: each agent has different event names and config format.
-- Files: `Sources/AgentPetCore/StateMapper.swift`, `Sources/AgentPetCore/AgentHooks.swift`, `Sources/AgentPetCore/HookPayloads.swift`.
+- Files: `Sources/AgentBuddyCore/StateMapper.swift`, `Sources/AgentBuddyCore/AgentHooks.swift`, `Sources/AgentBuddyCore/HookPayloads.swift`.
 - Common failures: registering an event that does not map to state, missing waiting/done events, incorrect stdin field names.
 - Safe modification: update mapping, hook spec, payload parser, and tests together.
 - Test coverage: existing tests check registered event coverage for several agents and payload decoding for Cursor/Windsurf/Claude paths.
@@ -112,7 +112,7 @@
 - Scaling path: project grouping, filtering, notification throttling, and incremental UI updates.
 
 **Pet assets:**
-- Current capacity: local packs under `~/.agentpet/pets/` loaded by scanning directories.
+- Current capacity: local packs under `~/.agentbuddy/pets/` loaded by scanning directories.
 - Limit: no pagination/index for many installed packs.
 - Symptoms at limit: slow settings/pet list reload.
 - Scaling path: cache pack metadata and lazy-load spritesheets.

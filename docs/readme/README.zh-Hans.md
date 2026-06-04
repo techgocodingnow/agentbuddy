@@ -31,7 +31,7 @@
 - **桌面宠物**根据聚合状态作出反应（working / waiting / done / celebrate），并可选显示**聊天气泡**（内置或完全自定义的消息）。
 - 当智能体完成或需要输入时发出**系统通知**。
 - 通过 hook 集成 **Claude Code、Codex 与 Gemini CLI**，可在设置中一键安装（精确识别 working / waiting / done / idle，包括“需要你输入”）。
-- **通用包装器** `agentpet run -- <命令>`，可监视*任意* CLI 智能体（working/done），无需逐一配置。
+- **通用包装器** `agentbuddy run -- <命令>`，可监视*任意* CLI 智能体（working/done），无需逐一配置。
 - **宠物系统**：浏览在线宠物库并一键下载，为每个状态映射动画，调整大小，并自定义聊天内容。
 - **精致的原生设置**（分页、深色），且永不抢占焦点。
 
@@ -89,7 +89,7 @@ open build/AgentBuddy.app
 **其他 CLI 智能体**：用包装器运行。
 
 ```bash
-agentpet run -- <你的智能体命令>     # 例如：agentpet run -- aider
+agentbuddy run -- <你的智能体命令>     # 例如：agentbuddy run -- aider
 ```
 
 会话运行时显示 *working*，退出时显示 *done*。
@@ -123,7 +123,7 @@ Swift + SwiftUI，一个用于智能体事件的 Unix-socket 守护进程，以�
 
 由 **[GoCodingNow](https://github.com/techgocodingnow)** 维护。
 
-原项目由 **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996/agentpet)** 开发。本 fork 保留原 MIT 许可和署名。
+原项目由 **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996/agentbuddy)** 开发。本 fork 保留原 MIT 许可和署名。
 
 ## 致谢
 

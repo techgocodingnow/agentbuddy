@@ -1,6 +1,6 @@
 import SwiftUI
 import AppKit
-import AgentPetCore
+import AgentBuddyCore
 
 /// Rich menu bar popover: a blurred dark card with an arrow pointing at the
 /// status item, a live agent list, and a footer bar.

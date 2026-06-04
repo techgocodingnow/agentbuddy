@@ -1,5 +1,5 @@
 import XCTest
-@testable import AgentPetCore
+@testable import AgentBuddyCore
 
 final class MoodResolverTests: XCTestCase {
     private func session(_ state: AgentState, id: String, agentKind: AgentKind = .claude) -> AgentSession {
@@ -110,5 +110,55 @@ final class AgentSessionSummaryTests: XCTestCase {
         )
 
         XCTAssertEqual(session.compactStatusText, "Codex working")
+    }
+
+    func testDisplayMessageKeepsWorkingProgressMessage() {
+        let session = AgentSession(
+            id: "codex-working",
+            agentKind: .codex,
+            state: .working,
+            message: "Reviewing the hook flow",
+            source: .hook,
+            updatedAt: Date(timeIntervalSince1970: 0)
+        )
+
+        XCTAssertEqual(session.displayMessage, "Reviewing the hook flow")
+    }
+
+    func testDisplayMessagePrefersTaskSummaryForWorking() {
+        let session = AgentSession(
+            id: "codex-working",
+            agentKind: .codex,
+            state: .working,
+            message: "Please review the entire hook implementation and explain what is wrong",
+            taskSummary: "Reviewing hook implementation",
+            source: .hook,
+            updatedAt: Date(timeIntervalSince1970: 0)
+        )
+
+        XCTAssertEqual(session.displayMessage, "Reviewing hook implementation")
+    }
+
+    func testDisplayMessageKeepsHumanFacingStates() {
+        let waiting = AgentSession(
+            id: "codex-waiting",
+            agentKind: .codex,
+            state: .waiting,
+            message: "  Needs approval  ",
+            taskSummary: "Reviewing hook implementation",
+            source: .hook,
+            updatedAt: Date(timeIntervalSince1970: 0)
+        )
+        let done = AgentSession(
+            id: "codex-done",
+            agentKind: .codex,
+            state: .done,
+            message: "Finished the patch.",
+            source: .hook,
+            updatedAt: Date(timeIntervalSince1970: 0)
+        )
+
+        XCTAssertEqual(waiting.displayMessage, "Needs approval")
+        XCTAssertEqual(done.displayMessage, "Finished the patch.")
     }
 }

@@ -7,24 +7,24 @@
 **Overall:** Native macOS menu bar app with embedded CLI bridge and event-driven local daemon.
 
 **Key Characteristics:**
-- Single SwiftPM executable (`agentpet`) has multiple roles: app, hook CLI, and generic command wrapper.
+- Single SwiftPM executable (`agentbuddy`) has multiple roles: app, hook CLI, and generic command wrapper.
 - Event-driven state pipeline: agent hook -> local JSON event -> socket/queue -> daemon -> in-memory session store -> UI/pet/notifications.
-- Core event/session logic is isolated in `AgentPetCore`; UI and macOS integration live in `Sources/App`.
-- Persistent user data is local only: UserDefaults plus files under `~/.agentpet`.
+- Core event/session logic is isolated in `AgentBuddyCore`; UI and macOS integration live in `Sources/App`.
+- Persistent user data is local only: UserDefaults plus files under `~/.agentbuddy`.
 
 ## Layers
 
 **Executable Routing Layer:**
 - Purpose: Choose app mode or CLI helper mode.
-- Contains: `AgentPetMain` switch over `hook`, `run`, and default app launch.
+- Contains: `AgentBuddyMain` switch over `hook`, `run`, and default app launch.
 - Location: `Sources/App/AppEntry.swift`.
-- Depends on: `HookCLI`, `RunCLI`, `AgentPetApp`.
-- Used by: direct binary execution, installed agent hooks, and `agentpet run -- <command>`.
+- Depends on: `HookCLI`, `RunCLI`, `AgentBuddyApp`.
+- Used by: direct binary execution, installed agent hooks, and `agentbuddy run -- <command>`.
 
 **Core Domain Layer:**
 - Purpose: Model agents, events, states, sessions, hook specs, and transport primitives independent of SwiftUI.
 - Contains: `AgentEvent`, `AgentSession`, `AgentState`, `AgentKind`, `StateMapper`, `SessionStore`, `EventSocketServer`, `EventSender`, hook parsing/install transforms.
-- Location: `Sources/AgentPetCore/`.
+- Location: `Sources/AgentBuddyCore/`.
 - Depends on: Foundation and POSIX socket functions.
 - Used by: CLI helpers, daemon, settings, status UI, tests.
 
@@ -32,15 +32,15 @@
 - Purpose: Own live session state in the running app.
 - Contains: `AppDaemon`, socket startup, queue drain, session pruning, notification triggers, UI refresh propagation.
 - Location: `Sources/App/AppDaemon.swift`.
-- Depends on: `AgentPetCore`, `NotificationManager`, `PetController`, `StatusBarController`.
+- Depends on: `AgentBuddyCore`, `NotificationManager`, `PetController`, `StatusBarController`.
 - Used by: app startup through `AppDelegate`.
 
 **UI Layer:**
 - Purpose: Present state and settings through macOS native surfaces.
 - Contains: menu bar controller/content, settings/onboarding, floating pet window, pet view, browse/download UI.
 - Location: `Sources/App/`.
-- Depends on: SwiftUI, AppKit, `AgentPetCore`.
-- Used by: `AgentPetApp` and `AppDelegate`.
+- Depends on: SwiftUI, AppKit, `AgentBuddyCore`.
+- Used by: `AgentBuddyApp` and `AppDelegate`.
 
 **Distribution Layer:**
 - Purpose: Build app bundle, sign/notarize, package DMG, update appcast, publish releases.
@@ -51,17 +51,17 @@
 
 **Hook Event Processing:**
 
-1. Agent hook invokes `agentpet hook --agent <kind> ...` or pipes a supported hook payload to stdin.
+1. Agent hook invokes `agentbuddy hook --agent <kind> ...` or pipes a supported hook payload to stdin.
 2. `Sources/App/CLI.swift` parses explicit flags or decodes the agent-native payload through `HookPayload`.
 3. The helper creates an `AgentEvent` and calls `EventSender.send`.
-4. `EventSender` writes newline-delimited JSON to `~/.agentpet/agentpet.sock`; if unavailable, it writes a queue file in `~/.agentpet/queue/`.
+4. `EventSender` writes newline-delimited JSON to `~/.agentbuddy/agentbuddy.sock`; if unavailable, it writes a queue file in `~/.agentbuddy/queue/`.
 5. `AppDaemon.start()` drains queued events, starts `EventSocketServer`, and applies new events on the main actor.
 6. `SessionStore.apply` maps native event names through `StateMapper` and creates/updates/removes sessions.
 7. `AppDaemon.refresh()` updates `PetController` and `StatusBarController`; state transitions to waiting/done can trigger notifications and sounds.
 
 **Generic CLI Wrapper Flow:**
 
-1. User runs `agentpet run [flags] -- <command...>`.
+1. User runs `agentbuddy run [flags] -- <command...>`.
 2. `RunCLI` emits `working`, starts a heartbeat timer, launches child process with `/usr/bin/env`, waits, then emits `done`.
 3. The same socket/queue and daemon path processes those normalized events.
 
@@ -69,7 +69,7 @@
 
 1. `PetBrowser.loadIfNeeded()` fetches the Petdex manifest.
 2. User picks a pet; `PetInstaller.download` downloads `pet.json` and spritesheet assets.
-3. Files are stored under `~/.agentpet/pets/`.
+3. Files are stored under `~/.agentbuddy/pets/`.
 4. `ImagePetStore.reload()` uses `SpriteSlicer.loadPack` to populate available packs.
 5. `PetController.selectedPetID` persists the selected pack in UserDefaults.
 
@@ -95,7 +95,7 @@
 - Pattern: deterministic state store, not internally thread-safe; app confines it to the main actor.
 
 **HookInstaller / AgentHooks:**
-- Purpose: Install/remove AgentPet hook entries across different agent config formats.
+- Purpose: Install/remove AgentBuddy hook entries across different agent config formats.
 - Examples: Claude/Codex/Gemini nested hooks, Cursor/Windsurf flat hooks, opencode JS plugin.
 - Pattern: pure dictionary/source transforms wrapped by disk I/O helpers.
 
@@ -109,21 +109,21 @@
 **App / CLI Entry:**
 - Location: `Sources/App/AppEntry.swift`.
 - Triggers: binary invocation.
-- Responsibilities: dispatch to `HookCLI`, `RunCLI`, or `AgentPetApp.main()`.
+- Responsibilities: dispatch to `HookCLI`, `RunCLI`, or `AgentBuddyApp.main()`.
 
 **Menu Bar App Startup:**
-- Location: `Sources/App/AgentPetApp.swift`.
+- Location: `Sources/App/AgentBuddyApp.swift`.
 - Triggers: default binary launch.
 - Responsibilities: accessory app policy, pet/store startup, daemon start, hook migration, updater/status/settings startup.
 
 **Hook CLI:**
 - Location: `Sources/App/CLI.swift`.
-- Triggers: installed hooks or explicit `agentpet hook`.
+- Triggers: installed hooks or explicit `agentbuddy hook`.
 - Responsibilities: parse/decode event, send over socket/queue, exit with usage error when no event can be made.
 
 **Run Wrapper CLI:**
 - Location: `Sources/App/RunCLI.swift`.
-- Triggers: `agentpet run -- <command>`.
+- Triggers: `agentbuddy run -- <command>`.
 - Responsibilities: emit working/done around child process, keep heartbeat alive, preserve child exit status.
 
 ## Error Handling
@@ -150,7 +150,7 @@
 **Security:**
 - Local-only Unix socket and hook config writes.
 - Release signing/notarization requires external secrets; repo docs reference secret names but do not store secret values.
-- `agentpet run` launches user-provided commands through `/usr/bin/env`; callers control the command.
+- `agentbuddy run` launches user-provided commands through `/usr/bin/env`; callers control the command.
 
 **Notifications and Sounds:**
 - `AppDaemon.notifyIfNeeded` only fires when state changes to waiting or done.

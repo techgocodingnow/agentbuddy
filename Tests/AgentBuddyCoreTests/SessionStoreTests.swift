@@ -1,5 +1,5 @@
 import XCTest
-@testable import AgentPetCore
+@testable import AgentBuddyCore
 
 final class StateMapperTests: XCTestCase {
     func testClaudeEventMapping() {
@@ -73,6 +73,63 @@ final class SessionStoreTests: XCTestCase {
         XCTAssertEqual(updated?.state, .done)
         XCTAssertEqual(updated?.project, "/proj", "project should persist when event omits it")
         XCTAssertEqual(store.sessions.count, 1)
+    }
+
+    func testApplyPreservesMessageAcrossSameStateEvents() {
+        let store = SessionStore()
+        let prompt = AgentEvent(
+            sessionId: "s1",
+            agentKind: .claude,
+            eventName: "UserPromptSubmit",
+            project: "/proj",
+            message: "Working on hook messages",
+            timestamp: t0
+        )
+        store.apply(prompt, now: t0)
+
+        let updated = store.apply(event("PreToolUse"), now: t0.addingTimeInterval(5))
+
+        XCTAssertEqual(updated?.state, .working)
+        XCTAssertEqual(updated?.message, "Working on hook messages")
+        XCTAssertEqual(updated?.taskSummary, "Working on hook messages")
+    }
+
+    func testApplyClearsMessageOnStateChangeWithoutNewMessage() {
+        let store = SessionStore()
+        let prompt = AgentEvent(
+            sessionId: "s1",
+            agentKind: .claude,
+            eventName: "UserPromptSubmit",
+            project: "/proj",
+            message: "Working on hook messages",
+            timestamp: t0
+        )
+        store.apply(prompt, now: t0)
+
+        let updated = store.apply(event("Stop"), now: t0.addingTimeInterval(5))
+
+        XCTAssertEqual(updated?.state, .done)
+        XCTAssertNil(updated?.message)
+        XCTAssertEqual(updated?.taskSummary, "Working on hook messages")
+    }
+
+    func testApplyClearsSummaryWhenSessionRegistersAgain() {
+        let store = SessionStore()
+        let prompt = AgentEvent(
+            sessionId: "s1",
+            agentKind: .claude,
+            eventName: "UserPromptSubmit",
+            project: "/proj",
+            message: "Working on hook messages",
+            timestamp: t0
+        )
+        store.apply(prompt, now: t0)
+
+        let updated = store.apply(event("SessionStart"), now: t0.addingTimeInterval(5))
+
+        XCTAssertEqual(updated?.state, .registered)
+        XCTAssertNil(updated?.message)
+        XCTAssertNil(updated?.taskSummary)
     }
 
     func testApplyIgnoresUnmappedEvent() {

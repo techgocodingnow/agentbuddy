@@ -1,4 +1,4 @@
-# Requirements: AgentPet Multi-Session Companion
+# Requirements: AgentBuddy Multi-Session Companion
 
 **Defined:** 2026-06-04
 **Core Value:** One ambient pet should tell the user when any coding agent needs attention without forcing them to inspect every terminal.

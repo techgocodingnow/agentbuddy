@@ -23,7 +23,7 @@ public enum AgentKind: String, Codable, Sendable {
     case cursor
     case opencode
     case windsurf
-    /// Any CLI agent launched via the `agentpet run` wrapper.
+    /// Any CLI agent launched via the `agentbuddy run` wrapper.
     case cli
     case unknown
 }

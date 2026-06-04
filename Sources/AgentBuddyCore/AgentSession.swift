@@ -7,6 +7,7 @@ public struct AgentSession: Identifiable, Sendable, Equatable {
     public var project: String?
     public var state: AgentState
     public var message: String?
+    public var taskSummary: String?
     public var source: AgentSource
     public var updatedAt: Date
     /// When the session entered its current `state`; resets on state change.
@@ -18,6 +19,7 @@ public struct AgentSession: Identifiable, Sendable, Equatable {
         project: String? = nil,
         state: AgentState,
         message: String? = nil,
+        taskSummary: String? = nil,
         source: AgentSource,
         updatedAt: Date,
         stateSince: Date? = nil
@@ -27,6 +29,7 @@ public struct AgentSession: Identifiable, Sendable, Equatable {
         self.project = project
         self.state = state
         self.message = message
+        self.taskSummary = taskSummary
         self.source = source
         self.updatedAt = updatedAt
         self.stateSince = stateSince ?? updatedAt

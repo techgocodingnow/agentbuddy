@@ -1,5 +1,5 @@
 import SwiftUI
-import AgentPetCore
+import AgentBuddyCore
 
 /// Body motion for a given mood at time `t`, shared by all pet renderers.
 struct PetMotion {

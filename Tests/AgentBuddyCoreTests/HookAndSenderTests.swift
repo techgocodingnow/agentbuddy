@@ -1,5 +1,5 @@
 import XCTest
-@testable import AgentPetCore
+@testable import AgentBuddyCore
 
 final class HookArgumentsTests: XCTestCase {
     func testParseAllFlags() {
@@ -51,7 +51,7 @@ final class RunArgumentsTests: XCTestCase {
 
 final class EventSenderTests: XCTestCase {
     func testSenderDeliversOverSocket() throws {
-        let path = "/tmp/agentpet-\(UUID().uuidString).sock"
+        let path = "/tmp/agentbuddy-\(UUID().uuidString).sock"
         let server = EventSocketServer(path: path)
         defer { server.stop() }
 
@@ -69,8 +69,8 @@ final class EventSenderTests: XCTestCase {
     }
 
     func testSenderFallsBackToQueueWhenNoServer() throws {
-        let socketPath = "/tmp/agentpet-missing-\(UUID().uuidString).sock"
-        let queueDir = NSTemporaryDirectory() + "agentpet-q-\(UUID().uuidString)"
+        let socketPath = "/tmp/agentbuddy-missing-\(UUID().uuidString).sock"
+        let queueDir = NSTemporaryDirectory() + "agentbuddy-q-\(UUID().uuidString)"
         defer { try? FileManager.default.removeItem(atPath: queueDir) }
 
         let event = AgentEvent(sessionId: "s10", agentKind: .claude, eventName: "Stop",

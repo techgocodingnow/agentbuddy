@@ -1,6 +1,6 @@
 import Foundation
 
-/// Parsed `agentpet hook` flags. Unknown flags are ignored.
+/// Parsed `agentbuddy hook` flags. Unknown flags are ignored.
 public struct HookArguments: Equatable {
     public var event: String?
     public var session: String?

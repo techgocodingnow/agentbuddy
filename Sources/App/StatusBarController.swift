@@ -1,6 +1,6 @@
 import AppKit
 import SwiftUI
-import AgentPetCore
+import AgentBuddyCore
 
 /// Owns the menu bar status item and a native `NSPopover` (the pattern used by
 /// polished menu bar apps): smooth open/close animation, a real arrow pointing
@@ -16,21 +16,21 @@ final class StatusBarController: NSObject, ObservableObject {
     /// Whether to show the agent count next to the menu bar icon.
     @Published var showCount: Bool {
         didSet {
-            UserDefaults.standard.set(showCount, forKey: "agentpet.showCount")
+            UserDefaults.standard.set(showCount, forKey: "agentbuddy.showCount")
             updateStatus(lastSessions)
         }
     }
     /// Whether to show the pet's chat line next to the menu bar icon (default off).
     @Published var showChatOnMenuBar: Bool {
         didSet {
-            UserDefaults.standard.set(showChatOnMenuBar, forKey: "agentpet.showChatMenuBar")
+            UserDefaults.standard.set(showChatOnMenuBar, forKey: "agentbuddy.showChatMenuBar")
             updateStatus(lastSessions)
         }
     }
 
     override init() {
-        showCount = (UserDefaults.standard.object(forKey: "agentpet.showCount") as? Bool) ?? true
-        showChatOnMenuBar = (UserDefaults.standard.object(forKey: "agentpet.showChatMenuBar") as? Bool) ?? false
+        showCount = (UserDefaults.standard.object(forKey: "agentbuddy.showCount") as? Bool) ?? true
+        showChatOnMenuBar = (UserDefaults.standard.object(forKey: "agentbuddy.showChatMenuBar") as? Bool) ?? false
         super.init()
     }
 

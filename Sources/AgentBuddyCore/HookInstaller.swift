@@ -1,6 +1,6 @@
 import Foundation
 
-/// Installs/removes AgentPet's hook entries in an agent's config. Claude Code
+/// Installs/removes AgentBuddy's hook entries in an agent's config. Claude Code
 /// and Gemini use nested JSON, Codex uses inline TOML, Cursor and Windsurf use
 /// flatter JSON shapes, and opencode uses a JS plugin file. The shape is
 /// selected by `HookStyle`.
@@ -18,7 +18,7 @@ public enum HookInstaller {
     }
 
     static func isOurs(_ command: String) -> Bool {
-        command.contains("agentpet") && command.contains("hook")
+        command.contains("agentbuddy") && command.contains("hook")
     }
 
     // MARK: - Claude-nested shape (Claude / Codex / Gemini)
@@ -106,8 +106,8 @@ public enum HookInstaller {
 
     // MARK: - opencode JS plugin
 
-    /// Extracts the agentpet binary path from a hook command like
-    /// `"/path/to/agentpet" hook --agent opencode` (the first quoted token).
+    /// Extracts the agentbuddy binary path from a hook command like
+    /// `"/path/to/agentbuddy" hook --agent opencode` (the first quoted token).
     static func binaryPath(fromCommand command: String) -> String {
         if let first = command.firstIndex(of: "\"") {
             let rest = command[command.index(after: first)...]
@@ -120,14 +120,14 @@ public enum HookInstaller {
 
     static func opencodePlugin(binary: String) -> String {
         """
-        // AgentPet integration (auto-generated, safe to delete to uninstall).
-        // Reports opencode session lifecycle to AgentPet's menu bar app.
-        const AGENTPET_BIN = \(jsString(binary))
-        export const AgentPet = async ({ directory }) => {
+        // AgentBuddy integration (auto-generated, safe to delete to uninstall).
+        // Reports opencode session lifecycle to AgentBuddy's menu bar app.
+        const AGENTBUDDY_BIN = \(jsString(binary))
+        export const AgentBuddy = async ({ directory }) => {
           const sid = "opencode:" + (directory || "default")
           const send = (state) => {
             try {
-              Bun.spawn([AGENTPET_BIN, "hook", "--agent", "opencode",
+              Bun.spawn([AGENTBUDDY_BIN, "hook", "--agent", "opencode",
                          "--event", state, "--session", sid, "--project", directory || ""])
             } catch (e) {}
           }
@@ -149,8 +149,8 @@ public enum HookInstaller {
 
     // MARK: - Codex inline TOML
 
-    private static let codexStartMarker = "# AgentPet Codex hooks (auto-generated; safe to delete)"
-    private static let codexEndMarker = "# End AgentPet Codex hooks"
+    private static let codexStartMarker = "# AgentBuddy Codex hooks (auto-generated; safe to delete)"
+    private static let codexEndMarker = "# End AgentBuddy Codex hooks"
 
     static func installCodexToml(into content: String, command: String, events: [String]) -> String {
         var updated = enableCodexHooksFeature(in: uninstallCodexToml(from: content))

@@ -116,4 +116,4 @@ Implement Phase 2 as one UI wiring plan:
 
 ## Research Complete
 
-No external research is needed. The required work is local SwiftUI/AppKit wiring over existing `AgentPetCore` APIs and current app surfaces.
+No external research is needed. The required work is local SwiftUI/AppKit wiring over existing `AgentBuddyCore` APIs and current app surfaces.

@@ -7,10 +7,10 @@
 ```
 agentbuddy/
 ├── Sources/
-│   ├── AgentPetCore/        # Pure core models, hook transforms, event transport, session state
+│   ├── AgentBuddyCore/        # Pure core models, hook transforms, event transport, session state
 │   └── App/                 # SwiftUI/AppKit app, CLI entry points, settings, pet UI, release-facing app code
 ├── Tests/
-│   └── AgentPetCoreTests/   # XCTest coverage for core logic and hook integrations
+│   └── AgentBuddyCoreTests/   # XCTest coverage for core logic and hook integrations
 ├── scripts/                 # App bundle assembly, icon/banner generation, DMG/release automation
 ├── docs/                    # Static docs site, release appcast, localized READMEs, design specs
 ├── assets/                  # README/demo media and screenshots
@@ -22,7 +22,7 @@ agentbuddy/
 
 ## Directory Purposes
 
-**Sources/AgentPetCore:**
+**Sources/AgentBuddyCore:**
 - Purpose: Platform-adjacent but UI-free core logic for event/session handling and hook installation.
 - Contains: Swift source files for agent models, hook payloads, hook config transforms, event coding, socket transport, state mapping, and session storage.
 - Key files: `StateMapper.swift`, `SessionStore.swift`, `EventSocketServer.swift`, `EventSender.swift`, `HookInstaller.swift`, `AgentHooks.swift`.
@@ -31,10 +31,10 @@ agentbuddy/
 **Sources/App:**
 - Purpose: Executable target code: macOS app, CLI commands, pet UI, settings, updater, and local storage helpers.
 - Contains: SwiftUI views, AppKit window/status controllers, CLI entry points, browser/download logic for pet packs, notification/sound/settings controllers.
-- Key files: `AppEntry.swift`, `AgentPetApp.swift`, `AppDaemon.swift`, `CLI.swift`, `RunCLI.swift`, `SetupView.swift`, `StatusBarController.swift`, `PetController.swift`.
+- Key files: `AppEntry.swift`, `AgentBuddyApp.swift`, `AppDaemon.swift`, `CLI.swift`, `RunCLI.swift`, `SetupView.swift`, `StatusBarController.swift`, `PetController.swift`.
 - Subdirectories: none; app code is currently a flat target directory.
 
-**Tests/AgentPetCoreTests:**
+**Tests/AgentBuddyCoreTests:**
 - Purpose: XCTest suite for core behavior.
 - Contains: tests for event mapping, session pruning/sorting, socket transport, hook installation shapes, hook payload decoding, pet mood mapping, and argument/sender behavior.
 - Key files: `SessionStoreTests.swift`, `EventSocketServerTests.swift`, `HookInstallerTests.swift`, `MultiAgentHookTests.swift`, `HookAndSenderTests.swift`.
@@ -47,7 +47,7 @@ agentbuddy/
 **docs:**
 - Purpose: Release/distribution docs and project design/reference material.
 - Contains: static landing page, Sparkle appcast, release instructions, localized README copies, specs.
-- Key files: `docs/appcast.xml`, `docs/RELEASING.md`, `docs/specs/2026-05-29-agentpet-design.md`.
+- Key files: `docs/appcast.xml`, `docs/RELEASING.md`, `docs/specs/2026-05-29-agentbuddy-design.md`.
 
 **assets:**
 - Purpose: README visuals and demo media.
@@ -62,9 +62,9 @@ agentbuddy/
 
 **Entry Points:**
 - `Sources/App/AppEntry.swift` - `@main` entry and binary role dispatch.
-- `Sources/App/AgentPetApp.swift` - SwiftUI app and `AppDelegate` startup.
-- `Sources/App/CLI.swift` - `agentpet hook` command.
-- `Sources/App/RunCLI.swift` - `agentpet run` command wrapper.
+- `Sources/App/AgentBuddyApp.swift` - SwiftUI app and `AppDelegate` startup.
+- `Sources/App/CLI.swift` - `agentbuddy hook` command.
+- `Sources/App/RunCLI.swift` - `agentbuddy run` command wrapper.
 
 **Configuration:**
 - `Package.swift` - SwiftPM package, targets, platform, Sparkle dependency.
@@ -75,12 +75,12 @@ agentbuddy/
 - `.gitignore` - build/user scratch exclusions.
 
 **Core Logic:**
-- `Sources/AgentPetCore/StateMapper.swift` - event-name-to-state mapping.
-- `Sources/AgentPetCore/SessionStore.swift` - session reducer and pruning/sorting policy.
-- `Sources/AgentPetCore/EventSocketServer.swift` - socket listener and queue draining.
-- `Sources/AgentPetCore/EventSender.swift` - socket client and fallback queue writer.
-- `Sources/AgentPetCore/HookInstaller.swift` - hook config install/remove transforms and disk I/O.
-- `Sources/AgentPetCore/HookPayloads.swift` and `ClaudeHookPayload.swift` - stdin payload decoding.
+- `Sources/AgentBuddyCore/StateMapper.swift` - event-name-to-state mapping.
+- `Sources/AgentBuddyCore/SessionStore.swift` - session reducer and pruning/sorting policy.
+- `Sources/AgentBuddyCore/EventSocketServer.swift` - socket listener and queue draining.
+- `Sources/AgentBuddyCore/EventSender.swift` - socket client and fallback queue writer.
+- `Sources/AgentBuddyCore/HookInstaller.swift` - hook config install/remove transforms and disk I/O.
+- `Sources/AgentBuddyCore/HookPayloads.swift` and `ClaudeHookPayload.swift` - stdin payload decoding.
 
 **UI and App Behavior:**
 - `Sources/App/AppDaemon.swift` - live state owner and notification trigger.
@@ -92,13 +92,13 @@ agentbuddy/
 - `Sources/App/PetBrowser.swift`, `PetInstaller.swift`, `ImagePetStore.swift`, `SpriteSlicer.swift` - pet library and local pet pack handling.
 
 **Testing:**
-- `Tests/AgentPetCoreTests/*.swift` - all current automated tests.
+- `Tests/AgentBuddyCoreTests/*.swift` - all current automated tests.
 
 **Documentation:**
 - `README.md` - main user documentation.
 - `docs/readme/*.md` - localized README variants.
 - `docs/RELEASING.md` - release process.
-- `docs/specs/2026-05-29-agentpet-design.md` - original design spec.
+- `docs/specs/2026-05-29-agentbuddy-design.md` - original design spec.
 
 ## Naming Conventions
 
@@ -114,20 +114,20 @@ agentbuddy/
 **Special Patterns:**
 - Test files end with `Tests.swift`.
 - App target files are flat rather than grouped by feature subdirectories.
-- Runtime data is outside the repo under `~/.agentpet`, not committed.
+- Runtime data is outside the repo under `~/.agentbuddy`, not committed.
 
 ## Where to Add New Code
 
 **New agent integration:**
-- Core hook spec and event mapping: `Sources/AgentPetCore/AgentHooks.swift`, `StateMapper.swift`, `AgentCatalog.swift`.
-- Payload parser if stdin shape differs: `Sources/AgentPetCore/HookPayloads.swift`.
+- Core hook spec and event mapping: `Sources/AgentBuddyCore/AgentHooks.swift`, `StateMapper.swift`, `AgentCatalog.swift`.
+- Payload parser if stdin shape differs: `Sources/AgentBuddyCore/HookPayloads.swift`.
 - Settings UI should usually update automatically through `AgentCatalog.all`.
-- Tests: add/extend `Tests/AgentPetCoreTests/MultiAgentHookTests.swift` and `SessionStoreTests.swift`.
+- Tests: add/extend `Tests/AgentBuddyCoreTests/MultiAgentHookTests.swift` and `SessionStoreTests.swift`.
 
 **New event/session behavior:**
-- Core implementation: `Sources/AgentPetCore/SessionStore.swift` or `StateMapper.swift`.
+- Core implementation: `Sources/AgentBuddyCore/SessionStore.swift` or `StateMapper.swift`.
 - App reaction: `Sources/App/AppDaemon.swift`, `PetController.swift`, `StatusBarController.swift`.
-- Tests: `Tests/AgentPetCoreTests/SessionStoreTests.swift`.
+- Tests: `Tests/AgentBuddyCoreTests/SessionStoreTests.swift`.
 
 **New settings/control:**
 - Model/state: `Sources/App/SettingsModel.swift` or a dedicated settings object if already established for that domain.

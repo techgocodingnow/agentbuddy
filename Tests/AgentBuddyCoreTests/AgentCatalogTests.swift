@@ -1,5 +1,5 @@
 import XCTest
-@testable import AgentPetCore
+@testable import AgentBuddyCore
 
 final class AgentCatalogTests: XCTestCase {
     func testHookAgentsSupported() {

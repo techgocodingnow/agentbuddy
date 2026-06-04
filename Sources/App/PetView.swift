@@ -1,5 +1,5 @@
 import SwiftUI
-import AgentPetCore
+import AgentBuddyCore
 
 /// The pet sprite alone (imported pack, reacting to mood). Shows a paw
 /// placeholder if no pet is selected yet.
@@ -101,7 +101,7 @@ private struct FloatingSessionCard: View {
                 Text(subtitle)
                     .font(.system(size: 12))
                     .foregroundStyle(.white.opacity(0.76))
-                    .lineLimit(1)
+                    .lineLimit(session.displayMessage == nil ? 1 : 2)
                     .truncationMode(.tail)
             }
             Spacer(minLength: 8)
@@ -117,7 +117,7 @@ private struct FloatingSessionCard: View {
                 .background(Capsule().fill(Color.orange.opacity(0.9)))
             }
         }
-        .frame(width: 302, height: 44)
+        .frame(width: 302, height: session.displayMessage == nil ? 44 : 58)
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(.black.opacity(0.86)))
@@ -130,7 +130,7 @@ private struct FloatingSessionCard: View {
     }
 
     private var subtitle: String {
-        session.compactStatusText
+        session.displayMessage ?? session.compactStatusText
     }
 
     private var dotColor: Color {

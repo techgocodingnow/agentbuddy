@@ -58,7 +58,7 @@ public enum AgentHooks {
             return AgentHookSpec(
                 kind: .opencode, style: .opencodePlugin,
                 events: [],
-                settingsPath: home + "/.config/opencode/plugin/agentpet.js")
+                settingsPath: home + "/.config/opencode/plugin/agentbuddy.js")
         case .cli, .unknown:
             return nil
         }

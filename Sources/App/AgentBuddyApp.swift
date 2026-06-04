@@ -1,7 +1,7 @@
 import SwiftUI
 import AppKit
 
-struct AgentPetApp: App {
+struct AgentBuddyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {

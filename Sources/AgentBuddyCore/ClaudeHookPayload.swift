@@ -1,6 +1,6 @@
 import Foundation
 
-/// The JSON Claude Code writes to a hook's stdin. Only the fields AgentPet
+/// The JSON Claude Code writes to a hook's stdin. Only the fields AgentBuddy
 /// needs are decoded; the rest are ignored.
 public struct ClaudeHookPayload: Decodable, Equatable {
     public let sessionId: String?
@@ -39,10 +39,9 @@ public struct ClaudeHookPayload: Decodable, Equatable {
     ) -> AgentEvent? {
         guard let sessionId, let hookEventName else { return nil }
         // Prefer an explicit message; then the agent's final assistant text on a
-        // terminal event; then the running tool name.
+        // terminal event. Tool names are telemetry, not user-facing agent text.
         let context = message
             ?? transcriptMessage(for: hookEventName, kind: kind, readTranscript: readTranscript)
-            ?? toolName.map { "Using \($0)" }
         return AgentEvent(
             sessionId: sessionId, agentKind: kind, eventName: hookEventName,
             project: cwd, message: context, timestamp: now

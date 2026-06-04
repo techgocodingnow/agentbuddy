@@ -17,7 +17,7 @@
 - `rtk swift test`: pass, 61 tests, 0 failures.
 - `rtk swift build`: pass.
 - `rtk ./scripts/build-app.sh debug`: pass.
-- Manual smoke screenshots: captured under `/tmp/agentpet-smoke-*.png`.
+- Manual smoke screenshots: captured under `/tmp/agentbuddy-smoke-*.png`.
 
 ## Notes
 

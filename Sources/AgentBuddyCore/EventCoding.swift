@@ -17,8 +17,8 @@ public enum EventCoding {
 }
 
 /// Default on-disk locations used by both the daemon and the CLI helper.
-public enum AgentPetPaths {
-    public static var baseDir: String { NSHomeDirectory() + "/.agentpet" }
-    public static var socketPath: String { baseDir + "/agentpet.sock" }
+public enum AgentBuddyPaths {
+    public static var baseDir: String { NSHomeDirectory() + "/.agentbuddy" }
+    public static var socketPath: String { baseDir + "/agentbuddy.sock" }
     public static var queueDir: String { baseDir + "/queue" }
 }

@@ -1,8 +1,8 @@
-# AgentPet Multi-Session Companion
+# AgentBuddy Multi-Session Companion
 
 ## What This Is
 
-AgentPet is a native macOS menu bar utility and floating desktop pet that monitors local AI coding agents. This project focuses the existing app into a clearer "one pet, many sessions" companion: a single pet reacts to all active Claude Code and Codex sessions, while a compact pet-adjacent stack shows multiple session cards and the menu bar keeps deeper per-session detail.
+AgentBuddy is a native macOS menu bar utility and floating desktop pet that monitors local AI coding agents. This project focuses the existing app into a clearer "one pet, many sessions" companion: a single pet reacts to all active Claude Code and Codex sessions, while a compact pet-adjacent stack shows multiple session cards and the menu bar keeps deeper per-session detail.
 
 ## Core Value
 
@@ -13,10 +13,10 @@ One ambient pet should tell the user when any coding agent needs attention witho
 ### Validated
 
 - [x] Single floating pet exists and is controlled by `Sources/App/PetWindowController.swift` and `Sources/App/PetView.swift` - existing.
-- [x] Multiple sessions are stored independently by `Sources/AgentPetCore/SessionStore.swift` - existing.
+- [x] Multiple sessions are stored independently by `Sources/AgentBuddyCore/SessionStore.swift` - existing.
 - [x] Menu bar popover lists active sessions via `Sources/App/MenuBarContentView.swift` - existing.
-- [x] Claude Code and Codex are represented as agent kinds and hook mappings in `Sources/AgentPetCore/AgentHooks.swift` and `Sources/AgentPetCore/StateMapper.swift` - existing.
-- [x] Pet mood is derived from aggregate session state through `Sources/AgentPetCore/PetMood.swift` and `Sources/App/PetController.swift` - existing.
+- [x] Claude Code and Codex are represented as agent kinds and hook mappings in `Sources/AgentBuddyCore/AgentHooks.swift` and `Sources/AgentBuddyCore/StateMapper.swift` - existing.
+- [x] Pet mood is derived from aggregate session state through `Sources/AgentBuddyCore/PetMood.swift` and `Sources/App/PetController.swift` - existing.
 
 ### Active
 
@@ -50,15 +50,15 @@ Final UI direction from the 2026-06-04 reference screenshot:
 - The stack should remain compact and glanceable; the menu bar remains the place for full detail and management.
 
 The codebase map in `.planning/codebase/` identifies the key implementation areas:
-- Core state and aggregation: `Sources/AgentPetCore/PetMood.swift`, `Sources/AgentPetCore/SessionStore.swift`, `Sources/AgentPetCore/AgentSession.swift`.
+- Core state and aggregation: `Sources/AgentBuddyCore/PetMood.swift`, `Sources/AgentBuddyCore/SessionStore.swift`, `Sources/AgentBuddyCore/AgentSession.swift`.
 - App-level summary and pet text: `Sources/App/PetController.swift`, `Sources/App/StatusBarController.swift`, `Sources/App/MenuBarContentView.swift`.
 - Detailed session UI: `Sources/App/MenuBarContentView.swift`.
-- Tests: `Tests/AgentPetCoreTests/`.
+- Tests: `Tests/AgentBuddyCoreTests/`.
 
 ## Constraints
 
 - **Platform**: macOS 13+ native Swift/SwiftUI/AppKit - match the existing SwiftPM package.
-- **Architecture**: Keep core aggregation logic in `AgentPetCore` when it is pure and testable; app controllers should consume it.
+- **Architecture**: Keep core aggregation logic in `AgentBuddyCore` when it is pure and testable; app controllers should consume it.
 - **UX**: One pet remains the only floating desktop companion.
 - **Attention priority**: Waiting beats working for visible summary and pet attention because user action is more urgent than background work.
 - **Noise control**: Summary text must stay compact enough for a pet bubble and menu bar status.

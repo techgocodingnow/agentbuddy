@@ -1,7 +1,7 @@
 # Project State
 
 **Status:** Ready for milestone verification
-**Project:** AgentPet Multi-Session Companion
+**Project:** AgentBuddy Multi-Session Companion
 **Current Milestone:** v1 - Compact Multi-Session Pet Summary
 **Current Phase:** Phase 3 - Verification and Polish
 **Updated:** 2026-06-04T11:35:00Z

@@ -1,5 +1,5 @@
 import SwiftUI
-import AgentPetCore
+import AgentBuddyCore
 
 /// Renders an imported spritesheet pet: cycles its frames and applies the same
 /// mood motion and overlays as the built-in pets. Frame rate varies by mood

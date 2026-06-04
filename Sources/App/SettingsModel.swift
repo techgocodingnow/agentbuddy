@@ -1,7 +1,7 @@
 import AppKit
 import Foundation
 import UserNotifications
-import AgentPetCore
+import AgentBuddyCore
 
 /// Backs the onboarding/Settings window: notification permission status and
 /// per-agent hook install state, with the actions to change them.
@@ -53,7 +53,7 @@ final class SettingsModel: ObservableObject {
     /// touches our own hook entries.
     func migrateInstalledHooksIfNeeded() {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
-        let key = "agentpet.hookMigration.\(version)"
+        let key = "agentbuddy.hookMigration.\(version)"
         guard !UserDefaults.standard.bool(forKey: key) else { return }
         UserDefaults.standard.set(true, forKey: key)
         for agent in agents where agent.isSupported {
@@ -66,7 +66,7 @@ final class SettingsModel: ObservableObject {
     }
 
     private func hookCommand(for kind: AgentKind) -> String {
-        let path = Bundle.main.executablePath ?? CommandLine.arguments.first ?? "agentpet"
+        let path = Bundle.main.executablePath ?? CommandLine.arguments.first ?? "agentbuddy"
         return "\"\(path)\" hook --agent \(kind.rawValue)"
     }
 

@@ -31,7 +31,7 @@ Chạy nhiều agent song song nghĩa là phải liên tục đổi cửa sổ �
 - **Pet trên desktop** phản ứng theo trạng thái tổng hợp (working / waiting / done / celebrate), kèm **bong bóng chat** tùy chọn (tin nhắn mặc định hoặc tự đặt).
 - **Thông báo hệ thống** khi agent xong hoặc cần nhập liệu.
 - Tích hợp **Claude Code, Codex & Gemini CLI** qua hook, cài một chạm từ Settings (nhận đúng working / waiting / done / idle, kể cả "cần bạn nhập liệu").
-- **Wrapper phổ quát** `agentpet run -- <lệnh>` để theo dõi *bất kỳ* agent CLI nào (working/done), không cần cấu hình riêng.
+- **Wrapper phổ quát** `agentbuddy run -- <lệnh>` để theo dõi *bất kỳ* agent CLI nào (working/done), không cần cấu hình riêng.
 - **Hệ thống pet**: duyệt thư viện pet trực tuyến và tải về một chạm, gán animation cho từng trạng thái, đổi kích thước, tùy biến câu chat.
 - **Settings native, chỉn chu** (chia tab, nền tối) và không bao giờ cướp focus.
 
@@ -89,7 +89,7 @@ Lần đầu mở, vào **Settings → General**, bấm **Install** cạnh Claud
 **Agent CLI khác**: bọc nó lại.
 
 ```bash
-agentpet run -- <lệnh-agent-của-bạn>     # ví dụ: agentpet run -- aider
+agentbuddy run -- <lệnh-agent-của-bạn>     # ví dụ: agentbuddy run -- aider
 ```
 
 Phiên hiện *working* khi đang chạy và *done* khi kết thúc.
@@ -123,7 +123,7 @@ Nếu AgentBuddy giúp bạn đỡ phải lật terminal, đây là cách giúp 
 
 Được duy trì bởi **[GoCodingNow](https://github.com/techgocodingnow)**.
 
-Dự án gốc bởi **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996/agentpet)**. Fork này giữ giấy phép MIT và ghi nhận tác giả gốc.
+Dự án gốc bởi **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996/agentbuddy)**. Fork này giữ giấy phép MIT và ghi nhận tác giả gốc.
 
 ## Ghi nhận
 

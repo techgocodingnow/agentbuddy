@@ -31,7 +31,7 @@
 - **デスクトップのペット**が集約状態（working / waiting / done / celebrate）に反応し、任意で**チャットバブル**（組み込み or 完全カスタムのメッセージ）を表示。
 - エージェントの完了時や入力が必要なときに**ネイティブ通知**。
 - **Claude Code・Codex・Gemini CLI** を hook で統合し、設定からワンタップでインストール（working / waiting / done / idle を正確に検出、「入力待ち」も含む）。
-- **汎用ラッパー** `agentpet run -- <コマンド>` で*任意の* CLI エージェントを監視（working/done）、個別設定は不要。
+- **汎用ラッパー** `agentbuddy run -- <コマンド>` で*任意の* CLI エージェントを監視（working/done）、個別設定は不要。
 - **ペットシステム**: オンラインのペットライブラリを閲覧してワンクリックでダウンロード、各状態にアニメーションを割り当て、サイズ変更、チャット文のカスタマイズ。
 - **洗練されたネイティブ設定**（タブ・ダーク）。フォーカスを奪いません。
 
@@ -89,7 +89,7 @@ open build/AgentBuddy.app
 **その他の CLI エージェント**: ラップして実行します。
 
 ```bash
-agentpet run -- <あなたのエージェントコマンド>     # 例: agentpet run -- aider
+agentbuddy run -- <あなたのエージェントコマンド>     # 例: agentbuddy run -- aider
 ```
 
 セッションは実行中に *working*、終了時に *done* と表示されます。
@@ -123,7 +123,7 @@ AgentBuddy がターミナル探しを減らせたなら、こんな応援がで
 
 メンテナンス: **[GoCodingNow](https://github.com/techgocodingnow)**
 
-元プロジェクト: **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996/agentpet)**。この fork は元の MIT ライセンスと帰属表示を保持しています。
+元プロジェクト: **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996/agentbuddy)**。この fork は元の MIT ライセンスと帰属表示を保持しています。
 
 ## 謝辞
 

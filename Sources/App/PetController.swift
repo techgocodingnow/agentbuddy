@@ -1,5 +1,5 @@
 import Foundation
-import AgentPetCore
+import AgentBuddyCore
 
 /// Resolves the aggregate session mood, plays a short `celebrate` burst when
 /// work finishes, owns the selected (imported) pet, and drives the chat bubble.
@@ -38,7 +38,7 @@ final class PetController: ObservableObject {
         }
 
         let cardWidth: Double = 330
-        let cardHeight: Double = 68
+        let cardHeight: Double = 78
         let visibleCards = min(activeCount, maxFloatingCards)
         let overflowHeight = activeCount > maxFloatingCards ? 30.0 : 0.0
         let cardStackHeight = (cardHeight * Double(visibleCards)) + overflowHeight + 16
@@ -53,9 +53,9 @@ final class PetController: ObservableObject {
     private var celebrateTimer: Timer?
     private var chatTimer: Timer?
 
-    private static let petKey = "agentpet.selectedPetID"
-    private static let chatKey = "agentpet.showChat"
-    private static let sizeKey = "agentpet.petSize"
+    private static let petKey = "agentbuddy.selectedPetID"
+    private static let chatKey = "agentbuddy.showChat"
+    private static let sizeKey = "agentbuddy.petSize"
     private static let celebrateDuration: TimeInterval = 3
 
     init() {
@@ -177,15 +177,12 @@ final class PetController: ObservableObject {
         }
     }
 
-    /// The lead waiting/done session's own message, if any — the pet voices
-    /// this instead of a generic "Claude done". Skipped during the celebrate
+    /// The lead session's pet-facing message, if any — the pet voices this
+    /// instead of a generic "Claude working". Skipped during the celebrate
     /// burst so the celebration plays first.
     private func spokenMessage() -> String? {
-        guard mood == .done || mood == .waiting else { return nil }
-        let lead = activeSessions.first {
-            ($0.state == .waiting || $0.state == .done) && $0.displayMessage != nil
-        }
-        return lead?.displayMessage
+        guard mood == .working || mood == .done || mood == .waiting else { return nil }
+        return leadSessionForChat()?.displayMessage
     }
 
     private func refreshSessionPresentation(_ sessions: [AgentSession]) {

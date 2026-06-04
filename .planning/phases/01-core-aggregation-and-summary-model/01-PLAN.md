@@ -5,12 +5,12 @@ type: "execute"
 wave: 1
 depends_on: []
 files_modified:
-  - "Sources/AgentPetCore/PetMood.swift"
-  - "Sources/AgentPetCore/AgentSessionSummary.swift"
-  - "Sources/AgentPetCore/AgentState.swift"
-  - "Sources/AgentPetCore/SessionStore.swift"
-  - "Tests/AgentPetCoreTests/PetTests.swift"
-  - "Tests/AgentPetCoreTests/SessionStoreTests.swift"
+  - "Sources/AgentBuddyCore/PetMood.swift"
+  - "Sources/AgentBuddyCore/AgentSessionSummary.swift"
+  - "Sources/AgentBuddyCore/AgentState.swift"
+  - "Sources/AgentBuddyCore/SessionStore.swift"
+  - "Tests/AgentBuddyCoreTests/PetTests.swift"
+  - "Tests/AgentBuddyCoreTests/SessionStoreTests.swift"
 autonomous: true
 requirements:
   - "AGG-01"
@@ -43,11 +43,11 @@ must_haves:
     - "AGG-04/SUM-05: compact summaries exclude registered and idle sessions, and crowded summaries collapse to bounded count text."
     - "AGG-01: this phase preserves the single-pet model by adding shared core logic, not additional pet windows."
   artifacts:
-    - path: "Sources/AgentPetCore/AgentSessionSummary.swift"
+    - path: "Sources/AgentBuddyCore/AgentSessionSummary.swift"
       provides: "pure compact multi-session summary formatter for Phase 2 UI reuse"
-    - path: "Sources/AgentPetCore/PetMood.swift"
+    - path: "Sources/AgentBuddyCore/PetMood.swift"
       provides: "waiting-first aggregate pet mood resolution"
-    - path: "Tests/AgentPetCoreTests/PetTests.swift"
+    - path: "Tests/AgentBuddyCoreTests/PetTests.swift"
       provides: "deterministic aggregate and compact-summary regression tests"
 ---
 
@@ -65,14 +65,14 @@ This phase does not add network, file-system, hook ingestion, or process-observa
 
 <task type="auto">
 <name>Task 1: Update aggregate mood priority</name>
-<files>Sources/AgentPetCore/PetMood.swift, Tests/AgentPetCoreTests/PetTests.swift</files>
+<files>Sources/AgentBuddyCore/PetMood.swift, Tests/AgentBuddyCoreTests/PetTests.swift</files>
 <requirements>AGG-01, AGG-02, AGG-03, AGG-04, TEST-01</requirements>
 <read_first>
 
-- `Sources/AgentPetCore/PetMood.swift`
-- `Sources/AgentPetCore/AgentSession.swift`
-- `Sources/AgentPetCore/AgentState.swift`
-- `Tests/AgentPetCoreTests/PetTests.swift`
+- `Sources/AgentBuddyCore/PetMood.swift`
+- `Sources/AgentBuddyCore/AgentSession.swift`
+- `Sources/AgentBuddyCore/AgentState.swift`
+- `Tests/AgentBuddyCoreTests/PetTests.swift`
 
 </read_first>
 <action>
@@ -102,19 +102,19 @@ Update the existing mood resolver tests:
 
 <task type="auto">
 <name>Task 2: Add compact session summary formatter</name>
-<files>Sources/AgentPetCore/AgentSessionSummary.swift, Sources/AgentPetCore/AgentState.swift, Tests/AgentPetCoreTests/PetTests.swift</files>
+<files>Sources/AgentBuddyCore/AgentSessionSummary.swift, Sources/AgentBuddyCore/AgentState.swift, Tests/AgentBuddyCoreTests/PetTests.swift</files>
 <requirements>SUM-01, SUM-02, SUM-03, SUM-04, SUM-05, AGG-04, TEST-02</requirements>
 <read_first>
 
-- `Sources/AgentPetCore/AgentSession.swift`
-- `Sources/AgentPetCore/AgentState.swift`
-- `Sources/AgentPetCore/PetMood.swift`
-- `Tests/AgentPetCoreTests/PetTests.swift`
+- `Sources/AgentBuddyCore/AgentSession.swift`
+- `Sources/AgentBuddyCore/AgentState.swift`
+- `Sources/AgentBuddyCore/PetMood.swift`
+- `Tests/AgentBuddyCoreTests/PetTests.swift`
 
 </read_first>
 <action>
 
-Add a pure formatter in `Sources/AgentPetCore/AgentSessionSummary.swift`.
+Add a pure formatter in `Sources/AgentBuddyCore/AgentSessionSummary.swift`.
 
 Target API:
 
@@ -154,13 +154,13 @@ Add a core display-name helper for `AgentKind`, either in the new formatter file
 
 <task type="auto">
 <name>Task 3: Cover summary edge cases with unit tests</name>
-<files>Tests/AgentPetCoreTests/PetTests.swift, Sources/AgentPetCore/AgentSessionSummary.swift</files>
+<files>Tests/AgentBuddyCoreTests/PetTests.swift, Sources/AgentBuddyCore/AgentSessionSummary.swift</files>
 <requirements>SUM-01, SUM-02, SUM-03, SUM-04, SUM-05, TEST-02</requirements>
 <read_first>
 
-- `Tests/AgentPetCoreTests/PetTests.swift`
-- `Tests/AgentPetCoreTests/SessionStoreTests.swift`
-- `Sources/AgentPetCore/AgentSessionSummary.swift`
+- `Tests/AgentBuddyCoreTests/PetTests.swift`
+- `Tests/AgentBuddyCoreTests/SessionStoreTests.swift`
+- `Sources/AgentBuddyCore/AgentSessionSummary.swift`
 
 </read_first>
 <action>
@@ -194,13 +194,13 @@ Keep test helpers local and deterministic with fixed dates.
 
 <task type="auto">
 <name>Task 4: Align session store attention sorting</name>
-<files>Sources/AgentPetCore/SessionStore.swift, Tests/AgentPetCoreTests/SessionStoreTests.swift</files>
+<files>Sources/AgentBuddyCore/SessionStore.swift, Tests/AgentBuddyCoreTests/SessionStoreTests.swift</files>
 <requirements>AGG-02, SUM-04, TEST-01</requirements>
 <read_first>
 
-- `Sources/AgentPetCore/SessionStore.swift`
-- `Tests/AgentPetCoreTests/SessionStoreTests.swift`
-- `Sources/AgentPetCore/PetMood.swift`
+- `Sources/AgentBuddyCore/SessionStore.swift`
+- `Tests/AgentBuddyCoreTests/SessionStoreTests.swift`
+- `Sources/AgentBuddyCore/PetMood.swift`
 
 </read_first>
 <action>
@@ -230,13 +230,13 @@ Update `SessionStoreTests.testSortedByAttentionPriority` to expect `["waiting", 
 
 <task type="auto">
 <name>Task 5: Run focused and package verification</name>
-<files>Package.swift, Tests/AgentPetCoreTests/PetTests.swift, Tests/AgentPetCoreTests/SessionStoreTests.swift</files>
+<files>Package.swift, Tests/AgentBuddyCoreTests/PetTests.swift, Tests/AgentBuddyCoreTests/SessionStoreTests.swift</files>
 <requirements>TEST-01, TEST-02</requirements>
 <read_first>
 
 - `Package.swift`
-- `Tests/AgentPetCoreTests/PetTests.swift`
-- `Tests/AgentPetCoreTests/SessionStoreTests.swift`
+- `Tests/AgentBuddyCoreTests/PetTests.swift`
+- `Tests/AgentBuddyCoreTests/SessionStoreTests.swift`
 
 </read_first>
 <action>
@@ -290,7 +290,7 @@ Expected assertions:
 <success_criteria>
 
 - Phase 1 requirements AGG-01 through AGG-04, SUM-01 through SUM-05, TEST-01, and TEST-02 are covered by implementation and tests.
-- The summary API is in `AgentPetCore` and is safe for Phase 2 UI reuse.
+- The summary API is in `AgentBuddyCore` and is safe for Phase 2 UI reuse.
 - No UI behavior is changed in this phase except through future consumers of the new core API.
 - The repository passes `swift test` and `swift build`, or any environment blocker is documented with command output.
 

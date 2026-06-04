@@ -1,5 +1,5 @@
 import AppKit
-import AgentPetCore
+import AgentBuddyCore
 
 /// Boundary for the pet/menu Reply affordance.
 ///

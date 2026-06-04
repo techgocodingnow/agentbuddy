@@ -18,7 +18,7 @@ Covered requirements:
 
 ### Aggregate Mood Priority
 
-`Sources/AgentPetCore/PetMood.swift` currently contains a pure `MoodResolver.aggregate(_:)` function. It returns `.working` before `.waiting`, then `.done`, then `.idle`.
+`Sources/AgentBuddyCore/PetMood.swift` currently contains a pure `MoodResolver.aggregate(_:)` function. It returns `.working` before `.waiting`, then `.done`, then `.idle`.
 
 That directly conflicts with AGG-02. In the approved product behavior, a waiting session is the highest attention state because it means the user is blocking progress. Working is still active, but it should not hide a waiting Claude/Codex session.
 
@@ -45,7 +45,7 @@ Recommended sort priority:
 
 ### Summary Formatter
 
-There is no existing compact summary API. `MenuBarContentView` renders individual session rows, and `PetController` emits generic mood chat lines. Phase 1 should add a pure summary formatter to `AgentPetCore` so Phase 2 can consume one implementation instead of duplicating UI logic.
+There is no existing compact summary API. `MenuBarContentView` renders individual session rows, and `PetController` emits generic mood chat lines. Phase 1 should add a pure summary formatter to `AgentBuddyCore` so Phase 2 can consume one implementation instead of duplicating UI logic.
 
 Recommended API shape:
 

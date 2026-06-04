@@ -2,25 +2,25 @@
 import PackageDescription
 
 let package = Package(
-    name: "AgentPet",
+    name: "AgentBuddy",
     platforms: [.macOS(.v13)],
     dependencies: [
         .package(url: "https://github.com/sparkle-project/Sparkle", from: "2.6.0"),
     ],
     targets: [
         .target(
-            name: "AgentPetCore",
-            path: "Sources/AgentPetCore"
+            name: "AgentBuddyCore",
+            path: "Sources/AgentBuddyCore"
         ),
         .executableTarget(
-            name: "agentpet",
-            dependencies: ["AgentPetCore", .product(name: "Sparkle", package: "Sparkle")],
+            name: "agentbuddy",
+            dependencies: ["AgentBuddyCore", .product(name: "Sparkle", package: "Sparkle")],
             path: "Sources/App"
         ),
         .testTarget(
-            name: "AgentPetCoreTests",
-            dependencies: ["AgentPetCore"],
-            path: "Tests/AgentPetCoreTests"
+            name: "AgentBuddyCoreTests",
+            dependencies: ["AgentBuddyCore"],
+            path: "Tests/AgentBuddyCoreTests"
         ),
     ]
 )

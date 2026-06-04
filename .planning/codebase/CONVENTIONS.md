@@ -39,7 +39,7 @@
 
 **Order:**
 1. Apple/system frameworks (`Foundation`, `SwiftUI`, `AppKit`, `UserNotifications`).
-2. Package/internal modules (`AgentPetCore`, `Sparkle`).
+2. Package/internal modules (`AgentBuddyCore`, `Sparkle`).
 
 **Grouping:**
 - Imports are simple and not separated by blank-line groups.
@@ -78,7 +78,7 @@
 
 **Documentation Comments:**
 - Public core types and important app controllers commonly have `///` comments.
-- Continue this pattern for public APIs in `AgentPetCore`.
+- Continue this pattern for public APIs in `AgentBuddyCore`.
 
 **TODO Comments:**
 - No strong TODO convention is present. Prefer issue-backed docs or concise comments if a limitation is intentionally deferred.
@@ -101,7 +101,7 @@
 ## Module Design
 
 **Exports:**
-- `AgentPetCore` exposes public value types and services used by the app target and tests.
+- `AgentBuddyCore` exposes public value types and services used by the app target and tests.
 - `Sources/App` types are mostly internal by default.
 - No barrel/index files; SwiftPM module membership is directory based.
 

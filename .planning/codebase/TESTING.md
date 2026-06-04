@@ -6,7 +6,7 @@
 
 **Runner:**
 - XCTest through Swift Package Manager.
-- Tests live in the `AgentPetCoreTests` test target declared in `Package.swift`.
+- Tests live in the `AgentBuddyCoreTests` test target declared in `Package.swift`.
 
 **Assertion Library:**
 - XCTest assertions: `XCTAssertEqual`, `XCTAssertNil`, `XCTAssertTrue`, `XCTAssertFalse`, `XCTAssertNotNil`, expectations.
@@ -21,7 +21,7 @@ swift build                # Compile all package targets
 ## Test File Organization
 
 **Location:**
-- Tests are centralized under `Tests/AgentPetCoreTests/`.
+- Tests are centralized under `Tests/AgentBuddyCoreTests/`.
 - There are currently no UI test targets or app snapshot tests.
 
 **Naming:**
@@ -31,7 +31,7 @@ swift build                # Compile all package targets
 **Structure:**
 ```
 Tests/
-└── AgentPetCoreTests/
+└── AgentBuddyCoreTests/
     ├── SessionStoreTests.swift
     ├── HookInstallerTests.swift
     ├── EventSocketServerTests.swift
@@ -71,7 +71,7 @@ final class SessionStoreTests: XCTestCase {
 
 **Patterns:**
 ```swift
-let tmp = NSTemporaryDirectory() + "agentpet-test-\(UUID().uuidString)/"
+let tmp = NSTemporaryDirectory() + "agentbuddy-test-\(UUID().uuidString)/"
 defer { try? FileManager.default.removeItem(atPath: tmp) }
 ```
 

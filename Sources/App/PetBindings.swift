@@ -1,5 +1,5 @@
 import Foundation
-import AgentPetCore
+import AgentBuddyCore
 
 /// Maps each pet state to a clip index of an imported sprite pet.
 struct PetBindings: Equatable {
@@ -45,7 +45,7 @@ final class PetBindingsStore: ObservableObject {
         save(packId, current)
     }
 
-    private func key(_ packId: String) -> String { "agentpet.bindings.\(packId)" }
+    private func key(_ packId: String) -> String { "agentbuddy.bindings.\(packId)" }
 
     private func load(_ packId: String) -> PetBindings? {
         guard let data = UserDefaults.standard.data(forKey: key(packId)),

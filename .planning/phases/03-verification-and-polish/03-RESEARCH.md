@@ -47,25 +47,25 @@ These cover core hook/session tests and compile the SwiftUI/AppKit app code.
 
 ### App Launch Path
 
-The repo has `scripts/build-app.sh`, which assembles `build/AgentPet.app` from the SwiftPM executable and signs it ad-hoc for local testing.
+The repo has `scripts/build-app.sh`, which assembles `build/AgentBuddy.app` from the SwiftPM executable and signs it ad-hoc for local testing.
 
 Recommended local launch:
 
 ```bash
 ./scripts/build-app.sh debug
-open build/AgentPet.app
+open build/AgentBuddy.app
 ```
 
 All shell commands in this workspace should be run through `rtk`.
 
 ### Simulated Session Events
 
-`Sources/App/AppEntry.swift` routes `agentpet hook ...` to `HookCLI`.
+`Sources/App/AppEntry.swift` routes `agentbuddy hook ...` to `HookCLI`.
 
 `HookCLI` accepts:
 
 ```bash
-agentpet hook --event <name> --session <id> [--project <path>] [--agent <kind>] [--message <text>]
+agentbuddy hook --event <name> --session <id> [--project <path>] [--agent <kind>] [--message <text>]
 ```
 
 `EventSender` sends events to the running app over the Unix socket, falling back to queue files if the app is not running. `AppDaemon` applies those events and refreshes pet/menu/status UI.

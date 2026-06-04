@@ -12,7 +12,7 @@ VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' scripts
 
 if [ -n "${SIGN_IDENTITY:-}" ]; then
     echo "==> Signing with Developer ID"
-    codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP/Contents/MacOS/agentpet"
+    codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP/Contents/MacOS/agentbuddy"
     codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP"
     codesign --verify --strict "$APP"
 fi

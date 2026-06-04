@@ -1,4 +1,4 @@
-# Roadmap: AgentPet Multi-Session Companion
+# Roadmap: AgentBuddy Multi-Session Companion
 
 **Created:** 2026-06-04
 **Milestone:** v1 - Compact Multi-Session Pet Summary
@@ -24,11 +24,11 @@ This roadmap implements the approved one-pet, many-sessions behavior as a brownf
 **Requirements:** AGG-01, AGG-02, AGG-03, AGG-04, SUM-01, SUM-02, SUM-03, SUM-04, SUM-05, TEST-01, TEST-02
 
 **Likely files:**
-- `Sources/AgentPetCore/PetMood.swift`
-- `Sources/AgentPetCore/AgentSession.swift`
-- `Sources/AgentPetCore/AgentState.swift`
-- `Tests/AgentPetCoreTests/PetTests.swift`
-- `Tests/AgentPetCoreTests/SessionStoreTests.swift`
+- `Sources/AgentBuddyCore/PetMood.swift`
+- `Sources/AgentBuddyCore/AgentSession.swift`
+- `Sources/AgentBuddyCore/AgentState.swift`
+- `Tests/AgentBuddyCoreTests/PetTests.swift`
+- `Tests/AgentBuddyCoreTests/SessionStoreTests.swift`
 
 **Deliverables:**
 - Waiting-over-working aggregate priority.
@@ -78,7 +78,7 @@ This roadmap implements the approved one-pet, many-sessions behavior as a brownf
 **Requirements:** TEST-03, TEST-04, TEST-05
 
 **Likely files:**
-- `Tests/AgentPetCoreTests/*.swift`
+- `Tests/AgentBuddyCoreTests/*.swift`
 - `README.md` or docs only if user-facing behavior needs documentation.
 - Potentially no source changes if Phase 1 and 2 verification is complete.
 

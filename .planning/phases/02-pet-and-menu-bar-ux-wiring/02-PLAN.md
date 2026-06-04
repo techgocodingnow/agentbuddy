@@ -12,7 +12,7 @@ files_modified:
   - "Sources/App/StatusBarController.swift"
   - "Sources/App/MenuBarContentView.swift"
   - "Sources/App/SessionReplyController.swift"
-  - "Tests/AgentPetCoreTests/PetTests.swift"
+  - "Tests/AgentBuddyCoreTests/PetTests.swift"
 autonomous: true
 requirements:
   - "UX-01"
@@ -76,7 +76,7 @@ This phase displays local session metadata on the desktop. Avoid leaking prompts
 - `Sources/App/PetController.swift`
 - `Sources/App/MenuBarContentView.swift`
 - `Sources/App/StatusBarController.swift`
-- `Sources/AgentPetCore/AgentSessionSummary.swift`
+- `Sources/AgentBuddyCore/AgentSessionSummary.swift`
 - `.planning/phases/01-core-aggregation-and-summary-model/01-SUMMARY.md`
 
 </read_first>
@@ -120,7 +120,7 @@ Keep the presentation helper small and local to the app layer unless a reusable 
 - `Sources/App/PetWindowController.swift`
 - `Sources/App/ClickThroughHostingView.swift`
 - `Sources/App/PetController.swift`
-- `Sources/AgentPetCore/AgentSession.swift`
+- `Sources/AgentBuddyCore/AgentSession.swift`
 
 </read_first>
 <action>
@@ -166,7 +166,7 @@ Use SwiftUI system controls and keep card radius at 8px or less unless existing 
 - `Sources/App/MenuBarContentView.swift`
 - `Sources/App/StatusBarController.swift`
 - `Sources/App/PetWindowController.swift`
-- `Sources/AgentPetCore/AgentSession.swift`
+- `Sources/AgentBuddyCore/AgentSession.swift`
 - `.planning/phases/02-pet-and-menu-bar-ux-wiring/02-RESEARCH.md`
 
 </read_first>
@@ -209,7 +209,7 @@ Do not add terminal injection, AppleScript typing, or process targeting unless t
 - `Sources/App/StatusBarController.swift`
 - `Sources/App/MenuBarContentView.swift`
 - `Sources/App/PetController.swift`
-- `Sources/AgentPetCore/AgentSessionSummary.swift`
+- `Sources/AgentBuddyCore/AgentSessionSummary.swift`
 
 </read_first>
 <action>

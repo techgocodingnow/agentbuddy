@@ -1,6 +1,6 @@
 import Foundation
 
-/// Parsed `agentpet run [flags] -- <command...>` arguments.
+/// Parsed `agentbuddy run [flags] -- <command...>` arguments.
 public struct RunArguments: Equatable {
     public var session: String?
     public var project: String?

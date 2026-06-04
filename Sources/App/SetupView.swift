@@ -1,5 +1,5 @@
 import SwiftUI
-import AgentPetCore
+import AgentBuddyCore
 
 /// Native macOS-style settings: a preferences-style toolbar of tabs over
 /// grouped forms (dark).

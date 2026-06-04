@@ -1,9 +1,9 @@
 import XCTest
-@testable import AgentPetCore
+@testable import AgentBuddyCore
 
 final class EventSocketServerTests: XCTestCase {
     func testReceivesEventOverSocket() throws {
-        let path = "/tmp/agentpet-\(UUID().uuidString).sock"
+        let path = "/tmp/agentbuddy-\(UUID().uuidString).sock"
         let server = EventSocketServer(path: path)
         defer { server.stop() }
 
@@ -27,7 +27,7 @@ final class EventSocketServerTests: XCTestCase {
     }
 
     func testDrainQueueEmitsAndRemovesFiles() throws {
-        let dir = NSTemporaryDirectory() + "agentpet-q-\(UUID().uuidString)"
+        let dir = NSTemporaryDirectory() + "agentbuddy-q-\(UUID().uuidString)"
         try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(atPath: dir) }
 

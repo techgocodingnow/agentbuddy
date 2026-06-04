@@ -17,7 +17,7 @@ public enum StateMapper {
     }
 
     public static func state(for kind: AgentKind, eventName: String) -> AgentState? {
-        // Generic: any caller (e.g. the `agentpet run` wrapper) can send a
+        // Generic: any caller (e.g. the `agentbuddy run` wrapper) can send a
         // normalised state name directly.
         if let direct = AgentState(rawValue: eventName) { return direct }
 

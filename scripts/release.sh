@@ -40,7 +40,7 @@ if [ -d "$SPARKLE" ]; then
     codesign --force --options runtime --timestamp --sign "$IDENTITY" "$SPARKLE"
 fi
 
-codesign --force --options runtime --timestamp --sign "$IDENTITY" "$APP/Contents/MacOS/agentpet"
+codesign --force --options runtime --timestamp --sign "$IDENTITY" "$APP/Contents/MacOS/agentbuddy"
 codesign --force --options runtime --timestamp --sign "$IDENTITY" "$APP"
 codesign --verify --deep --strict --verbose=2 "$APP"
 

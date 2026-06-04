@@ -17,10 +17,10 @@ Requires macOS 13+ and a recent Swift toolchain (Swift 6 / Xcode 15+).
 
 ## Project layout
 
-- `Sources/AgentPetCore/` — pure, testable core: session state, event model, hook
+- `Sources/AgentBuddyCore/` — pure, testable core: session state, event model, hook
   parsing/installing, the Unix-socket server. No AppKit/SwiftUI here.
 - `Sources/App/` — the macOS app: menu bar, floating pet, Settings, controllers.
-- `Tests/AgentPetCoreTests/` — unit tests for the core.
+- `Tests/AgentBuddyCoreTests/` — unit tests for the core.
 - `scripts/` — app packaging and asset generation.
 
 The split keeps logic (Core) independent of UI so it stays unit-testable.
@@ -28,7 +28,7 @@ The split keeps logic (Core) independent of UI so it stays unit-testable.
 ## Guidelines
 
 - Keep changes focused; match the surrounding style.
-- Add or update tests in `AgentPetCore` for any behavior change.
+- Add or update tests in `AgentBuddyCore` for any behavior change.
 - Run `swift test` before opening a PR; CI must stay green.
 - Conventional commit messages (`feat:`, `fix:`, `docs:`, `refactor:`...).
 

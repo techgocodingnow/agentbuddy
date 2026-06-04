@@ -1,8 +1,8 @@
 import XCTest
-@testable import AgentPetCore
+@testable import AgentBuddyCore
 
 final class MultiAgentHookTests: XCTestCase {
-    private let cmd = "\"/Applications/AgentBuddy.app/Contents/MacOS/agentpet\" hook --agent cursor"
+    private let cmd = "\"/Applications/AgentBuddy.app/Contents/MacOS/agentbuddy\" hook --agent cursor"
 
     // MARK: - Cursor flat shape
 
@@ -15,7 +15,7 @@ final class MultiAgentHookTests: XCTestCase {
         let stop = hooks?["stop"] as? [[String: Any]]
         XCTAssertEqual(stop?.count, 1)
         XCTAssertEqual(stop?.first?["type"] as? String, "command")
-        XCTAssertTrue((stop?.first?["command"] as? String ?? "").contains("agentpet"))
+        XCTAssertTrue((stop?.first?["command"] as? String ?? "").contains("agentbuddy"))
     }
 
     func testCursorIdempotentAndForeignPreserved() {
@@ -35,7 +35,7 @@ final class MultiAgentHookTests: XCTestCase {
 
     func testWindsurfInstallShape() {
         let events = AgentHooks.spec(for: .windsurf)!.events
-        let cmd = "\"/x/agentpet\" hook --agent windsurf"
+        let cmd = "\"/x/agentbuddy\" hook --agent windsurf"
         let result = HookInstaller.installFlat(into: [:], command: cmd, events: events, style: .windsurfFlat)
         XCTAssertNil(result["version"], "Windsurf has no version field")
         let resp = (result["hooks"] as? [String: Any])?["post_cascade_response"] as? [[String: Any]]
@@ -48,12 +48,12 @@ final class MultiAgentHookTests: XCTestCase {
 
     func testOpencodeBinaryPathExtraction() {
         XCTAssertEqual(
-            HookInstaller.binaryPath(fromCommand: "\"/Applications/AgentBuddy.app/Contents/MacOS/agentpet\" hook --agent opencode"),
-            "/Applications/AgentBuddy.app/Contents/MacOS/agentpet")
+            HookInstaller.binaryPath(fromCommand: "\"/Applications/AgentBuddy.app/Contents/MacOS/agentbuddy\" hook --agent opencode"),
+            "/Applications/AgentBuddy.app/Contents/MacOS/agentbuddy")
     }
 
     func testOpencodePluginContent() {
-        let js = HookInstaller.opencodePlugin(binary: "/x/agentpet")
+        let js = HookInstaller.opencodePlugin(binary: "/x/agentbuddy")
         XCTAssertTrue(js.contains("session.idle"))
         XCTAssertTrue(js.contains("session.created"))
         XCTAssertTrue(js.contains("--agent"))
@@ -126,13 +126,13 @@ final class MultiAgentHookTests: XCTestCase {
     // MARK: - Disk round-trip for each new style
 
     func testDiskRoundTripAllStyles() throws {
-        let tmp = NSTemporaryDirectory() + "agentpet-test-\(UUID().uuidString)/"
+        let tmp = NSTemporaryDirectory() + "agentbuddy-test-\(UUID().uuidString)/"
         defer { try? FileManager.default.removeItem(atPath: tmp) }
-        let cases: [(AgentKind, String)] = [(.cursor, "cursor.json"), (.windsurf, "windsurf.json"), (.opencode, "plugin/agentpet.js")]
+        let cases: [(AgentKind, String)] = [(.cursor, "cursor.json"), (.windsurf, "windsurf.json"), (.opencode, "plugin/agentbuddy.js")]
         for (kind, file) in cases {
             let spec = AgentHooks.spec(for: kind)!
             let path = tmp + file
-            let command = "\"/Applications/AgentBuddy.app/Contents/MacOS/agentpet\" hook --agent \(kind.rawValue)"
+            let command = "\"/Applications/AgentBuddy.app/Contents/MacOS/agentbuddy\" hook --agent \(kind.rawValue)"
             XCTAssertFalse(HookInstaller.isInstalledOnDisk(path: path, events: spec.events, style: spec.style), "\(kind) clean")
             try HookInstaller.installToDisk(command: command, path: path, events: spec.events, style: spec.style)
             XCTAssertTrue(HookInstaller.isInstalledOnDisk(path: path, events: spec.events, style: spec.style), "\(kind) installed")

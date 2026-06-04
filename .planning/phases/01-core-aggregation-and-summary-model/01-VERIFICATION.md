@@ -19,7 +19,7 @@ score: 3/3 must-haves verified
 |---|-------|--------|----------|
 | 1 | Waiting is the highest attention state and sorts before working everywhere this phase touches. | VERIFIED | `MoodResolver.aggregate(_:)` checks `.waiting` before `.working`; `AgentState.attentionPriority` gives waiting priority 4 and working priority 3; `testWaitingWins` and `testSortedByAttentionPriority` passed. |
 | 2 | Compact summaries exclude registered and idle sessions, and crowded summaries collapse to bounded count text. | VERIFIED | `AgentSessionSummary.compact(for:)` filters to waiting/working/done and switches to count groups above `detailLimit`; summary tests passed for inactive, crowded, and zero-group cases. |
-| 3 | This phase preserves the single-pet model by adding shared core logic, not additional pet windows. | VERIFIED | Only `AgentPetCore` and unit test files changed; no app UI/window files were modified in Phase 1. |
+| 3 | This phase preserves the single-pet model by adding shared core logic, not additional pet windows. | VERIFIED | Only `AgentBuddyCore` and unit test files changed; no app UI/window files were modified in Phase 1. |
 
 **Score:** 3/3 truths verified
 
@@ -27,9 +27,9 @@ score: 3/3 must-haves verified
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| `Sources/AgentPetCore/AgentSessionSummary.swift` | Pure compact multi-session summary formatter | EXISTS + SUBSTANTIVE | 53 lines; exports `AgentSessionSummary.compact(for:detailLimit:)` and `AgentKind.displayName`. |
-| `Sources/AgentPetCore/PetMood.swift` | Waiting-first aggregate pet mood resolution | EXISTS + SUBSTANTIVE | Aggregate resolver checks waiting, then working, then done. |
-| `Tests/AgentPetCoreTests/PetTests.swift` | Deterministic aggregate and compact-summary regression tests | EXISTS + SUBSTANTIVE | Includes `MoodResolverTests` and `AgentSessionSummaryTests`; all tests passed. |
+| `Sources/AgentBuddyCore/AgentSessionSummary.swift` | Pure compact multi-session summary formatter | EXISTS + SUBSTANTIVE | 53 lines; exports `AgentSessionSummary.compact(for:detailLimit:)` and `AgentKind.displayName`. |
+| `Sources/AgentBuddyCore/PetMood.swift` | Waiting-first aggregate pet mood resolution | EXISTS + SUBSTANTIVE | Aggregate resolver checks waiting, then working, then done. |
+| `Tests/AgentBuddyCoreTests/PetTests.swift` | Deterministic aggregate and compact-summary regression tests | EXISTS + SUBSTANTIVE | Includes `MoodResolverTests` and `AgentSessionSummaryTests`; all tests passed. |
 
 **Artifacts:** 3/3 verified
 

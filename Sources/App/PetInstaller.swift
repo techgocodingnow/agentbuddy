@@ -1,7 +1,7 @@
 import Foundation
-import AgentPetCore
+import AgentBuddyCore
 
-/// Downloads a pet pack (pet.json + spritesheet) into `~/.agentpet/pets/<slug>/`.
+/// Downloads a pet pack (pet.json + spritesheet) into `~/.agentbuddy/pets/<slug>/`.
 /// Shared by the Browse gallery and first-run onboarding.
 enum PetInstaller {
     private struct PackMeta: Decodable { let id: String?; let spritesheetPath: String }
@@ -11,7 +11,7 @@ enum PetInstaller {
     static func download(slug: String, petJsonURL: URL, spritesheetURL: URL) async -> String? {
         do {
             let fm = FileManager.default
-            let dir = URL(fileURLWithPath: AgentPetPaths.baseDir)
+            let dir = URL(fileURLWithPath: AgentBuddyPaths.baseDir)
                 .appendingPathComponent("pets").appendingPathComponent(slug)
             try fm.createDirectory(at: dir, withIntermediateDirectories: true)
 
@@ -32,7 +32,7 @@ enum PetInstaller {
 /// Installs a starter pet on the very first launch so the app isn't empty.
 @MainActor
 enum DefaultPetBootstrap {
-    private static let triedKey = "agentpet.defaultPetTried"
+    private static let triedKey = "agentbuddy.defaultPetTried"
     private static let manifestURL = URL(string: "https://petdex.crafter.run/api/manifest")!
     /// Preferred starter (a non-franchise original); falls back to any pet.
     private static let preferredSlug = "boba"

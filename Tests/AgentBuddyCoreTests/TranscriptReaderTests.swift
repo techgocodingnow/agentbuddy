@@ -1,5 +1,5 @@
 import XCTest
-@testable import AgentPetCore
+@testable import AgentBuddyCore
 
 final class TranscriptReaderTests: XCTestCase {
     private func writeTemp(_ contents: String) -> String {

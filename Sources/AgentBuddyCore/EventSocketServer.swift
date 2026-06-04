@@ -15,7 +15,7 @@ public enum SocketError: Error, Equatable {
 public final class EventSocketServer: @unchecked Sendable {
     private let path: String
     private var listenFD: Int32 = -1
-    private let acceptQueue = DispatchQueue(label: "agentpet.socket.accept")
+    private let acceptQueue = DispatchQueue(label: "agentbuddy.socket.accept")
     private var running = false
 
     public init(path: String) {

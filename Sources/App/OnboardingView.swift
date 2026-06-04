@@ -1,5 +1,5 @@
 import SwiftUI
-import AgentPetCore
+import AgentBuddyCore
 
 /// First-launch welcome: pick a pet and connect an agent in one screen.
 struct OnboardingView: View {

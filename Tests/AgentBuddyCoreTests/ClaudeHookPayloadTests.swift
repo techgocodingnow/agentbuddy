@@ -1,5 +1,5 @@
 import XCTest
-@testable import AgentPetCore
+@testable import AgentBuddyCore
 
 final class ClaudeHookPayloadTests: XCTestCase {
     private let now = Date(timeIntervalSince1970: 100)
@@ -37,6 +37,13 @@ final class ClaudeHookPayloadTests: XCTestCase {
         let p = payload(#"{"session_id":"s","hook_event_name":"Notification","message":"needs permission","transcript_path":"/x"}"#)
         let event = p?.makeEvent(now: now, readTranscript: { _ in "should be ignored" })
         XCTAssertEqual(event?.message, "needs permission")
+    }
+
+    func testToolNameDoesNotBecomeDisplayMessage() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"PreToolUse","tool_name":"Bash"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex)
+        XCTAssertNil(event?.message)
+        XCTAssertEqual(StateMapper.state(for: .codex, eventName: event!.eventName), .working)
     }
 
     func testTranscriptIgnoredForNonClaudeKind() {

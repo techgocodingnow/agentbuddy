@@ -1,6 +1,6 @@
 import Foundation
 
-/// A coding agent AgentPet can integrate with, and whether that integration is
+/// A coding agent AgentBuddy can integrate with, and whether that integration is
 /// available yet. Drives the Settings/onboarding agent list.
 public struct AgentIntegration: Identifiable, Sendable, Equatable {
     public let kind: AgentKind

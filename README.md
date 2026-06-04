@@ -32,7 +32,7 @@ Running multiple agents in parallel means constantly switching windows to check 
 - **Desktop pet** that reacts to the aggregate state (working / waiting / done / celebrate), with an optional **chat bubble** (built-in or fully custom messages).
 - **Native notifications** when an agent finishes or needs input.
 - **Claude Code, Codex, Gemini CLI, Cursor, opencode & Windsurf** integration via hooks, with one-tap install from Settings (precise working / waiting / done / idle, including "needs your input"). GLM (Z.AI) works through Claude Code automatically. Cursor and Windsurf report working/done (they have no "needs input" hook).
-- **Universal wrapper** `agentpet run -- <command>` to monitor *any* CLI agent (working/done), no per-agent setup.
+- **Universal wrapper** `agentbuddy run -- <command>` to monitor *any* CLI agent (working/done), no per-agent setup.
 - **Pet system**: browse an online pet library and download with one click, map each animation to a state, resize, and customise chat lines.
 - **Polished, native Settings** (tabbed, dark) that never steals focus.
 
@@ -86,7 +86,7 @@ On first launch, open **Settings → General** and click **Install** next to Cla
 
 ```bash
 brew uninstall --cask agentbuddy          # or drag /Applications/AgentBuddy.app to Trash
-rm -rf ~/.agentpet                       # downloaded pets + state
+rm -rf ~/.agentbuddy                       # downloaded pets + state
 rm -f  ~/Library/Preferences/com.agentbuddy.app.plist
 ```
 
@@ -97,7 +97,7 @@ rm -f  ~/Library/Preferences/com.agentbuddy.app.plist
 **Any other CLI agent**: wrap it.
 
 ```bash
-agentpet run -- <your-agent-command>     # e.g. agentpet run -- aider
+agentbuddy run -- <your-agent-command>     # e.g. agentbuddy run -- aider
 ```
 
 The session shows as *working* while it runs and *done* when it exits.
@@ -131,7 +131,7 @@ If AgentBuddy saves you some tab-hunting, here's how to help:
 
 Maintained by **[GoCodingNow](https://github.com/techgocodingnow)**.
 
-Original project by **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996/agentpet)**. This fork keeps the original MIT license and attribution.
+Original project by **[Nguyễn Thành Đạt (@ntd4996)](https://github.com/ntd4996/agentbuddy)**. This fork keeps the original MIT license and attribution.
 
 ## Acknowledgements
 

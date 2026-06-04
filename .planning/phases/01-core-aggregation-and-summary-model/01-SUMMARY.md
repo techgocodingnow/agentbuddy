@@ -15,18 +15,18 @@ tech-stack:
   patterns: [pure-core-formatter, waiting-first-attention-priority]
 key-files:
   created:
-    - Sources/AgentPetCore/AgentSessionSummary.swift
+    - Sources/AgentBuddyCore/AgentSessionSummary.swift
   modified:
-    - Sources/AgentPetCore/PetMood.swift
-    - Sources/AgentPetCore/SessionStore.swift
-    - Tests/AgentPetCoreTests/PetTests.swift
-    - Tests/AgentPetCoreTests/SessionStoreTests.swift
+    - Sources/AgentBuddyCore/PetMood.swift
+    - Sources/AgentBuddyCore/SessionStore.swift
+    - Tests/AgentBuddyCoreTests/PetTests.swift
+    - Tests/AgentBuddyCoreTests/SessionStoreTests.swift
 key-decisions:
   - "Use waiting-first priority for aggregate mood, summaries, and session sorting."
   - "Keep compact summaries UI-safe by using only agent kind and state."
   - "Use count summaries above the detail limit to bound crowded output."
 patterns-established:
-  - "Core summary behavior lives in AgentPetCore as a pure formatter."
+  - "Core summary behavior lives in AgentBuddyCore as a pure formatter."
   - "Display names for AgentKind are provided by a core extension for stable summary text."
 requirements-completed: [AGG-01, AGG-02, AGG-03, AGG-04, SUM-01, SUM-02, SUM-03, SUM-04, SUM-05, TEST-01, TEST-02]
 duration: 12min
@@ -35,7 +35,7 @@ completed: 2026-06-04
 
 # Phase 1: Core Aggregation and Summary Model Summary
 
-**Waiting-first multi-session aggregation with compact named/count summaries for AgentPetCore**
+**Waiting-first multi-session aggregation with compact named/count summaries for AgentBuddyCore**
 
 ## Performance
 
@@ -59,11 +59,11 @@ This phase was executed inline and will be committed as one scoped Phase 1 imple
 
 ## Files Created/Modified
 
-- `Sources/AgentPetCore/AgentSessionSummary.swift` - Pure compact summary formatter and stable `AgentKind.displayName` values.
-- `Sources/AgentPetCore/PetMood.swift` - Waiting-first aggregate mood priority.
-- `Sources/AgentPetCore/SessionStore.swift` - Waiting-first attention priority for sorted session display.
-- `Tests/AgentPetCoreTests/PetTests.swift` - Aggregate priority and compact summary tests.
-- `Tests/AgentPetCoreTests/SessionStoreTests.swift` - Updated sorted-priority expectation.
+- `Sources/AgentBuddyCore/AgentSessionSummary.swift` - Pure compact summary formatter and stable `AgentKind.displayName` values.
+- `Sources/AgentBuddyCore/PetMood.swift` - Waiting-first aggregate mood priority.
+- `Sources/AgentBuddyCore/SessionStore.swift` - Waiting-first attention priority for sorted session display.
+- `Tests/AgentBuddyCoreTests/PetTests.swift` - Aggregate priority and compact summary tests.
+- `Tests/AgentBuddyCoreTests/SessionStoreTests.swift` - Updated sorted-priority expectation.
 
 ## Decisions Made
 
@@ -85,7 +85,7 @@ None - no external service configuration required.
 
 ## Next Phase Readiness
 
-Phase 2 can consume `AgentSessionSummary.compact(for:)` from `AgentPetCore` to render the pet-adjacent session stack and menu/status summary without reimplementing ordering or filtering rules.
+Phase 2 can consume `AgentSessionSummary.compact(for:)` from `AgentBuddyCore` to render the pet-adjacent session stack and menu/status summary without reimplementing ordering or filtering rules.
 
 ---
 *Phase: 01-core-aggregation-and-summary-model*

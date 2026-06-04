@@ -16,7 +16,7 @@
 **Environment:**
 - macOS 13+ - Declared as `.macOS(.v13)` in `Package.swift` and reflected in `scripts/AppInfo.plist`.
 - Xcode 16 / Swift 6 - CI selects `/Applications/Xcode_16.app` in `.github/workflows/ci.yml`.
-- Single executable role split - `Sources/App/AppEntry.swift` launches either the menu bar app or CLI subcommands (`hook`, `run`) from the same `agentpet` binary.
+- Single executable role split - `Sources/App/AppEntry.swift` launches either the menu bar app or CLI subcommands (`hook`, `run`) from the same `agentbuddy` binary.
 
 **Package Manager:**
 - Swift Package Manager - `Package.swift` and `Package.resolved` are the package definition and dependency lockfile.
@@ -24,12 +24,12 @@
 ## Frameworks
 
 **Core:**
-- SwiftUI - Native app UI in `Sources/App/AgentPetApp.swift`, `Sources/App/SetupView.swift`, and menu/pet views.
+- SwiftUI - Native app UI in `Sources/App/AgentBuddyApp.swift`, `Sources/App/SetupView.swift`, and menu/pet views.
 - AppKit - Menu bar accessory, floating windows, notifications/system settings hooks, and bundle behavior across `Sources/App/*WindowController.swift`, `Sources/App/StatusBarController.swift`, and related files.
-- Foundation - Core event models, Unix socket server/client, JSON coding, file queue, timers, and CLI argument parsing in `Sources/AgentPetCore/`.
+- Foundation - Core event models, Unix socket server/client, JSON coding, file queue, timers, and CLI argument parsing in `Sources/AgentBuddyCore/`.
 
 **Testing:**
-- XCTest - Unit tests in `Tests/AgentPetCoreTests/`.
+- XCTest - Unit tests in `Tests/AgentBuddyCoreTests/`.
 
 **Build/Dev:**
 - SwiftPM build and test commands - `swift build`, `swift test`.
@@ -44,16 +44,16 @@
 - ServiceManagement - Login item support through `Sources/App/LoginItem.swift`.
 
 **Infrastructure:**
-- Unix domain sockets - Local event transport implemented in `Sources/AgentPetCore/EventSocketServer.swift` and `Sources/AgentPetCore/EventSender.swift`.
+- Unix domain sockets - Local event transport implemented in `Sources/AgentBuddyCore/EventSocketServer.swift` and `Sources/AgentBuddyCore/EventSender.swift`.
 - UserDefaults - User preferences for pet, chat, sounds, onboarding, and migration state across `Sources/App/`.
-- File system storage under `~/.agentpet` - Event queue, pet packs, and custom sounds are persisted through `AgentPetPaths` and app storage classes.
+- File system storage under `~/.agentbuddy` - Event queue, pet packs, and custom sounds are persisted through `AgentBuddyPaths` and app storage classes.
 
 ## Configuration
 
 **Environment:**
 - No required runtime environment variables for normal app usage.
 - Release automation uses optional signing/notarization environment variables in `.github/workflows/release.yml`: `MACOS_CERT_P12`, `MACOS_CERT_PASSWORD`, `MACOS_SIGN_IDENTITY`, `AC_API_KEY_P8`, `AC_KEY_ID`, and `AC_ISSUER_ID`.
-- Local notarization uses a notarytool keychain profile named by `NOTARY_PROFILE` or default `agentpet` in `scripts/release.sh`.
+- Local notarization uses a notarytool keychain profile named by `NOTARY_PROFILE` or default `agentbuddy` in `scripts/release.sh`.
 
 **Build:**
 - `Package.swift` - Swift package targets and dependencies.

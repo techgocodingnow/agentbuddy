@@ -47,7 +47,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 
     func windowWillClose(_ notification: Notification) {
         if (notification.object as? NSWindow) === onboardingWindow {
-            UserDefaults.standard.set(true, forKey: "agentpet.hasOnboarded")
+            UserDefaults.standard.set(true, forKey: "agentbuddy.hasOnboarded")
             onboardingWindow = nil
         } else {
             window = nil
@@ -60,7 +60,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 
     /// Shows the welcome/onboarding window the first time the app is launched.
     func showOnFirstLaunch() {
-        guard !UserDefaults.standard.bool(forKey: "agentpet.hasOnboarded") else { return }
+        guard !UserDefaults.standard.bool(forKey: "agentbuddy.hasOnboarded") else { return }
         showOnboarding()
     }
 

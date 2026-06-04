@@ -59,7 +59,7 @@ This phase launches a local macOS app and injects simulated local hook events. U
 
 <task type="auto">
 <name>Task 1: Run automated regression gates</name>
-<files>Package.swift, Tests/AgentPetCoreTests/*.swift</files>
+<files>Package.swift, Tests/AgentBuddyCoreTests/*.swift</files>
 <requirements>TEST-03</requirements>
 <read_first>
 
@@ -98,7 +98,7 @@ Record exact pass/fail evidence in `03-SMOKE.md` or the Phase 3 summary. If eith
 
 <task type="auto">
 <name>Task 2: Build and launch the local app for smoke testing</name>
-<files>scripts/build-app.sh, build/AgentPet.app, .planning/phases/03-verification-and-polish/03-SMOKE.md</files>
+<files>scripts/build-app.sh, build/AgentBuddy.app, .planning/phases/03-verification-and-polish/03-SMOKE.md</files>
 <requirements>TEST-04, TEST-05</requirements>
 <read_first>
 
@@ -115,7 +115,7 @@ Build and launch the local app bundle:
 
 ```bash
 rtk ./scripts/build-app.sh debug
-rtk open build/AgentPet.app
+rtk open build/AgentBuddy.app
 ```
 
 Wait for the menu bar item and floating pet to appear. If GUI launch is not possible in the current environment, record the exact blocker in `03-SMOKE.md` and continue with automated evidence only.
@@ -129,7 +129,7 @@ Wait for the menu bar item and floating pet to appear. If GUI launch is not poss
 
 </acceptance_criteria>
 <verify>
-  <manual>Confirm AgentPet.app launches and the floating pet/menu item appear.</manual>
+  <manual>Confirm AgentBuddy.app launches and the floating pet/menu item appear.</manual>
 </verify>
 <done>Local app is ready for simulated session smoke testing, or the GUI blocker is documented.</done>
 </task>
@@ -149,10 +149,10 @@ Wait for the menu bar item and floating pet to appear. If GUI launch is not poss
 </read_first>
 <action>
 
-Use the built `agentpet` helper to send local smoke events. Resolve the binary with SwiftPM if needed:
+Use the built `agentbuddy` helper to send local smoke events. Resolve the binary with SwiftPM if needed:
 
 ```bash
-BIN="$(rtk swift build --show-bin-path)/agentpet"
+BIN="$(rtk swift build --show-bin-path)/agentbuddy"
 rtk "$BIN" hook --agent codex --event PermissionRequest --session smoke-codex --project "$PWD" --message "Create gsd new project"
 rtk "$BIN" hook --agent claude --event UserPromptSubmit --session smoke-claude --project "$PWD" --message "Update README credits"
 rtk "$BIN" hook --agent cli --event working --session smoke-cli --project "$PWD" --message "Checking release notes"

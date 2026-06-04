@@ -9,7 +9,7 @@
 |-------|--------|----------|
 | `rtk swift test` | Pass | 61 tests, 0 failures |
 | `rtk swift build` | Pass | `ok (build complete)` |
-| `rtk ./scripts/build-app.sh debug` | Pass | Built and ad-hoc signed `build/AgentPet.app` |
+| `rtk ./scripts/build-app.sh debug` | Pass | Built and ad-hoc signed `build/AgentBuddy.app` |
 
 ## App Launch
 
@@ -17,13 +17,13 @@ Command:
 
 ```bash
 rtk ./scripts/build-app.sh debug
-rtk open build/AgentPet.app
+rtk open build/AgentBuddy.app
 ```
 
-The app launched successfully from `build/AgentPet.app`. A process check showed the debug app running as:
+The app launched successfully from `build/AgentBuddy.app`. A process check showed the debug app running as:
 
 ```text
-/Users/kevin/Desktop/opensources/agentbuddy/build/AgentPet.app/Contents/MacOS/agentpet
+/Users/kevin/Desktop/opensources/agentbuddy/build/AgentBuddy.app/Contents/MacOS/agentbuddy
 ```
 
 The first launch welcome window appeared once and was closed before the clean smoke screenshot.
@@ -33,7 +33,7 @@ The first launch welcome window appeared once and was closed before the clean sm
 Commands:
 
 ```bash
-BIN="$(rtk swift build --show-bin-path)/agentpet"
+BIN="$(rtk swift build --show-bin-path)/agentbuddy"
 rtk "$BIN" hook --agent codex --event PermissionRequest --session smoke-codex --project "$PWD" --message "Create gsd new project"
 rtk "$BIN" hook --agent claude --event UserPromptSubmit --session smoke-claude --project "$PWD" --message "Update README credits"
 rtk "$BIN" hook --agent cli --event working --session smoke-cli --project "$PWD" --message "Checking release notes"
@@ -42,11 +42,11 @@ rtk "$BIN" hook --agent gemini --event Notification --session smoke-gemini --pro
 
 Screenshots captured:
 
-- `/tmp/agentpet-smoke-1.png` - first launch window plus active pet/cards visible.
-- `/tmp/agentpet-smoke-2.png` - clean target state after closing first launch window.
-- `/tmp/agentpet-smoke-final.png` - final clean evidence in the running desktop context.
-- `/tmp/agentpet-smoke-quartz-reply.png` - lower-level click attempt with Reply still visible.
-- `/tmp/agentpet-smoke-cleanup.png` - active cards cleared back to idle pet after cleanup.
+- `/tmp/agentbuddy-smoke-1.png` - first launch window plus active pet/cards visible.
+- `/tmp/agentbuddy-smoke-2.png` - clean target state after closing first launch window.
+- `/tmp/agentbuddy-smoke-final.png` - final clean evidence in the running desktop context.
+- `/tmp/agentbuddy-smoke-quartz-reply.png` - lower-level click attempt with Reply still visible.
+- `/tmp/agentbuddy-smoke-cleanup.png` - active cards cleared back to idle pet after cleanup.
 
 ## Observations
 
@@ -97,14 +97,14 @@ This is recorded as a smoke automation limitation, not a source defect, because 
 Cleanup commands:
 
 ```bash
-BIN="$(rtk swift build --show-bin-path)/agentpet"
+BIN="$(rtk swift build --show-bin-path)/agentbuddy"
 for sid in smoke-codex smoke-claude smoke-cli smoke-gemini; do
   rtk "$BIN" hook --agent cli --event idle --session "$sid" --project "$PWD" --message "smoke cleanup"
 done
-rtk pkill -f '/Users/kevin/Desktop/opensources/agentbuddy/build/AgentPet.app/Contents/MacOS/agentpet' || true
+rtk pkill -f '/Users/kevin/Desktop/opensources/agentbuddy/build/AgentBuddy.app/Contents/MacOS/agentbuddy' || true
 ```
 
-After cleanup, `rtk pgrep -fl 'AgentPet|agentpet' || true` returned no running debug app process.
+After cleanup, `rtk pgrep -fl 'AgentBuddy|agentbuddy' || true` returned no running debug app process.
 
 ## Polish
 

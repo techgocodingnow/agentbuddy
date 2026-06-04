@@ -1,7 +1,7 @@
-import AgentPetCore
+import AgentBuddyCore
 import Foundation
 
-/// CLI helper invoked by agent hooks: `agentpet hook --event ... --session ...`.
+/// CLI helper invoked by agent hooks: `agentbuddy hook --event ... --session ...`.
 enum HookCLI {
     static func run(arguments: [String]) -> Never {
         // Explicit flags win (used by opencode's plugin and the run wrapper);
@@ -15,11 +15,11 @@ enum HookCLI {
 
         guard let event else {
             FileHandle.standardError.write(Data(
-                "usage: agentpet hook --event <name> --session <id> [--project <path>] [--agent <kind>] [--message <text>]\n         or pipe a Claude Code hook JSON payload on stdin\n".utf8
+                "usage: agentbuddy hook --event <name> --session <id> [--project <path>] [--agent <kind>] [--message <text>]\n         or pipe a Claude Code hook JSON payload on stdin\n".utf8
             ))
             exit(2)
         }
-        EventSender.send(event, socketPath: AgentPetPaths.socketPath, queueDir: AgentPetPaths.queueDir)
+        EventSender.send(event, socketPath: AgentBuddyPaths.socketPath, queueDir: AgentBuddyPaths.queueDir)
         exit(0)
     }
 }

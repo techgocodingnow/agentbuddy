@@ -27,13 +27,13 @@
 ## Data Storage
 
 **Local Files:**
-- `~/.agentpet/agentpet.sock` - Unix socket used by hooks and CLI wrappers to send events to the app daemon.
-- `~/.agentpet/queue/` - Queue for events emitted while the app daemon is not listening; drained by `EventSocketServer.drainQueue`.
-- `~/.agentpet/pets/` - Installed pet packs loaded by `Sources/App/ImagePetStore.swift`.
+- `~/.agentbuddy/agentbuddy.sock` - Unix socket used by hooks and CLI wrappers to send events to the app daemon.
+- `~/.agentbuddy/queue/` - Queue for events emitted while the app daemon is not listening; drained by `EventSocketServer.drainQueue`.
+- `~/.agentbuddy/pets/` - Installed pet packs loaded by `Sources/App/ImagePetStore.swift`.
 - App preferences - UserDefaults store pet selection, size, chat visibility/content, notification toggle, sound settings, onboarding, and hook migration flags.
 
 **Databases:**
-- None. Session state is in-memory in `Sources/AgentPetCore/SessionStore.swift`; durable state is file/UserDefaults based.
+- None. Session state is in-memory in `Sources/AgentBuddyCore/SessionStore.swift`; durable state is file/UserDefaults based.
 
 **Caching:**
 - No server-side or shared cache. Remote pet results live in memory in `PetBrowser` during the UI session.
@@ -45,7 +45,7 @@
 
 **Agent Hook Identity:**
 - Agent type is selected from CLI flags or hook payloads and mapped through `AgentKind`.
-- Supported hook config locations are defined in `Sources/AgentPetCore/AgentHooks.swift`.
+- Supported hook config locations are defined in `Sources/AgentBuddyCore/AgentHooks.swift`.
 
 ## Monitoring & Observability
 
@@ -92,9 +92,9 @@
 
 **Incoming Local Hooks:**
 - Claude Code, Codex, Gemini, Cursor, Windsurf, and opencode integrations are local config/plugin hooks that invoke the bundled binary.
-- Hook target: `"agentpet" hook --agent <kind>`.
-- Install/remove logic: `Sources/AgentPetCore/HookInstaller.swift`.
-- Config paths: `~/.claude/settings.json`, `~/.codex/hooks.json`, `~/.gemini/settings.json`, `~/.cursor/hooks.json`, `~/.codeium/windsurf/hooks.json`, and `~/.config/opencode/plugin/agentpet.js`.
+- Hook target: `"agentbuddy" hook --agent <kind>`.
+- Install/remove logic: `Sources/AgentBuddyCore/HookInstaller.swift`.
+- Config paths: `~/.claude/settings.json`, `~/.codex/hooks.json`, `~/.gemini/settings.json`, `~/.cursor/hooks.json`, `~/.codeium/windsurf/hooks.json`, and `~/.config/opencode/plugin/agentbuddy.js`.
 
 **Outgoing Network Calls:**
 - Pet library manifest and pet asset downloads.
