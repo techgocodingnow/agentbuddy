@@ -1,17 +1,17 @@
 # Project State
 
-**Status:** Ready to plan
+**Status:** Ready to execute
 **Project:** AgentPet Multi-Session Companion
 **Current Milestone:** v1 - Compact Multi-Session Pet Summary
 **Current Phase:** Phase 3 - Verification and Polish
-**Updated:** 2026-06-04T11:10:51Z
+**Updated:** 2026-06-04T11:13:58Z
 
 ## Project Reference
 
 See: `.planning/PROJECT.md` (updated 2026-06-04)
 
 **Core value:** One ambient pet should tell the user when any coding agent needs attention without forcing them to inspect every terminal.
-**Current focus:** Plan app-level smoke verification and polish for stacked cards, Reply, and menu behavior.
+**Current focus:** Execute app-level smoke verification and polish for stacked cards, Reply, and menu behavior.
 
 ## Active Context
 
@@ -33,7 +33,7 @@ This is a brownfield enhancement. The existing codebase already has:
 
 ## Current Plan
 
-1. Run `$gsd-plan-phase 3`.
+1. Run `$gsd-execute-phase 3`.
 2. Verify stacked session cards, Reply, and menu behavior in the running app.
 3. Polish any layout or documentation gaps found during smoke testing.
 4. Complete milestone verification.
@@ -54,7 +54,8 @@ None.
 
 ## Notes for Next Agent
 
-- Phase 1 and Phase 2 are complete. Read `.planning/phases/02-pet-and-menu-bar-ux-wiring/02-SUMMARY.md` before planning Phase 3.
+- Phase 1 and Phase 2 are complete. Read `.planning/phases/02-pet-and-menu-bar-ux-wiring/02-SUMMARY.md` before executing Phase 3.
+- Read `.planning/phases/03-verification-and-polish/03-RESEARCH.md` and `03-PLAN.md` before implementation.
 - Phase 3 should smoke-test floating card layout, Reply behavior, overflow, menu rows, and empty state.
 - Do not touch unrelated untracked local/tooling files unless the user explicitly asks for cleanup.
 
