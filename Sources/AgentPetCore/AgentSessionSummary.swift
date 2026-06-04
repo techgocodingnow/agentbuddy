@@ -58,4 +58,13 @@ public extension AgentSession {
     var compactStatusText: String {
         "\(agentKind.displayName) \(state.rawValue)"
     }
+
+    /// The agent's own message worth speaking in a bubble (e.g. its final
+    /// reply on `done`, or a permission prompt on `waiting`). Trimmed; `nil`
+    /// when empty so callers can fall back to status/personality text.
+    var displayMessage: String? {
+        guard let text = message?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !text.isEmpty else { return nil }
+        return text
+    }
 }

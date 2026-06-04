@@ -152,16 +152,20 @@ private struct ChatBubble: View {
             Text(text)
                 .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(.black.opacity(0.85))
+                .lineLimit(3)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 240)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 7)
-                .background(Capsule().fill(.white))
-                .overlay(Capsule().strokeBorder(.black.opacity(0.06), lineWidth: 1))
+                .background(RoundedRectangle(cornerRadius: 14).fill(.white))
+                .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(.black.opacity(0.06), lineWidth: 1))
                 .shadow(color: .black.opacity(0.18), radius: 5, y: 2)
             Triangle()
                 .fill(.white)
                 .frame(width: 12, height: 7)
         }
-        .fixedSize()
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 

@@ -24,6 +24,27 @@ final class ClaudeHookPayloadTests: XCTestCase {
         XCTAssertEqual(StateMapper.state(for: .claude, eventName: event!.eventName), .waiting)
     }
 
+    func testStopReadsTranscriptMessage() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"Stop","transcript_path":"/x.jsonl"}"#)
+        let event = p?.makeEvent(now: now, kind: .claude, readTranscript: { path in
+            path == "/x.jsonl" ? "Refactored the parser." : nil
+        })
+        XCTAssertEqual(event?.message, "Refactored the parser.")
+        XCTAssertEqual(StateMapper.state(for: .claude, eventName: event!.eventName), .done)
+    }
+
+    func testExplicitMessageWinsOverTranscript() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"Notification","message":"needs permission","transcript_path":"/x"}"#)
+        let event = p?.makeEvent(now: now, readTranscript: { _ in "should be ignored" })
+        XCTAssertEqual(event?.message, "needs permission")
+    }
+
+    func testTranscriptIgnoredForNonClaudeKind() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"Stop","transcript_path":"/x"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex, readTranscript: { _ in "claude-only text" })
+        XCTAssertNil(event?.message)
+    }
+
     func testIgnoresUnknownFields() {
         // Real Claude payloads carry extra keys (transcript_path, stop_hook_active, ...).
         let event = payload(#"{"session_id":"s","hook_event_name":"Stop","transcript_path":"/t","stop_hook_active":false}"#)?

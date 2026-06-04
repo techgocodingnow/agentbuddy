@@ -133,15 +133,59 @@ final class PetController: ObservableObject {
     }
 
     private func refreshChat() {
-        let summary = compactSummary
         let pool = ChatSettings.shared.lines(for: mood)
         guard showChat, mood != .idle else {
             chatLine = ""
             StatusBarController.shared.refreshTitle()
             return
         }
-        chatLine = !summary.isEmpty ? summary : (pool.randomElement() ?? "")
+        // Speak the agent's real message when it has finished or needs input;
+        // otherwise use pet-style chat. The compact summary still belongs to
+        // the status cards/menu, not the floating speech bubble.
+        if let spoken = spokenMessage() {
+            chatLine = spoken
+        } else {
+            chatLine = fallbackChatLine(from: pool)
+        }
         StatusBarController.shared.refreshTitle()
+    }
+
+    private func fallbackChatLine(from pool: [String]) -> String {
+        let lead = leadSessionForChat()
+        if ChatSettings.shared.source == .system,
+           let systemLine = PetChat.line(for: mood, agentKind: lead?.agentKind) {
+            return systemLine
+        }
+        return render(pool.randomElement() ?? compactSummary, for: lead)
+    }
+
+    private func render(_ line: String, for session: AgentSession?) -> String {
+        guard let session else { return line }
+        return line.replacingOccurrences(of: "{agent}", with: session.agentKind.displayName)
+    }
+
+    private func leadSessionForChat() -> AgentSession? {
+        switch mood {
+        case .working:
+            return activeSessions.first { $0.state == .working }
+        case .waiting:
+            return activeSessions.first { $0.state == .waiting }
+        case .done, .celebrate:
+            return activeSessions.first { $0.state == .done }
+        case .idle:
+            return nil
+        }
+    }
+
+    /// The lead waiting/done session's own message, if any — the pet voices
+    /// this instead of a generic "Claude done". Skipped during the celebrate
+    /// burst so the celebration plays first.
+    private func spokenMessage() -> String? {
+        guard mood == .done || mood == .waiting else { return nil }
+        let lead = activeSessions.first {
+            ($0.state == .waiting || $0.state == .done) && $0.displayMessage != nil
+        }
+        return lead?.displayMessage
     }
 
     private func refreshSessionPresentation(_ sessions: [AgentSession]) {
@@ -152,6 +196,15 @@ final class PetController: ObservableObject {
 
 /// Built-in (system) chat lines per mood.
 enum PetChat {
+    static func line(for mood: PetMood, agentKind: AgentKind?) -> String? {
+        guard let agentKind else { return lines[mood]?.randomElement() }
+        let templates = agentLines[mood]?[agentKind] ?? agentTemplates[mood]
+        return templates?
+            .randomElement()?
+            .replacingOccurrences(of: "{agent}", with: agentKind.displayName)
+            ?? lines[mood]?.randomElement()
+    }
+
     static let lines: [PetMood: [String]] = [
         .working: [
             "Thinking…", "Working on it…", "On it!", "Crunching code…",
@@ -168,6 +221,44 @@ enum PetChat {
         ],
         .celebrate: [
             "🎉 Woohoo!", "We did it!", "Victory!", "Yesss!", "High five! 🙌", "Champion!",
+        ],
+    ]
+
+    private static let agentTemplates: [PetMood: [String]] = [
+        .working: [
+            "{agent} pet is working on it…",
+            "{agent} pet is deep in the code…",
+            "{agent} pet is thinking it through…",
+        ],
+        .waiting: [
+            "{agent} pet needs your input.",
+            "{agent} pet is waiting on you.",
+            "{agent} pet needs a quick decision.",
+        ],
+        .done: [
+            "{agent} pet finished the turn.",
+            "{agent} pet wrapped it up.",
+            "{agent} pet is done.",
+        ],
+        .celebrate: [
+            "{agent} pet nailed it!",
+            "{agent} pet is celebrating!",
+            "{agent} pet got it done!",
+        ],
+    ]
+
+    private static let agentLines: [PetMood: [AgentKind: [String]]] = [
+        .working: [
+            .claude: [
+                "Claude pet is thinking through the prompt…",
+                "Claude pet is drafting carefully…",
+                "Claude pet is reading the context…",
+            ],
+            .codex: [
+                "Codex pet is working through the code…",
+                "Codex pet is patching the app…",
+                "Codex pet is checking the flow…",
+            ],
         ],
     ]
 }

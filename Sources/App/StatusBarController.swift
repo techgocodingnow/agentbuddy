@@ -141,7 +141,7 @@ final class StatusBarController: NSObject, ObservableObject {
 
     private func refreshChatBubble() {
         let pet = PetController.shared
-        let chat = pet.compactSummary.isEmpty ? pet.chatLine : pet.compactSummary
+        let chat = pet.chatLine
         guard showChatOnMenuBar, !chat.isEmpty else {
             hideChatBubble()
             return
