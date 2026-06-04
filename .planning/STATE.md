@@ -4,7 +4,7 @@
 **Project:** AgentPet Multi-Session Companion
 **Current Milestone:** v1 - Compact Multi-Session Pet Summary
 **Current Phase:** Phase 1 - Core Aggregation and Summary Model
-**Updated:** 2026-06-04T10:47:05Z
+**Updated:** 2026-06-04T10:49:14Z
 
 ## Project Reference
 
@@ -20,6 +20,8 @@ The user approved the recommended behavior:
 - Show compact multi-session summary.
 - Waiting has priority because it requires action.
 - Collapse crowded sessions into counts.
+- Final UI should show multiple active sessions as stacked cards near the pet.
+- Waiting/actionable cards should expose a `Reply` button.
 - Keep menu bar as detailed per-session view.
 
 This is a brownfield enhancement. The existing codebase already has:

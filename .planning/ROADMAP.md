@@ -5,15 +5,15 @@
 
 ## Summary
 
-This roadmap implements the approved one-pet, many-sessions behavior as a brownfield enhancement. The current app already stores multiple sessions and renders one pet; the work is to formalize aggregate priority, generate compact summary text, wire that summary into the pet/menu surfaces, and verify behavior.
+This roadmap implements the approved one-pet, many-sessions behavior as a brownfield enhancement. The current app already stores multiple sessions and renders one pet; the work is to formalize aggregate priority, generate compact summary text, wire a pet-adjacent stacked session card surface with Reply actions, and verify behavior.
 
 ## Phase Overview
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
 | 1 | Core Aggregation and Summary Model | Planned | AGG-01, AGG-02, AGG-03, AGG-04, SUM-01, SUM-02, SUM-03, SUM-04, SUM-05, TEST-01, TEST-02 |
-| 2 | Pet and Menu Bar UX Wiring | Pending | UX-01, UX-02, UX-03, UX-04 |
-| 3 | Verification and Polish | Pending | TEST-03, TEST-04 |
+| 2 | Pet and Menu Bar UX Wiring | Pending | UX-01, UX-02, UX-03, UX-04, UX-05, UX-06, UX-07, UX-08 |
+| 3 | Verification and Polish | Pending | TEST-03, TEST-04, TEST-05 |
 
 ## Phase 1: Core Aggregation and Summary Model
 
@@ -41,26 +41,32 @@ This roadmap implements the approved one-pet, many-sessions behavior as a brownf
 
 ## Phase 2: Pet and Menu Bar UX Wiring
 
-**Goal:** Make the compact multi-session summary visible in the one-pet experience while preserving detailed per-session menu rows.
+**Goal:** Make the compact multi-session summary and stacked session cards visible in the one-pet experience while preserving detailed per-session menu rows.
 
 **Why second:** UI should consume the Phase 1 model rather than reimplementing aggregation.
 
-**Requirements:** UX-01, UX-02, UX-03, UX-04
+**Requirements:** UX-01, UX-02, UX-03, UX-04, UX-05, UX-06, UX-07, UX-08
 
 **Likely files:**
 - `Sources/App/PetController.swift`
 - `Sources/App/PetView.swift`
+- `Sources/App/PetWindowController.swift`
 - `Sources/App/StatusBarController.swift`
 - `Sources/App/MenuBarContentView.swift`
 
 **Deliverables:**
 - Pet bubble can show compact active-session summary.
+- Pet-adjacent UI can show multiple active sessions as stacked cards.
+- Session cards show a short title/project label, truncated latest message/state, and state affordance.
+- Waiting/actionable session cards expose a visible `Reply` button.
 - Menu bar status can surface compact summary when enabled.
 - Existing menu rows still show per-session detail.
 - Empty/idle state clears summary cleanly.
 
 **Risks:**
 - Bubble text can become too wide or visually noisy.
+- Stacked cards can occlude too much desktop space if not bounded.
+- `Reply` needs a clear first implementation path; if direct text injection is unavailable, Phase 2 should at minimum open/focus the relevant session context and label any limitation explicitly.
 - Menu bar title behavior may need careful truncation to stay native-feeling.
 
 ## Phase 3: Verification and Polish
@@ -69,7 +75,7 @@ This roadmap implements the approved one-pet, many-sessions behavior as a brownf
 
 **Why third:** This phase closes gaps the codebase map identified: app-level behavior is less automated than core logic.
 
-**Requirements:** TEST-03, TEST-04
+**Requirements:** TEST-03, TEST-04, TEST-05
 
 **Likely files:**
 - `Tests/AgentPetCoreTests/*.swift`
@@ -80,6 +86,7 @@ This roadmap implements the approved one-pet, many-sessions behavior as a brownf
 - `swift test` passes.
 - `swift build` passes.
 - Manual smoke checklist for multiple simulated Claude/Codex sessions.
+- Manual smoke checklist for pet-adjacent stacked cards and `Reply` affordance on waiting sessions.
 - Any needed README/docs mention of one-pet multi-session summary.
 
 **Risks:**
@@ -96,10 +103,11 @@ This roadmap implements the approved one-pet, many-sessions behavior as a brownf
 
 - The product behavior is clearly one pet for all sessions.
 - Waiting sessions are not hidden by working sessions.
-- Users can glance at the pet/menu bar and understand whether Claude or Codex needs attention.
+- Users can glance at the pet-adjacent card stack or menu bar and understand whether Claude or Codex needs attention.
+- Waiting sessions expose a visible `Reply` action from the pet-adjacent surface.
 - Detailed session inspection remains in the menu bar popover.
 - Core behavior is covered by deterministic tests.
 
 ---
 *Roadmap created: 2026-06-04*
-*Last updated: 2026-06-04 after Phase 1 planning*
+*Last updated: 2026-06-04 after final UI reference capture*

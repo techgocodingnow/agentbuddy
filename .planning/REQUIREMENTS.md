@@ -26,6 +26,10 @@
 - [ ] **UX-02**: The menu bar status can reuse or expose the compact summary without removing the existing per-session popover.
 - [ ] **UX-03**: The menu bar popover continues to show individual sessions with project, state/message, timer, and clear controls.
 - [ ] **UX-04**: The UI clearly handles the no-active-session state without stale summary text.
+- [ ] **UX-05**: The final pet-adjacent UI can show multiple active sessions as a compact vertical stack of session cards.
+- [ ] **UX-06**: Each session card shows a short title/project label and a truncated latest message or state.
+- [ ] **UX-07**: Waiting/actionable session cards expose a visible `Reply` button.
+- [ ] **UX-08**: The stacked card surface stays bounded and does not create one pet per session.
 
 ### Verification
 
@@ -33,6 +37,7 @@
 - [ ] **TEST-02**: Unit tests cover compact summary output for few-session and crowded-session cases.
 - [ ] **TEST-03**: Existing hook/session tests still pass after the aggregation changes.
 - [ ] **TEST-04**: Manual smoke verification confirms one pet reacts while multiple Claude/Codex-like sessions appear in the menu.
+- [ ] **TEST-05**: Manual smoke verification confirms multiple active sessions appear in the pet-adjacent card stack and waiting cards expose `Reply`.
 
 ## v2 Requirements
 
@@ -70,23 +75,29 @@
 | UX-02 | Phase 2 | Pending |
 | UX-03 | Phase 2 | Pending |
 | UX-04 | Phase 2 | Pending |
+| UX-05 | Phase 2 | Pending |
+| UX-06 | Phase 2 | Pending |
+| UX-07 | Phase 2 | Pending |
+| UX-08 | Phase 2 | Pending |
 | TEST-01 | Phase 1 | Pending |
 | TEST-02 | Phase 1 | Pending |
 | TEST-03 | Phase 3 | Pending |
 | TEST-04 | Phase 3 | Pending |
+| TEST-05 | Phase 3 | Pending |
 
 **Coverage:**
-- v1 requirements: 17 total
-- Mapped to phases: 17
+- v1 requirements: 22 total
+- Mapped to phases: 22
 - Unmapped: 0
 
 ## Definition of Done
 
 - Compact summary logic is deterministic and covered by Swift tests.
 - The single pet can display multi-session status without creating additional pet windows.
+- The pet-adjacent surface can show multiple session cards and expose `Reply` for waiting sessions.
 - The menu bar remains the detailed session inspection surface.
 - `swift test` and `swift build` pass.
 
 ---
 *Requirements defined: 2026-06-04*
-*Last updated: 2026-06-04 after initialization*
+*Last updated: 2026-06-04 after final UI reference capture*
