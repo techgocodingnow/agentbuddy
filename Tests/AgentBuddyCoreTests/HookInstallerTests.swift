@@ -32,6 +32,21 @@ final class HookInstallerTests: XCTestCase {
         XCTAssertEqual(groups(result, "Stop").count, 2, "foreign + ours")
     }
 
+    func testInstallReplacesLegacyAgentPetHooks() {
+        let legacy = "\"/Applications/AgentPet.app/Contents/MacOS/agentpet\" hook"
+        let existing: [String: Any] = [
+            "hooks": ["Stop": [["hooks": [["type": "command", "command": legacy]]]]],
+        ]
+
+        let result = HookInstaller.install(into: existing, command: cmd)
+        let stopGroups = groups(result, "Stop")
+
+        XCTAssertEqual(stopGroups.count, 1, "legacy AgentPet hook is replaced by AgentBuddy")
+        let command = ((stopGroups.first?["hooks"] as? [[String: Any]])?.first?["command"] as? String) ?? ""
+        XCTAssertTrue(command.contains("agentbuddy"))
+        XCTAssertFalse(command.contains("agentpet"))
+    }
+
     func testUninstallRemovesOursKeepsForeign() {
         let existing: [String: Any] = [
             "hooks": ["Stop": [["hooks": [["type": "command", "command": "echo done"]]]]],
@@ -93,5 +108,31 @@ final class HookInstallerTests: XCTestCase {
         let removed = HookInstaller.uninstallCodexToml(from: twice)
         XCTAssertFalse(HookInstaller.isInstalledCodexToml(removed))
         XCTAssertTrue(removed.contains("echo foreign"))
+    }
+
+    func testCodexTomlInstallReplacesLegacyAgentPetBlock() {
+        let existing = """
+        model = "gpt-5.5"
+
+        # AgentPet Codex hooks (auto-generated; safe to delete)
+
+        [[hooks.Stop]]
+
+        [[hooks.Stop.hooks]]
+        type = "command"
+        command = "\\"/Applications/AgentPet.app/Contents/MacOS/agentpet\\" hook --agent codex"
+        timeout = 10
+        # End AgentPet Codex hooks
+        """
+
+        XCTAssertTrue(HookInstaller.isInstalledCodexToml(existing))
+
+        let result = HookInstaller.installCodexToml(into: existing, command: cmd + " --agent codex", events: ["Stop"])
+
+        XCTAssertTrue(HookInstaller.isInstalledCodexToml(result))
+        XCTAssertTrue(result.contains("# AgentBuddy Codex hooks"))
+        XCTAssertFalse(result.contains("# AgentPet Codex hooks"))
+        XCTAssertFalse(result.contains("agentpet"))
+        XCTAssertTrue(result.contains("agentbuddy"))
     }
 }
