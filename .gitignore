@@ -15,3 +15,6 @@ xcuserdata/
 
 # Brainstorm scratch
 .superpowers/
+
+# Local code-intelligence index data (generated, machine-local)
+.codegraph/

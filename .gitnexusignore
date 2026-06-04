@@ -1,0 +1,39 @@
+# GitNexus ignore — keep generated data and non-source artifacts out of the code index.
+# Syntax matches .gitignore. Only Sources/, Tests/, and hand-written docs should be indexed.
+
+# --- Build output (generated) ---
+.build/
+build/
+DerivedData/
+.swiftpm/
+*.o
+*.a
+*.dylib
+
+# --- Index / tooling data (generated) ---
+.gitnexus/
+.codegraph/
+parse-cache/
+*.db
+*.db-shm
+*.db-wal
+
+# --- Generated package + release artifacts ---
+Package.resolved
+docs/appcast.xml
+
+# --- Generated / binary media (not source) ---
+assets/
+*.png
+*.gif
+*.jpg
+*.jpeg
+*.mp4
+*.tiff
+*.icns
+*.ico
+
+# --- Editor / scratch ---
+.vscode/
+.superpowers/
+.DS_Store
