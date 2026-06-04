@@ -79,7 +79,6 @@ private struct AboutTab: View {
 
     private let repo = URL(string: "https://github.com/techgocodingnow/agentbuddy")!
     private let profile = URL(string: "https://github.com/techgocodingnow")!
-    private let upstream = URL(string: "https://github.com/ntd4996/agentpet")!
 
     var body: some View {
         Form {
@@ -119,9 +118,6 @@ private struct AboutTab: View {
                 }
                 Link(destination: repo) {
                     Label("github.com/techgocodingnow/agentbuddy", systemImage: "chevron.left.forwardslash.chevron.right")
-                }
-                Link(destination: upstream) {
-                    Label("Original project: ntd4996/agentpet", systemImage: "arrow.triangle.branch")
                 }
             }
 
