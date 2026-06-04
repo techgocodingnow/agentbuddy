@@ -11,7 +11,7 @@ This roadmap implements the approved one-pet, many-sessions behavior as a brownf
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 1 | Core Aggregation and Summary Model | Pending | AGG-01, AGG-02, AGG-03, AGG-04, SUM-01, SUM-02, SUM-03, SUM-04, SUM-05, TEST-01, TEST-02 |
+| 1 | Core Aggregation and Summary Model | Planned | AGG-01, AGG-02, AGG-03, AGG-04, SUM-01, SUM-02, SUM-03, SUM-04, SUM-05, TEST-01, TEST-02 |
 | 2 | Pet and Menu Bar UX Wiring | Pending | UX-01, UX-02, UX-03, UX-04 |
 | 3 | Verification and Polish | Pending | TEST-03, TEST-04 |
 
@@ -102,4 +102,4 @@ This roadmap implements the approved one-pet, many-sessions behavior as a brownf
 
 ---
 *Roadmap created: 2026-06-04*
-*Last updated: 2026-06-04 after initialization*
+*Last updated: 2026-06-04 after Phase 1 planning*

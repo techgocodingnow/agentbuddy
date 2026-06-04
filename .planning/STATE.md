@@ -1,10 +1,10 @@
 # Project State
 
-**Status:** Initialized
+**Status:** Ready to execute
 **Project:** AgentPet Multi-Session Companion
 **Current Milestone:** v1 - Compact Multi-Session Pet Summary
 **Current Phase:** Phase 1 - Core Aggregation and Summary Model
-**Updated:** 2026-06-04T10:36:40Z
+**Updated:** 2026-06-04T10:47:05Z
 
 ## Project Reference
 
@@ -31,8 +31,8 @@ This is a brownfield enhancement. The existing codebase already has:
 
 ## Current Plan
 
-1. Run `$gsd-plan-phase 1`.
-2. Implement core aggregation and summary model.
+1. Run `$gsd-execute-phase 1`.
+2. Implement core aggregation and summary model from `.planning/phases/01-core-aggregation-and-summary-model/01-PLAN.md`.
 3. Wire UI surfaces in later phases.
 4. Verify with Swift tests and app smoke checks.
 
@@ -50,8 +50,8 @@ None.
 
 ## Notes for Next Agent
 
-- Read `.planning/codebase/ARCHITECTURE.md`, `.planning/codebase/STRUCTURE.md`, and `.planning/codebase/TESTING.md` before planning Phase 1.
-- Keep core summary logic pure and testable in `AgentPetCore` when possible.
+- Read `.planning/phases/01-core-aggregation-and-summary-model/01-RESEARCH.md` and `.planning/phases/01-core-aggregation-and-summary-model/01-PLAN.md` before executing Phase 1.
+- Keep core summary logic pure and testable in `AgentPetCore`.
 - Do not touch unrelated untracked local/tooling files unless the user explicitly asks for cleanup.
 
 ---
