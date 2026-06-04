@@ -7,37 +7,37 @@
 
 ### Session Aggregation
 
-- [ ] **AGG-01**: The app keeps a single pet surface for all active sessions on the machine.
-- [ ] **AGG-02**: Waiting sessions outrank working sessions when deriving the user-facing aggregate attention state.
-- [ ] **AGG-03**: Done sessions remain visible briefly without overriding active waiting or working sessions.
-- [ ] **AGG-04**: Registered and idle sessions are excluded from compact summaries unless no active sessions exist.
+- [x] **AGG-01**: The app keeps a single pet surface for all active sessions on the machine.
+- [x] **AGG-02**: Waiting sessions outrank working sessions when deriving the user-facing aggregate attention state.
+- [x] **AGG-03**: Done sessions remain visible briefly without overriding active waiting or working sessions.
+- [x] **AGG-04**: Registered and idle sessions are excluded from compact summaries unless no active sessions exist.
 
 ### Compact Summary
 
-- [ ] **SUM-01**: The app can generate compact text summarizing active Claude/Codex sessions.
-- [ ] **SUM-02**: When few sessions are active, the summary names important agent states, for example `Codex waiting - Claude working`.
-- [ ] **SUM-03**: When many sessions are active, the summary collapses into counts, for example `1 waiting - 2 working - 1 done`.
-- [ ] **SUM-04**: The summary orders state groups by attention priority: waiting, working, done.
-- [ ] **SUM-05**: Summary text has a bounded length suitable for the pet bubble and menu bar status.
+- [x] **SUM-01**: The app can generate compact text summarizing active Claude/Codex sessions.
+- [x] **SUM-02**: When few sessions are active, the summary names important agent states, for example `Codex waiting - Claude working`.
+- [x] **SUM-03**: When many sessions are active, the summary collapses into counts, for example `1 waiting - 2 working - 1 done`.
+- [x] **SUM-04**: The summary orders state groups by attention priority: waiting, working, done.
+- [x] **SUM-05**: Summary text has a bounded length suitable for the pet bubble and menu bar status.
 
 ### Pet and Menu Bar UX
 
-- [ ] **UX-01**: The floating pet bubble can show the compact multi-session summary instead of only generic mood chat.
-- [ ] **UX-02**: The menu bar status can reuse or expose the compact summary without removing the existing per-session popover.
-- [ ] **UX-03**: The menu bar popover continues to show individual sessions with project, state/message, timer, and clear controls.
-- [ ] **UX-04**: The UI clearly handles the no-active-session state without stale summary text.
-- [ ] **UX-05**: The final pet-adjacent UI can show multiple active sessions as a compact vertical stack of session cards.
-- [ ] **UX-06**: Each session card shows a short title/project label and a truncated latest message or state.
-- [ ] **UX-07**: Waiting/actionable session cards expose a visible `Reply` button.
-- [ ] **UX-08**: The stacked card surface stays bounded and does not create one pet per session.
+- [x] **UX-01**: The floating pet bubble can show the compact multi-session summary instead of only generic mood chat.
+- [x] **UX-02**: The menu bar status can reuse or expose the compact summary without removing the existing per-session popover.
+- [x] **UX-03**: The menu bar popover continues to show individual sessions with project, state/message, timer, and clear controls.
+- [x] **UX-04**: The UI clearly handles the no-active-session state without stale summary text.
+- [x] **UX-05**: The final pet-adjacent UI can show multiple active sessions as a compact vertical stack of session cards.
+- [x] **UX-06**: Each session card shows a short title/project label and a truncated latest message or state.
+- [x] **UX-07**: Waiting/actionable session cards expose a visible `Reply` button.
+- [x] **UX-08**: The stacked card surface stays bounded and does not create one pet per session.
 
 ### Verification
 
-- [ ] **TEST-01**: Unit tests cover aggregate priority with mixed waiting, working, done, registered, and idle sessions.
-- [ ] **TEST-02**: Unit tests cover compact summary output for few-session and crowded-session cases.
-- [ ] **TEST-03**: Existing hook/session tests still pass after the aggregation changes.
-- [ ] **TEST-04**: Manual smoke verification confirms one pet reacts while multiple Claude/Codex-like sessions appear in the menu.
-- [ ] **TEST-05**: Manual smoke verification confirms multiple active sessions appear in the pet-adjacent card stack and waiting cards expose `Reply`.
+- [x] **TEST-01**: Unit tests cover aggregate priority with mixed waiting, working, done, registered, and idle sessions.
+- [x] **TEST-02**: Unit tests cover compact summary output for few-session and crowded-session cases.
+- [x] **TEST-03**: Existing hook/session tests still pass after the aggregation changes.
+- [x] **TEST-04**: Manual smoke verification confirms one pet reacts while multiple Claude/Codex-like sessions appear in the menu.
+- [x] **TEST-05**: Manual smoke verification confirms multiple active sessions appear in the pet-adjacent card stack and waiting cards expose `Reply`.
 
 ## v2 Requirements
 
@@ -81,9 +81,9 @@
 | UX-08 | Phase 2 | Complete |
 | TEST-01 | Phase 1 | Complete |
 | TEST-02 | Phase 1 | Complete |
-| TEST-03 | Phase 3 | Pending |
-| TEST-04 | Phase 3 | Pending |
-| TEST-05 | Phase 3 | Pending |
+| TEST-03 | Phase 3 | Complete |
+| TEST-04 | Phase 3 | Complete |
+| TEST-05 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 22 total
@@ -100,4 +100,4 @@
 
 ---
 *Requirements defined: 2026-06-04*
-*Last updated: 2026-06-04 after Phase 2 execution*
+*Last updated: 2026-06-04 after Phase 3 execution*
