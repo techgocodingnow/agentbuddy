@@ -51,3 +51,11 @@ public extension AgentKind {
         }
     }
 }
+
+public extension AgentSession {
+    /// UI-safe state text for compact surfaces. It intentionally ignores raw
+    /// hook messages such as tool names (`Using Bash`) or workflow internals.
+    var compactStatusText: String {
+        "\(agentKind.displayName) \(state.rawValue)"
+    }
+}

@@ -227,10 +227,10 @@ private struct AgentRow: View {
         session.project.map { ($0 as NSString).lastPathComponent } ?? session.id
     }
 
-    /// The agent's context (waiting reason / running tool) when known, else its state.
+    /// Compact UI-safe status. Raw hook messages can contain tool/workflow
+    /// internals, so the menu mirrors the pet cards instead.
     private var subtitle: String {
-        if let message = session.message, !message.isEmpty { return message }
-        return session.state.rawValue.capitalized
+        session.compactStatusText
     }
 
     private var dotColor: Color {

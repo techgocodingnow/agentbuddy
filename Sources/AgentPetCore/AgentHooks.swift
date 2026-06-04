@@ -9,6 +9,8 @@ public enum HookStyle: Sendable {
     case cursorFlat
     /// Windsurf `~/.codeium/windsurf/hooks.json`: `{"hooks": {event: [{"command": ...}]}}`.
     case windsurfFlat
+    /// Codex `~/.codex/config.toml`: inline `[[hooks.<Event>]]` tables.
+    case codexToml
     /// opencode: a JS plugin file dropped in `~/.config/opencode/plugin/`.
     case opencodePlugin
 }
@@ -32,9 +34,9 @@ public enum AgentHooks {
                 settingsPath: home + "/.claude/settings.json")
         case .codex:
             return AgentHookSpec(
-                kind: .codex, style: .claudeNested,
-                events: ["SessionStart", "UserPromptSubmit", "PreToolUse", "PermissionRequest", "Stop", "SubagentStop"],
-                settingsPath: home + "/.codex/hooks.json")
+                kind: .codex, style: .codexToml,
+                events: ["SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse", "PermissionRequest", "SubagentStart", "SubagentStop", "Stop"],
+                settingsPath: home + "/.codex/config.toml")
         case .gemini:
             return AgentHookSpec(
                 kind: .gemini, style: .claudeNested,

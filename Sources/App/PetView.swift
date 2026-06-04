@@ -130,10 +130,7 @@ private struct FloatingSessionCard: View {
     }
 
     private var subtitle: String {
-        if let message = session.message?.trimmingCharacters(in: .whitespacesAndNewlines), !message.isEmpty {
-            return message
-        }
-        return "\(session.agentKind.displayName) \(session.state.rawValue)"
+        session.compactStatusText
     }
 
     private var dotColor: Color {

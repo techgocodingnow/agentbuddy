@@ -1,9 +1,9 @@
 import Foundation
 
-/// Installs/removes AgentPet's hook entries in an agent's config. Claude Code,
-/// Codex, and Gemini share the nested `{"hooks": {...}}` shape; Cursor and
-/// Windsurf use flatter JSON shapes; opencode uses a JS plugin file. The shape
-/// is selected by `HookStyle`.
+/// Installs/removes AgentPet's hook entries in an agent's config. Claude Code
+/// and Gemini use nested JSON, Codex uses inline TOML, Cursor and Windsurf use
+/// flatter JSON shapes, and opencode uses a JS plugin file. The shape is
+/// selected by `HookStyle`.
 ///
 /// The dictionary transforms are pure (and tested); the `*OnDisk` helpers wrap
 /// them with file IO. Our entries are identified by their command string, so
@@ -147,6 +147,90 @@ public enum HookInstaller {
         return "\"\(s)\""
     }
 
+    // MARK: - Codex inline TOML
+
+    private static let codexStartMarker = "# AgentPet Codex hooks (auto-generated; safe to delete)"
+    private static let codexEndMarker = "# End AgentPet Codex hooks"
+
+    static func installCodexToml(into content: String, command: String, events: [String]) -> String {
+        var updated = enableCodexHooksFeature(in: uninstallCodexToml(from: content))
+        if !updated.isEmpty && !updated.hasSuffix("\n") { updated += "\n" }
+        if !updated.isEmpty { updated += "\n" }
+        updated += codexTomlBlock(command: command, events: events)
+        return updated
+    }
+
+    static func uninstallCodexToml(from content: String) -> String {
+        var remaining = content
+        while let start = remaining.range(of: codexStartMarker) {
+            guard let end = remaining.range(of: codexEndMarker, range: start.upperBound..<remaining.endIndex) else {
+                break
+            }
+            var removal = start.lowerBound..<end.upperBound
+            if removal.upperBound < remaining.endIndex,
+               remaining[removal.upperBound] == "\n" {
+                removal = removal.lowerBound..<remaining.index(after: removal.upperBound)
+            }
+            if removal.lowerBound > remaining.startIndex,
+               remaining[remaining.index(before: removal.lowerBound)] == "\n" {
+                removal = remaining.index(before: removal.lowerBound)..<removal.upperBound
+            }
+            remaining.removeSubrange(removal)
+        }
+        return remaining
+    }
+
+    static func isInstalledCodexToml(_ content: String) -> Bool {
+        content.contains(codexStartMarker) && content.contains(codexEndMarker)
+    }
+
+    private static func codexTomlBlock(command: String, events: [String]) -> String {
+        var lines = [codexStartMarker]
+        let escaped = tomlString(command)
+        for event in events {
+            lines.append("")
+            lines.append("[[hooks.\(event)]]")
+            lines.append("")
+            lines.append("[[hooks.\(event).hooks]]")
+            lines.append("type = \"command\"")
+            lines.append("command = \"\(escaped)\"")
+            lines.append("timeout = 10")
+        }
+        lines.append(codexEndMarker)
+        lines.append("")
+        return lines.joined(separator: "\n")
+    }
+
+    private static func enableCodexHooksFeature(in content: String) -> String {
+        let lines = content.components(separatedBy: "\n")
+        guard let sectionIndex = lines.firstIndex(where: { $0.trimmingCharacters(in: .whitespaces) == "[features]" }) else {
+            let prefix = content.isEmpty ? "" : content + (content.hasSuffix("\n") ? "\n" : "\n\n")
+            return prefix + "[features]\nhooks = true\n"
+        }
+
+        var updated = lines
+        let sectionEnd = updated[(sectionIndex + 1)...].firstIndex { line in
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            return trimmed.hasPrefix("[") && trimmed.hasSuffix("]")
+        } ?? updated.endIndex
+
+        if let hookIndex = updated[(sectionIndex + 1)..<sectionEnd].firstIndex(where: { line in
+            line.trimmingCharacters(in: .whitespaces).hasPrefix("hooks ")
+                || line.trimmingCharacters(in: .whitespaces).hasPrefix("hooks=")
+        }) {
+            updated[hookIndex] = "hooks = true"
+        } else {
+            updated.insert("hooks = true", at: sectionIndex + 1)
+        }
+        return updated.joined(separator: "\n")
+    }
+
+    private static func tomlString(_ value: String) -> String {
+        value
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+    }
+
     // MARK: - Disk IO
 
     public static func readSettings(path: String) -> [String: Any] {
@@ -170,6 +254,12 @@ public enum HookInstaller {
             try writeSettings(install(into: readSettings(path: path), command: command, events: events), path: path)
         case .cursorFlat, .windsurfFlat:
             try writeSettings(installFlat(into: readSettings(path: path), command: command, events: events, style: style), path: path)
+        case .codexToml:
+            let existing = (try? String(contentsOfFile: path, encoding: .utf8)) ?? ""
+            let updated = installCodexToml(into: existing, command: command, events: events)
+            let dir = (path as NSString).deletingLastPathComponent
+            try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+            try Data(updated.utf8).write(to: URL(fileURLWithPath: path))
         case .opencodePlugin:
             let dir = (path as NSString).deletingLastPathComponent
             try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
@@ -185,6 +275,12 @@ public enum HookInstaller {
             try writeSettings(uninstall(from: readSettings(path: path), events: events), path: path)
         case .cursorFlat, .windsurfFlat:
             try writeSettings(uninstallFlat(from: readSettings(path: path), events: events), path: path)
+        case .codexToml:
+            let existing = (try? String(contentsOfFile: path, encoding: .utf8)) ?? ""
+            let updated = uninstallCodexToml(from: existing)
+            let dir = (path as NSString).deletingLastPathComponent
+            try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+            try Data(updated.utf8).write(to: URL(fileURLWithPath: path))
         case .opencodePlugin:
             if isInstalledOnDisk(path: path, events: events, style: style) {
                 try? FileManager.default.removeItem(atPath: path)
@@ -199,6 +295,9 @@ public enum HookInstaller {
             return isInstalled(in: readSettings(path: path), events: events)
         case .cursorFlat, .windsurfFlat:
             return isInstalledFlat(in: readSettings(path: path), events: events)
+        case .codexToml:
+            guard let s = try? String(contentsOfFile: path, encoding: .utf8) else { return false }
+            return isInstalledCodexToml(s)
         case .opencodePlugin:
             guard let s = try? String(contentsOfFile: path, encoding: .utf8) else { return false }
             return isOurs(s)

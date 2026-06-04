@@ -98,4 +98,17 @@ final class AgentSessionSummaryTests: XCTestCase {
 
         XCTAssertEqual(AgentSessionSummary.compact(for: sessions, detailLimit: 0), "Codex waiting")
     }
+
+    func testCompactStatusTextIgnoresRawHookMessage() {
+        let session = AgentSession(
+            id: "codex-working",
+            agentKind: .codex,
+            state: .working,
+            message: "Using AskUserQuestion",
+            source: .hook,
+            updatedAt: Date(timeIntervalSince1970: 0)
+        )
+
+        XCTAssertEqual(session.compactStatusText, "Codex working")
+    }
 }

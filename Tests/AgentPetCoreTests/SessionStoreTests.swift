@@ -27,6 +27,8 @@ final class StateMapperTests: XCTestCase {
     func testCodexMapping() {
         XCTAssertEqual(StateMapper.state(for: .codex, eventName: "SessionStart"), .registered)
         XCTAssertEqual(StateMapper.state(for: .codex, eventName: "PreToolUse"), .working)
+        XCTAssertEqual(StateMapper.state(for: .codex, eventName: "PostToolUse"), .working)
+        XCTAssertEqual(StateMapper.state(for: .codex, eventName: "SubagentStart"), .working)
         XCTAssertEqual(StateMapper.state(for: .codex, eventName: "PermissionRequest"), .waiting)
         XCTAssertEqual(StateMapper.state(for: .codex, eventName: "Stop"), .done)
     }

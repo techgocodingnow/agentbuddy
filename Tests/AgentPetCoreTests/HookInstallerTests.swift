@@ -57,4 +57,41 @@ final class HookInstallerTests: XCTestCase {
         try HookInstaller.uninstallFromDisk(path: path)
         XCTAssertFalse(HookInstaller.isInstalledOnDisk(path: path))
     }
+
+    func testCodexTomlInstallAddsInlineHooksAndEnablesFeature() {
+        let existing = """
+        model = "gpt-5.5"
+
+        [features]
+        hooks = false
+        """
+
+        let result = HookInstaller.installCodexToml(into: existing, command: cmd + " --agent codex", events: ["SessionStart", "PreToolUse"])
+
+        XCTAssertTrue(HookInstaller.isInstalledCodexToml(result))
+        XCTAssertTrue(result.contains("[[hooks.SessionStart]]"))
+        XCTAssertTrue(result.contains("[[hooks.PreToolUse.hooks]]"))
+        XCTAssertTrue(result.contains("hooks = true"))
+        XCTAssertFalse(result.contains("hooks = false"))
+    }
+
+    func testCodexTomlInstallIsIdempotentAndUninstallKeepsForeignConfig() {
+        let existing = """
+        model = "gpt-5.5"
+
+        [[hooks.Stop]]
+        [[hooks.Stop.hooks]]
+        type = "command"
+        command = "echo foreign"
+        """
+
+        let once = HookInstaller.installCodexToml(into: existing, command: cmd + " --agent codex", events: ["Stop"])
+        let twice = HookInstaller.installCodexToml(into: once, command: cmd + " --agent codex", events: ["Stop"])
+
+        XCTAssertEqual(twice.components(separatedBy: "[[hooks.Stop]]").count - 1, 2)
+
+        let removed = HookInstaller.uninstallCodexToml(from: twice)
+        XCTAssertFalse(HookInstaller.isInstalledCodexToml(removed))
+        XCTAssertTrue(removed.contains("echo foreign"))
+    }
 }
