@@ -77,6 +77,7 @@ jobs:
           fi
 
           ED_ATTRS="$(printf '%s' "$SPARKLE_PRIVATE_KEY" | "$SIGN_UPDATE" --ed-key-file - "$DMG")"
+          git fetch origin main:main
           git switch main
           git pull --ff-only origin main
           cat > docs/appcast.xml <<EOF

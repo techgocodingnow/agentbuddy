@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="../../assets/banner.png?v=1.2.4" alt="AgentBuddy" width="100%" />
+  <img src="../../assets/banner.png?v=1.2.5" alt="AgentBuddy" width="100%" />
   <p>
     <img src="https://img.shields.io/badge/platform-macOS%2013%2B-black" alt="macOS 13+" />
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" />

@@ -15,9 +15,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2.4</string>
+	<string>1.2.5</string>
 	<key>CFBundleVersion</key>
-	<string>1.2.4</string>
+	<string>1.2.5</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>13.0</string>
 	<key>LSUIElement</key>
@@ -31,6 +31,6 @@
 	<key>SUFeedURL</key>
 	<string>https://techgocodingnow.github.io/agentbuddy/appcast.xml</string>
 	<key>SUPublicEDKey</key>
-	<string>2wE8euYD3TUI39c6UhWHbYlhHpXkeM5NiJTJywrm0xQ=</string>
+	<string>uwifYWfH6flu89XwTLB5dPb8ffv/uKQQ0cH42+Eh/u8=</string>
 </dict>
 </plist>
