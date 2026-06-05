@@ -51,14 +51,14 @@ public struct WindsurfHookPayload: Decodable, Equatable {
 /// Decodes a hook's stdin payload into an `AgentEvent`, choosing the field
 /// convention by agent kind. opencode sends explicit flags instead of stdin.
 public enum HookPayload {
-    public static func event(forAgent kind: AgentKind, stdin data: Data, now: Date) -> AgentEvent? {
+    public static func event(forAgent kind: AgentKind, stdin data: Data, now: Date, pendingResponsePath: String? = nil) -> AgentEvent? {
         switch kind {
         case .cursor:
             return CursorHookPayload.decode(from: data)?.makeEvent(now: now)
         case .windsurf:
             return WindsurfHookPayload.decode(from: data)?.makeEvent(now: now)
         default:
-            return ClaudeHookPayload.decode(from: data)?.makeEvent(now: now, kind: kind)
+            return ClaudeHookPayload.decode(from: data)?.makeEvent(now: now, kind: kind, pendingResponsePath: pendingResponsePath)
         }
     }
 }

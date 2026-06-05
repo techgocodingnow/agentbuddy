@@ -213,40 +213,25 @@ private struct AgentRow: View {
     var onReply: () -> Void = {}
     var onClear: () -> Void = {}
     @ObservedObject private var statusBar = StatusBarController.shared
+    @ObservedObject private var reply = SessionReplyController.shared
     @State private var hovering = false
 
     var body: some View {
-        HStack(spacing: 10) {
-            Circle().fill(dotColor).frame(width: 8, height: 8)
-            VStack(alignment: .leading, spacing: 1) {
-                Text(project).font(.system(size: 13, weight: .semibold)).foregroundStyle(.white)
-                Text(subtitle)
-                    .font(.system(size: 11)).foregroundStyle(.white.opacity(0.5))
-                    .lineLimit(1).truncationMode(.tail)
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 10) {
+                Circle().fill(dotColor).frame(width: 8, height: 8)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(project).font(.system(size: 13, weight: .semibold)).foregroundStyle(.white)
+                    Text(subtitle)
+                        .font(.system(size: 11)).foregroundStyle(.white.opacity(0.5))
+                        .lineLimit(1).truncationMode(.tail)
+                }
+                Spacer(minLength: 8)
+                trailingControl
             }
-            Spacer(minLength: 8)
-            if session.state == .waiting {
-                Button("Reply", action: onReply)
-                    .buttonStyle(.plain)
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.orange)
-                if hovering {
-                    Button(action: onClear) {
-                        Image(systemName: "xmark.circle.fill").foregroundStyle(.white.opacity(0.45))
-                    }
-                    .buttonStyle(.plain)
-                }
-            } else if hovering {
-                Button(action: onClear) {
-                    Image(systemName: "xmark.circle.fill").foregroundStyle(.white.opacity(0.45))
-                }
-                .buttonStyle(.plain)
-            } else {
-                TimelineView(.periodic(from: .now, by: 1)) { context in
-                    Text(timeString(now: context.date))
-                        .font(.system(size: 11, design: .monospaced))
-                        .foregroundStyle(.white.opacity(0.55))
-                }
+            if !actions.isEmpty {
+                actionButtons
+                    .padding(.leading, 18)
             }
         }
         .padding(.horizontal, 14).padding(.vertical, 6)
@@ -261,7 +246,41 @@ private struct AgentRow: View {
     /// Compact UI-safe status. Raw hook messages can contain tool/workflow
     /// internals, so the menu mirrors the pet cards instead.
     private var subtitle: String {
-        session.compactStatusText
+        session.pendingRequest?.prompt ?? session.compactStatusText
+    }
+
+    private var actions: [AgentSessionAction] {
+        reply.availableActions(for: session)
+    }
+
+    @ViewBuilder private var trailingControl: some View {
+        if hovering {
+            Button(action: onClear) {
+                Image(systemName: "xmark.circle.fill").foregroundStyle(.white.opacity(0.45))
+            }
+            .buttonStyle(.plain)
+        } else if actions.isEmpty {
+            TimelineView(.periodic(from: .now, by: 1)) { context in
+                Text(timeString(now: context.date))
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundStyle(.white.opacity(0.55))
+            }
+        }
+    }
+
+    private var actionButtons: some View {
+        HStack(spacing: 8) {
+            ForEach(actions, id: \.rawValue) { action in
+                Button(action.label) {
+                    reply.perform(action, on: session)
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(color(for: action))
+                .lineLimit(1)
+            }
+            Spacer(minLength: 0)
+        }
     }
 
     private var dotColor: Color {
@@ -280,6 +299,15 @@ private struct AgentRow: View {
         default:
             let s = max(0, Int(now.timeIntervalSince(session.stateSince)))
             return s < 60 ? "\(s)s" : "\(s / 60)m \(s % 60)s"
+        }
+    }
+
+    private func color(for action: AgentSessionAction) -> Color {
+        switch action {
+        case .deny: return .red
+        case .review: return .blue
+        case .allow, .apply, .continue: return .green
+        case .reply, .answer: return .orange
         }
     }
 }

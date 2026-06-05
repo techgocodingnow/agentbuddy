@@ -30,7 +30,7 @@ public enum AgentHooks {
         case .claude:
             return AgentHookSpec(
                 kind: .claude, style: .claudeNested,
-                events: ["SessionStart", "UserPromptSubmit", "PreToolUse", "Notification", "Stop", "SubagentStop", "SessionEnd"],
+                events: ["SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse", "PermissionRequest", "Elicitation", "ElicitationResult", "Notification", "Stop", "SubagentStop", "SessionEnd"],
                 settingsPath: home + "/.claude/settings.json")
         case .codex:
             return AgentHookSpec(

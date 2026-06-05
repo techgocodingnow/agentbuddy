@@ -63,6 +63,10 @@ public final class SessionStore {
             if let usage = event.usage { existing.usage = usage }
             if let quotaUsage = event.quotaUsage { existing.quotaUsage = quotaUsage }
             if let stats = event.stats { existing.stats = stats }
+            existing.pendingRequest = event.pendingRequest
+            if state != .waiting {
+                existing.pendingRequest = nil
+            }
             if let project = event.project { existing.project = project }
             let eventTitle = cleaned(event.title)
             if let eventTitle {
@@ -94,7 +98,8 @@ public final class SessionStore {
             updatedAt: now,
             usage: event.usage,
             quotaUsage: event.quotaUsage,
-            stats: event.stats
+            stats: event.stats,
+            pendingRequest: state == .waiting ? event.pendingRequest : nil
         )
         byID[event.sessionId] = session
         return session

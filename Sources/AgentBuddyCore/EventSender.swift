@@ -5,12 +5,14 @@ import Foundation
 public enum EventSender {
     /// Returns `true` if delivered over the socket, `false` if queued to disk.
     @discardableResult
-    public static func send(_ event: AgentEvent, socketPath: String, queueDir: String) -> Bool {
+    public static func send(_ event: AgentEvent, socketPath: String, queueDir: String, queueOnFailure: Bool = true) -> Bool {
         guard let line = try? encodeLine(event) else { return false }
         if writeToSocket(line, path: socketPath) {
             return true
         }
-        writeToQueue(line, dir: queueDir)
+        if queueOnFailure {
+            writeToQueue(line, dir: queueDir)
+        }
         return false
     }
 

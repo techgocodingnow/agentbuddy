@@ -8,6 +8,9 @@ final class StateMapperTests: XCTestCase {
         XCTAssertEqual(StateMapper.state(for: .claude, eventName: "PreToolUse"), .working)
         XCTAssertEqual(StateMapper.state(for: .claude, eventName: "PostToolUse"), .working)
         XCTAssertEqual(StateMapper.state(for: .claude, eventName: "Notification"), .waiting)
+        XCTAssertEqual(StateMapper.state(for: .claude, eventName: "PermissionRequest"), .waiting)
+        XCTAssertEqual(StateMapper.state(for: .claude, eventName: "Elicitation"), .waiting)
+        XCTAssertEqual(StateMapper.state(for: .claude, eventName: "ElicitationResult"), .working)
         XCTAssertEqual(StateMapper.state(for: .claude, eventName: "Stop"), .done)
         XCTAssertEqual(StateMapper.state(for: .claude, eventName: "SubagentStop"), .done)
     }
@@ -30,6 +33,7 @@ final class StateMapperTests: XCTestCase {
         XCTAssertEqual(StateMapper.state(for: .codex, eventName: "PostToolUse"), .working)
         XCTAssertEqual(StateMapper.state(for: .codex, eventName: "SubagentStart"), .working)
         XCTAssertEqual(StateMapper.state(for: .codex, eventName: "PermissionRequest"), .waiting)
+        XCTAssertEqual(StateMapper.state(for: .codex, eventName: "item/tool/requestUserInput"), .waiting)
         XCTAssertEqual(StateMapper.state(for: .codex, eventName: "Stop"), .done)
     }
 
@@ -94,6 +98,32 @@ final class SessionStoreTests: XCTestCase {
         let updated = store.apply(event("PreToolUse", stats: nil), now: t0.addingTimeInterval(5))
 
         XCTAssertEqual(updated?.stats, stats)
+    }
+
+    func testApplyStoresPendingRequestOnlyWhileWaiting() {
+        let store = SessionStore()
+        let pending = PendingAgentRequest(
+            id: "p1",
+            kind: .permission,
+            actions: [.allow, .deny, .review],
+            prompt: "Run tests?",
+            responsePath: "/tmp/agentbuddy-response.json"
+        )
+        let waiting = AgentEvent(
+            sessionId: "s1",
+            agentKind: .claude,
+            eventName: "PermissionRequest",
+            project: "/proj",
+            message: "Run tests?",
+            timestamp: t0,
+            pendingRequest: pending
+        )
+
+        let created = store.apply(waiting, now: t0)
+        XCTAssertEqual(created?.pendingRequest, pending)
+
+        let working = store.apply(event("PreToolUse"), now: t0.addingTimeInterval(1))
+        XCTAssertNil(working?.pendingRequest)
     }
 
     func testApplyStoresAndPreservesQuotaUsage() {

@@ -19,6 +19,8 @@ public struct AgentSession: Identifiable, Sendable, Equatable {
     public var quotaUsage: AgentQuotaUsage?
     /// Latest known runtime metadata, preserved across sparse events.
     public var stats: AgentRuntimeStats?
+    /// Active user-facing request with actions AgentBuddy can perform.
+    public var pendingRequest: PendingAgentRequest?
 
     public init(
         id: String,
@@ -32,7 +34,8 @@ public struct AgentSession: Identifiable, Sendable, Equatable {
         stateSince: Date? = nil,
         usage: ContextUsage? = nil,
         quotaUsage: AgentQuotaUsage? = nil,
-        stats: AgentRuntimeStats? = nil
+        stats: AgentRuntimeStats? = nil,
+        pendingRequest: PendingAgentRequest? = nil
     ) {
         self.id = id
         self.agentKind = agentKind
@@ -46,5 +49,6 @@ public struct AgentSession: Identifiable, Sendable, Equatable {
         self.usage = usage
         self.quotaUsage = quotaUsage?.isEmpty == true ? nil : quotaUsage
         self.stats = stats?.isEmpty == true ? nil : stats
+        self.pendingRequest = pendingRequest
     }
 }

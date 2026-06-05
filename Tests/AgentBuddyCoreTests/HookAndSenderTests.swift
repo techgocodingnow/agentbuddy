@@ -100,6 +100,19 @@ final class EventSenderTests: XCTestCase {
         XCTAssertEqual(received, [event])
     }
 
+    func testSenderCanSkipQueueWhenNoServer() throws {
+        let socketPath = "/tmp/agentbuddy-missing-\(UUID().uuidString).sock"
+        let queueDir = NSTemporaryDirectory() + "agentbuddy-q-\(UUID().uuidString)"
+        defer { try? FileManager.default.removeItem(atPath: queueDir) }
+
+        let event = AgentEvent(sessionId: "s11", agentKind: .claude, eventName: "PermissionRequest",
+                               timestamp: Date(timeIntervalSince1970: 8))
+        let delivered = EventSender.send(event, socketPath: socketPath, queueDir: queueDir, queueOnFailure: false)
+
+        XCTAssertFalse(delivered)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: queueDir))
+    }
+
     private final class Box: @unchecked Sendable {
         var value: AgentEvent?
     }

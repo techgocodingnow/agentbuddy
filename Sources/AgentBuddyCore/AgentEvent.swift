@@ -18,6 +18,9 @@ public struct AgentEvent: Codable, Sendable, Equatable {
     public var quotaUsage: AgentQuotaUsage?
     /// Optional runtime metadata such as model, speed mode, or service tier.
     public var stats: AgentRuntimeStats?
+    /// Details for a user-visible request that AgentBuddy can answer directly
+    /// while the agent hook is still waiting.
+    public var pendingRequest: PendingAgentRequest?
 
     public init(
         sessionId: String,
@@ -29,7 +32,8 @@ public struct AgentEvent: Codable, Sendable, Equatable {
         timestamp: Date,
         usage: ContextUsage? = nil,
         quotaUsage: AgentQuotaUsage? = nil,
-        stats: AgentRuntimeStats? = nil
+        stats: AgentRuntimeStats? = nil,
+        pendingRequest: PendingAgentRequest? = nil
     ) {
         self.sessionId = sessionId
         self.agentKind = agentKind
@@ -41,5 +45,6 @@ public struct AgentEvent: Codable, Sendable, Equatable {
         self.usage = usage
         self.quotaUsage = quotaUsage?.isEmpty == true ? nil : quotaUsage
         self.stats = stats?.isEmpty == true ? nil : stats
+        self.pendingRequest = pendingRequest
     }
 }

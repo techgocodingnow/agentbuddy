@@ -21,4 +21,5 @@ public enum AgentBuddyPaths {
     public static var baseDir: String { NSHomeDirectory() + "/.agentbuddy" }
     public static var socketPath: String { baseDir + "/agentbuddy.sock" }
     public static var queueDir: String { baseDir + "/queue" }
+    public static var pendingResponseDir: String { baseDir + "/pending-responses" }
 }

@@ -88,23 +88,30 @@ private struct SessionCardStack: View {
 private struct FloatingSessionCard: View {
     let session: AgentSession
     @ObservedObject private var statusBar = StatusBarController.shared
+    @ObservedObject private var reply = SessionReplyController.shared
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(alignment: .top, spacing: 10) {
             Circle()
                 .fill(dotColor)
                 .frame(width: 9, height: 9)
+                .padding(.top, 6)
             VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                Text(subtitle)
-                    .font(.system(size: 12))
-                    .foregroundStyle(.white.opacity(0.76))
-                    .lineLimit(session.displayMessage == nil ? 1 : 2)
-                    .truncationMode(.tail)
+                HStack(spacing: 8) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(title)
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                        Text(subtitle)
+                            .font(.system(size: 12))
+                            .foregroundStyle(.white.opacity(0.76))
+                            .lineLimit(session.displayMessage == nil ? 1 : 2)
+                            .truncationMode(.tail)
+                    }
+                    Spacer(minLength: 0)
+                }
                 if showMetadata {
                     CompactSessionMetadataView(
                         stats: compactStats,
@@ -113,20 +120,12 @@ private struct FloatingSessionCard: View {
                         mode: statusBar.usageDisplayMode,
                         showUsage: showUsage
                     )
-                        .padding(.top, 1)
+                    .padding(.top, 1)
                 }
-            }
-            Spacer(minLength: 8)
-            if session.state == .waiting {
-                Button("Reply") {
-                    SessionReplyController.shared.reply(to: session)
+                if !actions.isEmpty {
+                    actionButtons
+                        .padding(.top, 5)
                 }
-                .buttonStyle(.plain)
-                .font(.system(size: 11, weight: .bold))
-                .foregroundStyle(.white)
-                .padding(.horizontal, 9)
-                .padding(.vertical, 5)
-                .background(Capsule().fill(Color.orange.opacity(0.9)))
             }
         }
         .frame(width: 302, height: cardContentHeight)
@@ -135,6 +134,28 @@ private struct FloatingSessionCard: View {
         .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(.black.opacity(0.86)))
         .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(.white.opacity(0.2), lineWidth: 1))
         .shadow(color: .black.opacity(0.22), radius: 6, y: 2)
+    }
+
+    private var actionButtons: some View {
+        HStack(spacing: 7) {
+            ForEach(actions, id: \.rawValue) { action in
+                Button(action.label) {
+                    reply.perform(action, on: session)
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 9)
+                .padding(.vertical, 5)
+                .background(Capsule().fill(color(for: action).opacity(0.9)))
+                .lineLimit(1)
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    private var actions: [AgentSessionAction] {
+        reply.availableActions(for: session)
     }
 
     private var title: String {
@@ -163,7 +184,17 @@ private struct FloatingSessionCard: View {
     private var cardContentHeight: CGFloat {
         var height: CGFloat = session.displayMessage == nil ? 44 : 58
         if showMetadata { height += 16 }
+        if !actions.isEmpty { height += 30 }
         return height
+    }
+
+    private func color(for action: AgentSessionAction) -> Color {
+        switch action {
+        case .deny: return .red
+        case .review: return .blue
+        case .allow, .apply, .continue: return .green
+        case .reply, .answer: return .orange
+        }
     }
 
     private var dotColor: Color {

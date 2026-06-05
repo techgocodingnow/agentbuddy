@@ -192,4 +192,68 @@ final class ClaudeHookPayloadTests: XCTestCase {
         })
         XCTAssertNil(event?.usage)
     }
+
+    func testPermissionRequestBuildsPendingAllowDenyRequest() {
+        let p = payload(#"{"session_id":"s","turn_id":"t1","hook_event_name":"PermissionRequest","tool_name":"Bash","tool_input":{"command":"npm test","description":"Run tests"},"transcript_path":"/x"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex, pendingResponsePath: "/tmp/agentbuddy-response.json")
+
+        XCTAssertEqual(event?.pendingRequest?.kind, .permission)
+        XCTAssertEqual(event?.pendingRequest?.actions, [.allow, .deny, .review])
+        XCTAssertEqual(event?.pendingRequest?.responsePath, "/tmp/agentbuddy-response.json")
+        XCTAssertEqual(event?.pendingRequest?.toolInputSummary, "Run tests")
+        XCTAssertEqual(event?.pendingRequest?.turnId, "t1")
+        XCTAssertTrue(p?.waitsForAgentBuddyResponse == true)
+    }
+
+    func testPatchPermissionRequestUsesApplyReviewDeny() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"PermissionRequest","tool_name":"apply_patch","tool_input":{"command":"*** Begin Patch\n*** End Patch"}}"#)
+        let event = p?.makeEvent(now: now, kind: .codex, pendingResponsePath: "/tmp/response.json")
+
+        XCTAssertEqual(event?.pendingRequest?.actions, [.apply, .review, .deny])
+    }
+
+    func testCodexRequestUserInputBuildsAnswerRequest() {
+        let p = payload(#"{"session_id":"s","turn_id":"t1","hook_event_name":"item/tool/requestUserInput","message":"Which branch should I use?","tool_input":{"question":"Which branch should I use?"}}"#)
+        let event = p?.makeEvent(now: now, kind: .codex)
+
+        XCTAssertEqual(event?.pendingRequest?.kind, .question)
+        XCTAssertEqual(event?.pendingRequest?.actions, [.answer, .review])
+        XCTAssertEqual(event?.pendingRequest?.prompt, "Which branch should I use?")
+        XCTAssertEqual(event?.pendingRequest?.turnId, "t1")
+    }
+
+    func testPermissionAllowAndDenyHookOutput() throws {
+        let p = try XCTUnwrap(payload(#"{"session_id":"s","hook_event_name":"PermissionRequest","tool_name":"Bash"}"#))
+
+        let allow = try XCTUnwrap(p.hookOutput(for: PendingAgentResponse(action: .allow), kind: .codex))
+        let allowObject = try JSONSerialization.jsonObject(with: allow) as? [String: Any]
+        let allowSpecific = allowObject?["hookSpecificOutput"] as? [String: Any]
+        let allowDecision = allowSpecific?["decision"] as? [String: Any]
+        XCTAssertEqual(allowSpecific?["hookEventName"] as? String, "PermissionRequest")
+        XCTAssertEqual(allowDecision?["behavior"] as? String, "allow")
+
+        let deny = try XCTUnwrap(p.hookOutput(for: PendingAgentResponse(action: .deny, text: "Nope"), kind: .claude))
+        let denyObject = try JSONSerialization.jsonObject(with: deny) as? [String: Any]
+        let denySpecific = denyObject?["hookSpecificOutput"] as? [String: Any]
+        let denyDecision = denySpecific?["decision"] as? [String: Any]
+        XCTAssertEqual(denyDecision?["behavior"] as? String, "deny")
+        XCTAssertEqual(denyDecision?["message"] as? String, "Nope")
+        XCTAssertNil(p.hookOutput(for: PendingAgentResponse(action: .review), kind: .codex))
+    }
+
+    func testElicitationAnswerUsesRequestedSchemaKey() throws {
+        let p = try XCTUnwrap(payload(#"{"session_id":"s","hook_event_name":"Elicitation","mcp_server_name":"server","message":"Need ticket id","requested_schema":{"type":"object","properties":{"ticket":{"type":"string"}}}}"#))
+        let event = p.makeEvent(now: now, kind: .claude, pendingResponsePath: "/tmp/reply.json")
+
+        XCTAssertEqual(event?.pendingRequest?.kind, .elicitation)
+        XCTAssertEqual(event?.pendingRequest?.actions, [.answer, .deny, .review])
+
+        let output = try XCTUnwrap(p.hookOutput(for: PendingAgentResponse(action: .answer, text: "ABC-123"), kind: .claude))
+        let object = try JSONSerialization.jsonObject(with: output) as? [String: Any]
+        let specific = object?["hookSpecificOutput"] as? [String: Any]
+        let content = specific?["content"] as? [String: Any]
+        XCTAssertEqual(specific?["hookEventName"] as? String, "Elicitation")
+        XCTAssertEqual(specific?["action"] as? String, "accept")
+        XCTAssertEqual(content?["ticket"] as? String, "ABC-123")
+    }
 }

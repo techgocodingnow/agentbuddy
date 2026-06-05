@@ -25,8 +25,8 @@ public enum StateMapper {
         case .claude:
             switch eventName {
             case "SessionStart": return .registered
-            case "UserPromptSubmit", "PreToolUse", "PostToolUse": return .working
-            case "Notification": return .waiting
+            case "UserPromptSubmit", "PreToolUse", "PostToolUse", "ElicitationResult": return .working
+            case "Notification", "PermissionRequest", "Elicitation": return .waiting
             case "Stop", "SubagentStop": return .done
             default: return nil
             }
@@ -34,7 +34,7 @@ public enum StateMapper {
             switch eventName {
             case "SessionStart": return .registered
             case "UserPromptSubmit", "PreToolUse", "PostToolUse", "SubagentStart": return .working
-            case "PermissionRequest": return .waiting
+            case "PermissionRequest", "Elicitation", "item/tool/requestUserInput": return .waiting
             case "Stop", "SubagentStop": return .done
             default: return nil
             }
