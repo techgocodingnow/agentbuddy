@@ -31,10 +31,28 @@ jobs:
           NOTARY_TEAM_ID: ${{ secrets.NOTARY_TEAM_ID }}
           NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
 
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^$GITHUB_REF_NAME$" | head -1)
+          RANGE="${PREV_TAG:+$PREV_TAG..}HEAD"
+          FEATURES=$(git log $RANGE --pretty=format:"- %s" --no-merges | grep -E "^- feat" | sed 's/^- feat: /- /' | sed 's/^- feat(\([^)]*\)): /- /')
+          FIXES=$(git log $RANGE --pretty=format:"- %s" --no-merges | grep -E "^- fix" | sed 's/^- fix: /- /' | sed 's/^- fix(\([^)]*\)): /- /')
+          BODY=""
+          [ -n "$FEATURES" ] && BODY="## What's New"$'\n'"$FEATURES"
+          [ -n "$FIXES" ] && BODY="$BODY"$'\n\n'"## Bug Fixes"$'\n'"$FIXES"
+          [ -z "$BODY" ] && BODY="See [commits](${{ github.server_url }}/${{ github.repository }}/commits/$GITHUB_REF_NAME) for changes."
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Publish to GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_NOTES: ${{ steps.changelog.outputs.body }}
         run: |
           gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 \
-            || gh release create "$GITHUB_REF_NAME" --title "AgentBuddy $GITHUB_REF_NAME" --generate-notes
+            || gh release create "$GITHUB_REF_NAME" \
+                --title "AgentBuddy $GITHUB_REF_NAME" \
+                --notes "$RELEASE_NOTES"
           gh release upload "$GITHUB_REF_NAME" build/*.dmg --clobber
