@@ -87,7 +87,7 @@ On first launch, open **Settings → General** and click **Install** next to Cla
 ```bash
 brew uninstall --cask agentbuddy          # or drag /Applications/AgentBuddy.app to Trash
 rm -rf ~/.agentbuddy                       # downloaded pets + state
-rm -f  ~/Library/Preferences/com.agentbuddy.app.plist
+rm -f  ~/Library/Preferences/com.gocodingnow.agentbuddy.plist
 ```
 
 ## Usage

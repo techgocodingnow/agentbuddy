@@ -9,15 +9,15 @@
 	<key>CFBundleIconFile</key>
 	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.agentbuddy.app</string>
+	<string>com.gocodingnow.agentbuddy</string>
 	<key>CFBundleName</key>
 	<string>AgentBuddy</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.6</string>
+	<string>1.2.0</string>
 	<key>CFBundleVersion</key>
-	<string>1.1.6</string>
+	<string>1.2.0</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>13.0</string>
 	<key>LSUIElement</key>
