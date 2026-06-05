@@ -53,21 +53,27 @@ public extension AgentKind {
 }
 
 public extension AgentSession {
+    /// Human-facing title for the session, usually derived from the first prompt
+    /// or supplied by an agent hook.
+    var displayTitle: String? {
+        guard let text = title?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !text.isEmpty else { return nil }
+        return text
+    }
+
     /// UI-safe state text for compact surfaces. It intentionally ignores raw
     /// hook messages such as tool names (`Using Bash`) or workflow internals.
     var compactStatusText: String {
         "\(agentKind.displayName) \(state.rawValue)"
     }
 
-    /// Pet-facing status text. Working sessions prefer the compact task
-    /// summary; waiting/done sessions prefer the agent's direct message.
+    /// Pet-facing status text. Uses only the agent's direct message; compact
+    /// prompt-derived text is reserved for titles.
     var displayMessage: String? {
         let candidate: String?
         switch state {
-        case .working:
-            candidate = taskSummary ?? message
-        case .waiting, .done:
-            candidate = message ?? taskSummary
+        case .working, .waiting, .done:
+            candidate = message
         case .registered, .idle:
             candidate = nil
         }

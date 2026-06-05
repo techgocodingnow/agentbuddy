@@ -125,18 +125,17 @@ final class AgentSessionSummaryTests: XCTestCase {
         XCTAssertEqual(session.displayMessage, "Reviewing the hook flow")
     }
 
-    func testDisplayMessagePrefersTaskSummaryForWorking() {
+    func testDisplayTitleTrimsTitle() {
         let session = AgentSession(
             id: "codex-working",
             agentKind: .codex,
+            title: "  Assess Codex Pet clone idea  ",
             state: .working,
-            message: "Please review the entire hook implementation and explain what is wrong",
-            taskSummary: "Reviewing hook implementation",
             source: .hook,
             updatedAt: Date(timeIntervalSince1970: 0)
         )
 
-        XCTAssertEqual(session.displayMessage, "Reviewing hook implementation")
+        XCTAssertEqual(session.displayTitle, "Assess Codex Pet clone idea")
     }
 
     func testDisplayMessageKeepsHumanFacingStates() {
@@ -145,7 +144,6 @@ final class AgentSessionSummaryTests: XCTestCase {
             agentKind: .codex,
             state: .waiting,
             message: "  Needs approval  ",
-            taskSummary: "Reviewing hook implementation",
             source: .hook,
             updatedAt: Date(timeIntervalSince1970: 0)
         )

@@ -4,10 +4,11 @@ import XCTest
 final class HookArgumentsTests: XCTestCase {
     func testParseAllFlags() {
         let args = ["--event", "Stop", "--session", "s1", "--project", "/p",
-                    "--agent", "claude", "--message", "hello world"]
+                    "--agent", "claude", "--title", "Fix pet title", "--message", "hello world"]
         let parsed = HookArguments.parse(args)
         XCTAssertEqual(parsed, HookArguments(
-            event: "Stop", session: "s1", project: "/p", agent: "claude", message: "hello world"
+            event: "Stop", session: "s1", project: "/p", agent: "claude",
+            title: "Fix pet title", message: "hello world"
         ))
     }
 
@@ -29,6 +30,22 @@ final class HookArgumentsTests: XCTestCase {
         XCTAssertEqual(event?.agentKind, .claude)
         XCTAssertEqual(event?.eventName, "Stop")
         XCTAssertEqual(event?.timestamp, now)
+    }
+
+    func testMakeEventCarriesTitleAndMessage() {
+        let now = Date(timeIntervalSince1970: 1)
+        let event = HookArguments(
+            event: "UserPromptSubmit",
+            session: "s1",
+            project: "/p",
+            agent: "codex",
+            title: "Assess Codex Pet clone idea",
+            message: "Checking the pet flow"
+        ).makeEvent(now: now)
+
+        XCTAssertEqual(event?.agentKind, .codex)
+        XCTAssertEqual(event?.title, "Assess Codex Pet clone idea")
+        XCTAssertEqual(event?.message, "Checking the pet flow")
     }
 }
 

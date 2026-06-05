@@ -2,12 +2,12 @@ import XCTest
 @testable import AgentBuddyCore
 
 final class TaskSummaryTests: XCTestCase {
-    func testCompactsPromptToShortTaskLine() {
+    func testCompactsPromptToShortTitleLine() {
         let summary = TaskSummary.compact(
-            from: "Please implement the MVP version for compact-style pet task summaries in AgentBuddy"
+            from: "Please implement the MVP version for compact prompt titles in AgentBuddy"
         )
 
-        XCTAssertEqual(summary, "implement the MVP version for compact-style pet task summaries")
+        XCTAssertEqual(summary, "implement the MVP version for compact prompt titles in")
     }
 
     func testStripsConversationalPrefix() {

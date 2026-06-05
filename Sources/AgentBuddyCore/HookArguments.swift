@@ -6,14 +6,16 @@ public struct HookArguments: Equatable {
     public var session: String?
     public var project: String?
     public var agent: String?
+    public var title: String?
     public var message: String?
 
     public init(event: String? = nil, session: String? = nil, project: String? = nil,
-                agent: String? = nil, message: String? = nil) {
+                agent: String? = nil, title: String? = nil, message: String? = nil) {
         self.event = event
         self.session = session
         self.project = project
         self.agent = agent
+        self.title = title
         self.message = message
     }
 
@@ -29,6 +31,7 @@ public struct HookArguments: Equatable {
             case "--session": result.session = value
             case "--project": result.project = value
             case "--agent": result.agent = value
+            case "--title": result.title = value
             case "--message": result.message = value
             default:
                 i += 1
@@ -46,7 +49,7 @@ public struct HookArguments: Equatable {
         let kind = agent.flatMap(AgentKind.init(rawValue:)) ?? .claude
         return AgentEvent(
             sessionId: session, agentKind: kind, eventName: event,
-            project: project, message: message, timestamp: now
+            project: project, title: title, message: message, timestamp: now
         )
     }
 }

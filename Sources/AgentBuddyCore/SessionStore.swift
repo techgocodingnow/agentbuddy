@@ -61,14 +61,23 @@ public final class SessionStore {
             // Keep the last known usage when an event carries none (e.g. a
             // non-Claude event), so the indicator doesn't blink away.
             if let usage = event.usage { existing.usage = usage }
+            if let quotaUsage = event.quotaUsage { existing.quotaUsage = quotaUsage }
+            if let stats = event.stats { existing.stats = stats }
             if let project = event.project { existing.project = project }
+            let eventTitle = cleaned(event.title)
+            if let eventTitle {
+                existing.title = eventTitle
+            } else if existing.title == nil {
+                existing.title = inferredTitle(from: event.message, state: state)
+            }
             if let message = event.message {
                 existing.message = message
-                existing.taskSummary = TaskSummary.compact(from: message)
             } else if stateChanged {
                 existing.message = nil
                 if state == .registered || state == .idle {
-                    existing.taskSummary = nil
+                    if eventTitle == nil {
+                        existing.title = nil
+                    }
                 }
             }
             byID[event.sessionId] = existing
@@ -78,12 +87,14 @@ public final class SessionStore {
             id: event.sessionId,
             agentKind: event.agentKind,
             project: event.project,
+            title: cleaned(event.title) ?? inferredTitle(from: event.message, state: state),
             state: state,
             message: event.message,
-            taskSummary: TaskSummary.compact(from: event.message),
             source: .hook,
             updatedAt: now,
-            usage: event.usage
+            usage: event.usage,
+            quotaUsage: event.quotaUsage,
+            stats: event.stats
         )
         byID[event.sessionId] = session
         return session
@@ -136,6 +147,17 @@ public final class SessionStore {
 
     public func session(id: String) -> AgentSession? {
         byID[id]
+    }
+
+    private func cleaned(_ text: String?) -> String? {
+        guard let text = text?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !text.isEmpty else { return nil }
+        return text
+    }
+
+    private func inferredTitle(from message: String?, state: AgentState) -> String? {
+        guard state == .working else { return nil }
+        return TaskSummary.compact(from: message)
     }
 }
 

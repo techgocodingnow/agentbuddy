@@ -1,7 +1,7 @@
 import Foundation
 
-/// MVP compact-style summary for pet status text. This is deliberately
-/// deterministic; an agent-backed summarizer can replace this boundary later.
+/// Compact prompt text for titles only. This is a deterministic string cleanup,
+/// not an agent/LLM summary.
 public enum TaskSummary {
     private static let maxWords = 9
     private static let maxCharacters = 72

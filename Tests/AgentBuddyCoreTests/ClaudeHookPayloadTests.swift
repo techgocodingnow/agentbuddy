@@ -24,6 +24,29 @@ final class ClaudeHookPayloadTests: XCTestCase {
         XCTAssertEqual(StateMapper.state(for: .claude, eventName: event!.eventName), .waiting)
     }
 
+    func testDecodesTitleAndPrompt() {
+        let p = payload(#"{"session_id":"s","cwd":"/p","hook_event_name":"UserPromptSubmit","session_title":"Assess Codex Pet clone idea","prompt":"Sync title to pet"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex)
+
+        XCTAssertEqual(event?.title, "Assess Codex Pet clone idea")
+        XCTAssertNil(event?.message)
+    }
+
+    func testPromptSeedsTitleButNotMessage() {
+        let p = payload(#"{"session_id":"s","cwd":"/p","hook_event_name":"UserPromptSubmit","prompt":"Please sync title to pet"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex)
+
+        XCTAssertEqual(event?.title, "sync title to pet")
+        XCTAssertNil(event?.message)
+    }
+
+    func testExplicitMessageWinsOverPrompt() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"UserPromptSubmit","prompt":"user prompt","message":"explicit message"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex)
+
+        XCTAssertEqual(event?.message, "explicit message")
+    }
+
     func testStopReadsTranscriptMessage() {
         let p = payload(#"{"session_id":"s","hook_event_name":"Stop","transcript_path":"/x.jsonl"}"#)
         let event = p?.makeEvent(now: now, kind: .claude, readTranscript: { path in
@@ -31,6 +54,16 @@ final class ClaudeHookPayloadTests: XCTestCase {
         })
         XCTAssertEqual(event?.message, "Refactored the parser.")
         XCTAssertEqual(StateMapper.state(for: .claude, eventName: event!.eventName), .done)
+    }
+
+    func testClaudeWorkingEventReadsTranscriptMessage() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"PreToolUse","transcript_path":"/x.jsonl"}"#)
+        let event = p?.makeEvent(now: now, kind: .claude, readTranscript: { path in
+            path == "/x.jsonl" ? "I will inspect the hook flow." : nil
+        })
+
+        XCTAssertEqual(event?.message, "I will inspect the hook flow.")
+        XCTAssertEqual(StateMapper.state(for: .claude, eventName: event!.eventName), .working)
     }
 
     func testExplicitMessageWinsOverTranscript() {
@@ -46,10 +79,57 @@ final class ClaudeHookPayloadTests: XCTestCase {
         XCTAssertEqual(StateMapper.state(for: .codex, eventName: event!.eventName), .working)
     }
 
-    func testTranscriptIgnoredForNonClaudeKind() {
+    func testCodexStopReadsTranscriptMessage() {
         let p = payload(#"{"session_id":"s","hook_event_name":"Stop","transcript_path":"/x"}"#)
-        let event = p?.makeEvent(now: now, kind: .codex, readTranscript: { _ in "claude-only text" })
-        XCTAssertNil(event?.message)
+        let event = p?.makeEvent(now: now, kind: .codex, readTranscript: { path in
+            path == "/x" ? "Codex finished the patch." : nil
+        })
+
+        XCTAssertEqual(event?.message, "Codex finished the patch.")
+    }
+
+    func testCodexEventReadsUsageAndQuotaMetrics() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"Stop","transcript_path":"/x"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex, readUsage: { path in
+            path == "/x" ? ContextUsage(usedTokens: 25_000, limitTokens: 100_000) : nil
+        }, readQuotaUsage: { path in
+            path == "/x" ? AgentQuotaUsage(sessionUsedPercent: 10, weeklyUsedPercent: 20) : nil
+        })
+
+        XCTAssertEqual(event?.usage?.percentUsed, 25)
+        XCTAssertEqual(event?.quotaUsage?.sessionUsedPercent, 10)
+        XCTAssertEqual(event?.quotaUsage?.weeklyUsedPercent, 20)
+    }
+
+    func testDerivesTitleFromTranscriptWhenPromptMissing() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"Stop","transcript_path":"/x"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex, readSessionTitle: { _ in nil }, readTitle: { path in
+            path == "/x" ? "Assess Codex Pet clone idea" : nil
+        })
+
+        XCTAssertEqual(event?.title, "Assess Codex Pet clone idea")
+    }
+
+    func testDerivesTitleFromCodexSessionIndexBeforeTranscriptFallback() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"Stop","transcript_path":"/x"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex, readSessionTitle: { sessionId in
+            sessionId == "s" ? "Assess Codex Pet clone idea" : nil
+        }, readTitle: { _ in
+            "fallback transcript title"
+        })
+
+        XCTAssertEqual(event?.title, "Assess Codex Pet clone idea")
+    }
+
+    func testPromptWinsOverTranscriptTitle() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"UserPromptSubmit","prompt":"Please sync title to pet","transcript_path":"/x"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex, readSessionTitle: { _ in
+            "Old indexed title"
+        }, readTitle: { _ in
+            "Old transcript title"
+        })
+
+        XCTAssertEqual(event?.title, "sync title to pet")
     }
 
     func testIgnoresUnknownFields() {
@@ -75,9 +155,31 @@ final class ClaudeHookPayloadTests: XCTestCase {
         XCTAssertEqual(event?.usage?.percentLeft, 59)
     }
 
-    func testUsageNilForNonClaudeKind() {
+    func testPopulatesRuntimeStatsOnClaudeEvent() {
         let p = payload(#"{"session_id":"s","hook_event_name":"PreToolUse","transcript_path":"/x.jsonl"}"#)
-        let event = p?.makeEvent(now: now, kind: .codex, readUsage: { _ in
+        let event = p?.makeEvent(now: now, kind: .claude, readStats: { path in
+            path == "/x.jsonl" ? AgentRuntimeStats(model: "claude-opus-4-8", speed: "standard", serviceTier: "standard") : nil
+        })
+
+        XCTAssertEqual(event?.stats?.model, "claude-opus-4-8")
+        XCTAssertEqual(event?.stats?.speed, "standard")
+        XCTAssertEqual(event?.stats?.serviceTier, "standard")
+    }
+
+    func testPopulatesRuntimeStatsOnCodexEvent() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"PreToolUse","transcript_path":"/x.jsonl"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex, readStats: { path in
+            path == "/x.jsonl" ? AgentRuntimeStats(model: "gpt-5.5", speed: "fast", effort: "high") : nil
+        })
+
+        XCTAssertEqual(event?.stats?.model, "gpt-5.5")
+        XCTAssertEqual(event?.stats?.speed, "fast")
+        XCTAssertEqual(event?.stats?.effort, "high")
+    }
+
+    func testUsageNilForKindWithoutTranscriptUsage() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"PreToolUse","transcript_path":"/x.jsonl"}"#)
+        let event = p?.makeEvent(now: now, kind: .gemini, readUsage: { _ in
             ContextUsage(usedTokens: 1, limitTokens: 200_000)
         })
         XCTAssertNil(event?.usage)

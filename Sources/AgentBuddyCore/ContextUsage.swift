@@ -24,6 +24,47 @@ public struct ContextUsage: Codable, Sendable, Equatable {
         let left = Double(max(0, limitTokens - usedTokens)) / Double(limitTokens)
         return Int((left * 100).rounded())
     }
+
+    /// Percentage of the context window already used, `0...100`.
+    public var percentUsed: Int {
+        max(0, min(100, 100 - percentLeft))
+    }
+}
+
+public enum UsageDisplayMode: String, Codable, Sendable, CaseIterable {
+    case left
+    case used
+}
+
+/// Agent quota/rate-limit percentages when an agent exposes them locally.
+///
+/// For Codex, `sessionUsedPercent` maps to the primary short-window limit and
+/// `weeklyUsedPercent` maps to the secondary weekly window. Claude Code does
+/// not currently expose equivalent quota telemetry in the local transcript.
+public struct AgentQuotaUsage: Codable, Sendable, Equatable {
+    public var sessionUsedPercent: Int?
+    public var weeklyUsedPercent: Int?
+
+    public init(sessionUsedPercent: Int? = nil, weeklyUsedPercent: Int? = nil) {
+        self.sessionUsedPercent = Self.clamped(sessionUsedPercent)
+        self.weeklyUsedPercent = Self.clamped(weeklyUsedPercent)
+    }
+
+    public var isEmpty: Bool {
+        sessionUsedPercent == nil && weeklyUsedPercent == nil
+    }
+
+    public static func displayPercent(usedPercent: Int, mode: UsageDisplayMode) -> Int {
+        switch mode {
+        case .used: return usedPercent
+        case .left: return max(0, min(100, 100 - usedPercent))
+        }
+    }
+
+    private static func clamped(_ value: Int?) -> Int? {
+        guard let value else { return nil }
+        return max(0, min(100, value))
+    }
 }
 
 /// Maps a model name to its context-window size.

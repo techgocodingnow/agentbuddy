@@ -54,9 +54,11 @@ final class SessionStoreTests: XCTestCase {
     private let t0 = Date(timeIntervalSince1970: 1_000_000)
 
     private func event(_ name: String, session: String = "s1", project: String? = "/proj",
-                       usage: ContextUsage? = nil) -> AgentEvent {
+                       usage: ContextUsage? = nil,
+                       quotaUsage: AgentQuotaUsage? = nil,
+                       stats: AgentRuntimeStats? = nil) -> AgentEvent {
         AgentEvent(sessionId: session, agentKind: .claude, eventName: name, project: project,
-                   message: nil, timestamp: t0, usage: usage)
+                   message: nil, timestamp: t0, usage: usage, quotaUsage: quotaUsage, stats: stats)
     }
 
     func testApplyStoresUsage() {
@@ -84,6 +86,26 @@ final class SessionStoreTests: XCTestCase {
         XCTAssertEqual(updated?.usage, newer)
     }
 
+    func testApplyStoresAndPreservesRuntimeStats() {
+        let store = SessionStore()
+        let stats = AgentRuntimeStats(model: "claude-opus-4-8", speed: "standard", serviceTier: "standard")
+        store.apply(event("UserPromptSubmit", stats: stats), now: t0)
+
+        let updated = store.apply(event("PreToolUse", stats: nil), now: t0.addingTimeInterval(5))
+
+        XCTAssertEqual(updated?.stats, stats)
+    }
+
+    func testApplyStoresAndPreservesQuotaUsage() {
+        let store = SessionStore()
+        let quota = AgentQuotaUsage(sessionUsedPercent: 10, weeklyUsedPercent: 20)
+        store.apply(event("UserPromptSubmit", quotaUsage: quota), now: t0)
+
+        let updated = store.apply(event("PreToolUse", quotaUsage: nil), now: t0.addingTimeInterval(5))
+
+        XCTAssertEqual(updated?.quotaUsage, quota)
+    }
+
     func testApplyCreatesSession() {
         let store = SessionStore()
         let s = store.apply(event("SessionStart"), now: t0)
@@ -91,6 +113,86 @@ final class SessionStoreTests: XCTestCase {
         XCTAssertEqual(s?.project, "/proj")
         XCTAssertEqual(s?.source, .hook)
         XCTAssertEqual(store.sessions.count, 1)
+    }
+
+    func testApplyStoresExplicitTitle() {
+        let store = SessionStore()
+        let started = AgentEvent(
+            sessionId: "s1",
+            agentKind: .codex,
+            eventName: "UserPromptSubmit",
+            project: "/proj",
+            title: "Assess Codex Pet clone idea",
+            message: "Check the pet flow",
+            timestamp: t0
+        )
+
+        let session = store.apply(started, now: t0)
+
+        XCTAssertEqual(session?.title, "Assess Codex Pet clone idea")
+        XCTAssertEqual(session?.displayTitle, "Assess Codex Pet clone idea")
+    }
+
+    func testApplyDerivesTitleFromFirstMessageAndPreservesIt() {
+        let store = SessionStore()
+        let prompt = AgentEvent(
+            sessionId: "s1",
+            agentKind: .codex,
+            eventName: "UserPromptSubmit",
+            project: "/proj",
+            message: "Please assess the Codex Pet clone idea and report risk",
+            timestamp: t0
+        )
+        store.apply(prompt, now: t0)
+
+        let updated = store.apply(event("PreToolUse", project: nil), now: t0.addingTimeInterval(5))
+
+        XCTAssertEqual(updated?.title, "assess the Codex Pet clone idea and report risk")
+        XCTAssertEqual(updated?.message, "Please assess the Codex Pet clone idea and report risk")
+    }
+
+    func testApplyPreservesPromptTitleUntilAgentMessageArrives() {
+        let store = SessionStore()
+        let prompt = AgentEvent(
+            sessionId: "s1",
+            agentKind: .codex,
+            eventName: "UserPromptSubmit",
+            project: "/proj",
+            title: "okay let me check",
+            message: nil,
+            timestamp: t0
+        )
+        store.apply(prompt, now: t0)
+
+        let done = AgentEvent(
+            sessionId: "s1",
+            agentKind: .codex,
+            eventName: "Stop",
+            project: "/proj",
+            message: "Sounds good. I will stay here while you check it.",
+            timestamp: t0.addingTimeInterval(5)
+        )
+        let updated = store.apply(done, now: t0.addingTimeInterval(5))
+
+        XCTAssertEqual(updated?.title, "okay let me check")
+        XCTAssertEqual(updated?.displayMessage, "Sounds good. I will stay here while you check it.")
+    }
+
+    func testApplyDoesNotDeriveTitleFromWaitingMessage() {
+        let store = SessionStore()
+        let waiting = AgentEvent(
+            sessionId: "s1",
+            agentKind: .codex,
+            eventName: "PermissionRequest",
+            project: "/proj",
+            message: "Needs approval",
+            timestamp: t0
+        )
+
+        let session = store.apply(waiting, now: t0)
+
+        XCTAssertNil(session?.title)
+        XCTAssertEqual(session?.displayMessage, "Needs approval")
     }
 
     func testApplyUpdatesExistingAndKeepsProjectWhenNil() {
@@ -118,7 +220,6 @@ final class SessionStoreTests: XCTestCase {
 
         XCTAssertEqual(updated?.state, .working)
         XCTAssertEqual(updated?.message, "Working on hook messages")
-        XCTAssertEqual(updated?.taskSummary, "Working on hook messages")
     }
 
     func testApplyClearsMessageOnStateChangeWithoutNewMessage() {
@@ -137,10 +238,9 @@ final class SessionStoreTests: XCTestCase {
 
         XCTAssertEqual(updated?.state, .done)
         XCTAssertNil(updated?.message)
-        XCTAssertEqual(updated?.taskSummary, "Working on hook messages")
     }
 
-    func testApplyClearsSummaryWhenSessionRegistersAgain() {
+    func testApplyClearsTitleWhenSessionRegistersAgainWithoutTitle() {
         let store = SessionStore()
         let prompt = AgentEvent(
             sessionId: "s1",
@@ -156,7 +256,7 @@ final class SessionStoreTests: XCTestCase {
 
         XCTAssertEqual(updated?.state, .registered)
         XCTAssertNil(updated?.message)
-        XCTAssertNil(updated?.taskSummary)
+        XCTAssertNil(updated?.title)
     }
 
     func testApplyIgnoresUnmappedEvent() {
