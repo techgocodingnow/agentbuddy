@@ -1,6 +1,6 @@
 import AppKit
 import Foundation
-import UserNotifications
+@preconcurrency import UserNotifications
 import AgentBuddyCore
 
 /// Backs the onboarding/Settings window: notification permission status and
@@ -53,7 +53,7 @@ final class SettingsModel: ObservableObject {
     /// touches our own hook entries.
     func migrateInstalledHooksIfNeeded() {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
-        let key = "agentbuddy.hookMigration.\(version)"
+        let key = "agentbuddy.hookMigration.\(version).responseTimeout"
         guard !UserDefaults.standard.bool(forKey: key) else { return }
         UserDefaults.standard.set(true, forKey: key)
         for agent in agents where agent.isSupported {
@@ -82,8 +82,9 @@ final class SettingsModel: ObservableObject {
 
     func enableNotifications() {
         guard NotificationManager.shared.isAvailable else { return }
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in
-            Task { @MainActor in self.refreshNotificationState() }
+        Task { @MainActor in
+            _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
+            self.refreshNotificationState()
         }
     }
 
@@ -99,17 +100,15 @@ final class SettingsModel: ObservableObject {
             notificationState = .unavailable
             return
         }
-        UNUserNotificationCenter.current().getNotificationSettings { settings in
-            let status = settings.authorizationStatus
-            Task { @MainActor in
-                switch status {
-                case .authorized, .provisional, .ephemeral:
-                    self.notificationState = .enabled
-                case .denied:
-                    self.notificationState = .denied
-                default:
-                    self.notificationState = .notDetermined
-                }
+        Task { @MainActor in
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            switch settings.authorizationStatus {
+            case .authorized, .provisional, .ephemeral:
+                self.notificationState = .enabled
+            case .denied:
+                self.notificationState = .denied
+            default:
+                self.notificationState = .notDetermined
             }
         }
     }

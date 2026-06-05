@@ -40,6 +40,25 @@ public final class SessionStore {
         byID.removeValue(forKey: id)
     }
 
+    /// Optimistically clears a hook request after AgentBuddy has written the
+    /// response file, before the agent emits its next working event.
+    @discardableResult
+    public func resolvePendingRequest(id: String, now: Date) -> AgentSession? {
+        guard var existing = byID[id], existing.pendingRequest != nil else {
+            return nil
+        }
+        let stateChanged = existing.state != .working
+        if stateChanged {
+            existing.stateSince = now
+            existing.message = nil
+        }
+        existing.state = .working
+        existing.updatedAt = now
+        existing.pendingRequest = nil
+        byID[id] = existing
+        return existing
+    }
+
     /// Applies an event, creating or updating the matching session.
     /// Returns the updated session, or `nil` if the event maps to no state.
     @discardableResult

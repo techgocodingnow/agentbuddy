@@ -63,6 +63,7 @@ final class SessionReplyController: ObservableObject {
         if let responsePath = session.pendingRequest?.responsePath {
             do {
                 try PendingAgentResponseStore.write(PendingAgentResponse(action: action, text: text), to: responsePath)
+                AppDaemon.shared.resolvePendingRequest(session.id)
                 return
             } catch {
                 lastError = "Could not send \(action.label.lowercased()) to waiting hook."

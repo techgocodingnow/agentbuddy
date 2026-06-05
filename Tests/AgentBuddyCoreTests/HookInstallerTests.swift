@@ -16,6 +16,15 @@ final class HookInstallerTests: XCTestCase {
         }
     }
 
+    func testResponseWaitingHooksUseLongTimeout() {
+        let result = HookInstaller.install(into: [:], command: cmd, events: ["PermissionRequest", "PreToolUse"])
+        let permissionHook = groups(result, "PermissionRequest").first?["hooks"] as? [[String: Any]]
+        let preToolHook = groups(result, "PreToolUse").first?["hooks"] as? [[String: Any]]
+
+        XCTAssertEqual(permissionHook?.first?["timeout"] as? Int, 600)
+        XCTAssertNil(preToolHook?.first?["timeout"])
+    }
+
     func testInstallIsIdempotent() {
         let once = HookInstaller.install(into: [:], command: cmd)
         let twice = HookInstaller.install(into: once, command: cmd)
@@ -66,11 +75,14 @@ final class HookInstallerTests: XCTestCase {
         hooks = false
         """
 
-        let result = HookInstaller.installCodexToml(into: existing, command: cmd + " --agent codex", events: ["SessionStart", "PreToolUse"])
+        let result = HookInstaller.installCodexToml(into: existing, command: cmd + " --agent codex", events: ["SessionStart", "PreToolUse", "PermissionRequest"])
 
         XCTAssertTrue(HookInstaller.isInstalledCodexToml(result))
         XCTAssertTrue(result.contains("[[hooks.SessionStart]]"))
         XCTAssertTrue(result.contains("[[hooks.PreToolUse.hooks]]"))
+        XCTAssertTrue(result.contains("[[hooks.PermissionRequest.hooks]]"))
+        XCTAssertTrue(result.contains("timeout = 600"))
+        XCTAssertTrue(result.contains("timeout = 10"))
         XCTAssertTrue(result.contains("hooks = true"))
         XCTAssertFalse(result.contains("hooks = false"))
     }

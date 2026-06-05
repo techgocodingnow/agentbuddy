@@ -51,6 +51,13 @@ final class AppDaemon: ObservableObject {
         refresh()
     }
 
+    /// Clears a hook request as soon as the UI has answered it, without waiting
+    /// for the next agent event to arrive.
+    func resolvePendingRequest(_ id: String) {
+        guard store.resolvePendingRequest(id: id, now: Date()) != nil else { return }
+        refresh()
+    }
+
     private func ingest(_ event: AgentEvent) {
         let before = store.session(id: event.sessionId)?.state
         if let updated = store.apply(event, now: Date()) {

@@ -12,6 +12,9 @@ public enum HookInstaller {
     public static let events = [
         "SessionStart", "UserPromptSubmit", "PreToolUse", "Notification", "Stop", "SubagentStop",
     ]
+    private static let defaultHookTimeout = 10
+    private static let responseHookTimeout = 600
+    private static let responseWaitingEvents: Set<String> = ["PermissionRequest", "Elicitation"]
 
     public static func defaultSettingsPath() -> String {
         NSHomeDirectory() + "/.claude/settings.json"
@@ -39,11 +42,19 @@ public enum HookInstaller {
         var hooks = settings["hooks"] as? [String: Any] ?? [:]
         for event in events {
             var groups = (hooks[event] as? [[String: Any]] ?? []).filter { !groupIsOurs($0) }
-            groups.append(["hooks": [["type": "command", "command": command]]])
+            groups.append(["hooks": [commandHook(command: command, event: event)]])
             hooks[event] = groups
         }
         settings["hooks"] = hooks
         return settings
+    }
+
+    private static func commandHook(command: String, event: String) -> [String: Any] {
+        var hook: [String: Any] = ["type": "command", "command": command]
+        if responseWaitingEvents.contains(event) {
+            hook["timeout"] = responseHookTimeout
+        }
+        return hook
     }
 
     public static func uninstall(from settings: [String: Any], events: [String] = events) -> [String: Any] {
@@ -196,11 +207,15 @@ public enum HookInstaller {
             lines.append("[[hooks.\(event).hooks]]")
             lines.append("type = \"command\"")
             lines.append("command = \"\(escaped)\"")
-            lines.append("timeout = 10")
+            lines.append("timeout = \(timeout(for: event))")
         }
         lines.append(codexEndMarker)
         lines.append("")
         return lines.joined(separator: "\n")
+    }
+
+    private static func timeout(for event: String) -> Int {
+        responseWaitingEvents.contains(event) ? responseHookTimeout : defaultHookTimeout
     }
 
     private static func enableCodexHooksFeature(in content: String) -> String {

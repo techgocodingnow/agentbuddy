@@ -6,9 +6,10 @@ final class AgentCatalogTests: XCTestCase {
         let byKind = Dictionary(uniqueKeysWithValues: AgentCatalog.all.map { ($0.kind, $0) })
         XCTAssertEqual(byKind[.claude]?.isSupported, true)
         XCTAssertEqual(byKind[.codex]?.isSupported, true)
+        XCTAssertEqual(byKind[.cursor]?.isSupported, true)
     }
 
-    func testOnlyClaudeAndCodexAreSurfaced() {
-        XCTAssertEqual(Set(AgentCatalog.all.map(\.kind)), [.claude, .codex])
+    func testSupportedAgentsAreSurfaced() {
+        XCTAssertEqual(Set(AgentCatalog.all.map(\.kind)), [.claude, .codex, .cursor])
     }
 }

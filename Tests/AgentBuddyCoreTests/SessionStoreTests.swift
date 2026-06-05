@@ -126,6 +126,35 @@ final class SessionStoreTests: XCTestCase {
         XCTAssertNil(working?.pendingRequest)
     }
 
+    func testResolvePendingRequestImmediatelyMarksSessionWorking() {
+        let store = SessionStore()
+        let pending = PendingAgentRequest(
+            id: "p1",
+            kind: .permission,
+            actions: [.allow, .deny, .review],
+            prompt: "Run tests?",
+            responsePath: "/tmp/agentbuddy-response.json"
+        )
+        let waiting = AgentEvent(
+            sessionId: "s1",
+            agentKind: .claude,
+            eventName: "PermissionRequest",
+            project: "/proj",
+            message: "Run tests?",
+            timestamp: t0,
+            pendingRequest: pending
+        )
+        store.apply(waiting, now: t0)
+
+        let resolved = store.resolvePendingRequest(id: "s1", now: t0.addingTimeInterval(0.1))
+
+        XCTAssertEqual(resolved?.state, .working)
+        XCTAssertNil(resolved?.pendingRequest)
+        XCTAssertNil(resolved?.message)
+        XCTAssertEqual(resolved?.stateSince, t0.addingTimeInterval(0.1))
+        XCTAssertEqual(store.session(id: "s1")?.pendingRequest, nil)
+    }
+
     func testApplyStoresAndPreservesQuotaUsage() {
         let store = SessionStore()
         let quota = AgentQuotaUsage(sessionUsedPercent: 10, weeklyUsedPercent: 20)
