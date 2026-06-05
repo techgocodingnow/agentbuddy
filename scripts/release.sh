@@ -66,10 +66,17 @@ make_dmg() {
         "$DMG" "$STAGE" >/dev/null
 }
 
+sign_dmg() {
+    echo "==> Signing DMG"
+    codesign --force --timestamp --sign "$IDENTITY" "$DMG"
+    codesign --verify --verbose=2 "$DMG"
+}
+
 if [ -n "${SKIP_NOTARIZE:-}" ]; then
     echo "==> Skipping notarization (SKIP_NOTARIZE set); signed-only build"
     echo "==> Building DMG"
     make_dmg
+    sign_dmg
 else
     # Notarize the APP first and staple it, so the ticket is embedded in the
     # bundle that actually ships. Building the DMG before stapling (the old bug)
@@ -85,22 +92,27 @@ else
 
     echo "==> Building DMG from the stapled app"
     make_dmg
+    sign_dmg
 
     echo "==> Notarizing the DMG"
     xcrun notarytool submit "$DMG" --keychain-profile "$PROFILE" --wait
     xcrun stapler staple "$DMG"
 fi
 
-echo "==> Signing update for Sparkle appcast"
-SIGN_UPDATE="$(find "$ROOT/.build/artifacts" -name sign_update -path '*Sparkle*' 2>/dev/null | head -1)"
-ED_ATTRS="$("$SIGN_UPDATE" "$DMG")"   # emits: sparkle:edSignature="..." length="..."
-
 echo "==> Done"
 echo "DMG:    $DMG"
 echo "SHA256: $(shasum -a 256 "$DMG" | awk '{print $1}')"
 echo ""
-echo "Appcast <item> (paste into docs/appcast.xml, then commit + push for Pages):"
-cat <<EOF
+
+if [ -n "${SKIP_SPARKLE_SIGN:-}" ]; then
+    echo "Skipping Sparkle appcast signing (SKIP_SPARKLE_SIGN set)."
+else
+    echo "==> Signing update for Sparkle appcast"
+    SIGN_UPDATE="$(find "$ROOT/.build/artifacts" -name sign_update -path '*Sparkle*' 2>/dev/null | head -1)"
+    ED_ATTRS="$("$SIGN_UPDATE" "$DMG")"   # emits: sparkle:edSignature="..." length="..."
+
+    echo "Appcast <item> (paste into docs/appcast.xml, then commit + push for Pages):"
+    cat <<EOF
         <item>
             <title>$VERSION</title>
             <sparkle:version>$VERSION</sparkle:version>
@@ -110,3 +122,4 @@ cat <<EOF
                        $ED_ATTRS type="application/octet-stream" />
         </item>
 EOF
+fi
