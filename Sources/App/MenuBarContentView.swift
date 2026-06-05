@@ -270,6 +270,7 @@ private struct AgentRow: View {
 
     private var actionButtons: some View {
         HStack(spacing: 8) {
+            Spacer(minLength: 0)
             ForEach(actions, id: \.rawValue) { action in
                 Button(action.label) {
                     reply.perform(action, on: session)
@@ -279,7 +280,6 @@ private struct AgentRow: View {
                 .foregroundStyle(color(for: action))
                 .lineLimit(1)
             }
-            Spacer(minLength: 0)
         }
     }
 
