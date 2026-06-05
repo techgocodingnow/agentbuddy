@@ -34,6 +34,7 @@ struct RemotePet: Decodable, Identifiable {
     }
     var name: String { displayName ?? slug }
     var author: String { submittedBy ?? source.label }
+    var isOpenPets: Bool { source == .openPets }
     var isCodexPets: Bool { source == .codexPets }
 
     enum CodingKeys: String, CodingKey {
@@ -100,8 +101,7 @@ final class PetBrowser: ObservableObject {
     @Published var downloadError: String?
 
     static let categories: [(label: String, value: String)] = [
-        ("All", "all"), ("Featured", "featured"), ("Originals", "original"),
-        ("Western", "western"), ("Asian", "asian"), ("Codex Pets", "codex-pets"),
+        ("All", "all"), ("OpenPets", "open-pets"), ("Codex Pets", "codex-pets"),
     ]
 
     // OpenPets publishes the gallery as a static catalog with paged entries.
@@ -126,14 +126,10 @@ final class PetBrowser: ObservableObject {
     }
     var results: [RemotePet] {
         var list = pets
-        if category == "featured" {
-            list = list.filter(\.featured)
-        } else if category == "original" {
-            list = list.filter(\.original)
+        if category == "open-pets" {
+            list = list.filter(\.isOpenPets)
         } else if category == "codex-pets" {
             list = list.filter(\.isCodexPets)
-        } else if category != "all" {
-            list = list.filter { $0.kind == category }
         }
         guard !query.isEmpty else { return list }
         let q = query.lowercased()

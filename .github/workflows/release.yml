@@ -18,21 +18,18 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode_16.app
 
       - name: Import Developer ID certificate
-        if: ${{ env.CERT != '' }}
         uses: apple-actions/import-codesign-certs@v3
         with:
           p12-file-base64: ${{ secrets.MACOS_CERT_P12 }}
           p12-password: ${{ secrets.MACOS_CERT_PASSWORD }}
-        env:
-          CERT: ${{ secrets.MACOS_CERT_P12 }}
 
-      - name: Build DMG (sign + notarize if secrets present)
+      - name: Build DMG (sign + notarize)
         run: ./scripts/ci-dmg.sh
         env:
           SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
-          AC_API_KEY_P8: ${{ secrets.AC_API_KEY_P8 }}
-          AC_KEY_ID: ${{ secrets.AC_KEY_ID }}
-          AC_ISSUER_ID: ${{ secrets.AC_ISSUER_ID }}
+          NOTARY_APPLE_ID: ${{ secrets.NOTARY_APPLE_ID }}
+          NOTARY_TEAM_ID: ${{ secrets.NOTARY_TEAM_ID }}
+          NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
 
       - name: Publish to GitHub Release
         env:

@@ -4,6 +4,7 @@ import AppKit
 /// A searchable gallery to download new pets into the app.
 struct BrowsePetsView: View {
     @StateObject private var browser = PetBrowser()
+    @State private var previewPet: RemotePet?
     var onClose: () -> Void
 
     var body: some View {
@@ -52,6 +53,9 @@ struct BrowsePetsView: View {
         .preferredColorScheme(.dark)
         .noFocusRing()
         .onAppear { browser.loadIfNeeded() }
+        .sheet(item: $previewPet) { pet in
+            RemotePetPreviewSheet(pet: pet, browser: browser)
+        }
     }
 
     @ViewBuilder private var content: some View {
@@ -73,7 +77,9 @@ struct BrowsePetsView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(browser.results) { pet in
-                        RemotePetRow(pet: pet, browser: browser)
+                        RemotePetRow(pet: pet, browser: browser) {
+                            previewPet = pet
+                        }
                         Divider()
                     }
                 }
@@ -85,6 +91,7 @@ struct BrowsePetsView: View {
 private struct RemotePetRow: View {
     let pet: RemotePet
     @ObservedObject var browser: PetBrowser
+    let onPreview: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
@@ -98,15 +105,172 @@ private struct RemotePetRow: View {
             }
             Spacer()
 
-            if browser.downloading.contains(pet.id) {
-                ProgressView().controlSize(.small)
-            } else if browser.installed.contains(pet.id) {
-                Label("Added", systemImage: "checkmark.circle.fill").foregroundStyle(.green).font(.caption)
-            } else {
-                Button("Get") { browser.download(pet) }
+            HStack(spacing: 8) {
+                Button {
+                    onPreview()
+                } label: {
+                    Label("Preview", systemImage: "play.circle")
+                }
+                .controlSize(.small)
+
+                if browser.downloading.contains(pet.id) {
+                    ProgressView().controlSize(.small)
+                } else if browser.installed.contains(pet.id) {
+                    Label("Added", systemImage: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                        .font(.caption)
+                } else {
+                    Button {
+                        browser.download(pet)
+                    } label: {
+                        Label("Get", systemImage: "arrow.down.circle")
+                    }
+                    .controlSize(.small)
+                }
             }
         }
         .padding(.horizontal, 14).padding(.vertical, 8)
+    }
+}
+
+private struct RemotePetPreviewSheet: View {
+    let pet: RemotePet
+    @ObservedObject var browser: PetBrowser
+    @Environment(\.dismiss) private var dismiss
+    @State private var clips: [[NSImage]]?
+    @State private var errorText: String?
+    @State private var selectedClip = 0
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .top, spacing: 10) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(pet.name)
+                        .font(.headline)
+                    Text("by \(pet.author)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(16)
+
+            previewContent
+                .frame(maxWidth: .infinity, minHeight: 240)
+                .background(RoundedRectangle(cornerRadius: 8).fill(.quaternary))
+                .padding(.horizontal, 16)
+
+            HStack(spacing: 10) {
+                clipPicker
+
+                Spacer()
+
+                if browser.downloading.contains(pet.id) {
+                    ProgressView()
+                        .controlSize(.small)
+                } else if browser.installed.contains(pet.id) {
+                    Label("Added", systemImage: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                        .font(.caption)
+                } else {
+                    Button {
+                        browser.download(pet)
+                    } label: {
+                        Label("Get", systemImage: "arrow.down.circle")
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+            .padding(16)
+        }
+        .frame(width: 360)
+        .preferredColorScheme(.dark)
+        .task(id: pet.id) {
+            await loadPreview()
+        }
+    }
+
+    @ViewBuilder private var previewContent: some View {
+        if let clips, !clips.isEmpty {
+            ImageSpriteView(frames: clips[safe: selectedClip] ?? clips[0], mood: .working, size: 180)
+                .padding(.vertical, 20)
+        } else if let errorText {
+            VStack(spacing: 8) {
+                Image(systemName: "photo.on.rectangle.angled")
+                    .font(.largeTitle)
+                    .foregroundStyle(.secondary)
+                Text(errorText)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding()
+        } else {
+            VStack(spacing: 10) {
+                ProgressView()
+                Text("Loading preview...")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    @ViewBuilder private var clipPicker: some View {
+        if let clips, clips.count > 1 {
+            Picker("Animation", selection: $selectedClip) {
+                ForEach(clips.indices, id: \.self) { index in
+                    Text("Clip \(index + 1)").tag(index)
+                }
+            }
+            .pickerStyle(.menu)
+            .labelsHidden()
+            .frame(width: 120)
+        }
+    }
+
+    private func loadPreview() async {
+        clips = nil
+        errorText = nil
+        selectedClip = 0
+
+        guard let sheetURL = URL(string: pet.spritesheetUrl) else {
+            errorText = "This pet does not have a valid spritesheet."
+            return
+        }
+
+        do {
+            let data = try await PetdexAssets.data(sheetURL)
+            guard let nsImage = NSImage(data: data) else { throw PreviewLoadError() }
+            var rect = CGRect(origin: .zero, size: nsImage.size)
+            guard let cgImage = nsImage.cgImage(forProposedRect: &rect, context: nil, hints: nil) else {
+                throw PreviewLoadError()
+            }
+
+            let sliced = SpriteSlicer.slice(cgImage).map { row in
+                row.map { NSImage(cgImage: $0, size: NSSize(width: $0.width, height: $0.height)) }
+            }
+            guard !sliced.isEmpty else { throw PreviewLoadError() }
+            clips = sliced
+        } catch {
+            errorText = "Couldn't load this animation preview."
+        }
+    }
+}
+
+private struct PreviewLoadError: Error {}
+
+private extension Collection {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }
 

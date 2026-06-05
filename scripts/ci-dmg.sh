@@ -11,7 +11,7 @@ VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' scripts
 ./scripts/build-app.sh release
 
 if [ -n "${SIGN_IDENTITY:-}" ]; then
-    echo "==> Signing with Developer ID"
+    echo "==> Signing with Developer ID (hardened runtime)"
     codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP/Contents/MacOS/agentbuddy"
     codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP"
     codesign --verify --strict "$APP"
@@ -24,12 +24,19 @@ cp -R "$APP" "$STAGE/AgentBuddy.app"
 ln -s /Applications "$STAGE/Applications"
 hdiutil create -volname "AgentBuddy" -srcfolder "$STAGE" -ov -format UDZO "$DMG" >/dev/null
 
-if [ -n "${AC_API_KEY_P8:-}" ] && [ -n "${AC_KEY_ID:-}" ] && [ -n "${AC_ISSUER_ID:-}" ]; then
-    echo "==> Notarizing"
-    echo "$AC_API_KEY_P8" | base64 --decode > /tmp/ac_key.p8
-    xcrun notarytool submit "$DMG" --key /tmp/ac_key.p8 --key-id "$AC_KEY_ID" --issuer "$AC_ISSUER_ID" --wait
+if [ -n "${SIGN_IDENTITY:-}" ]; then
+    echo "==> Signing DMG"
+    codesign --force --timestamp --sign "$SIGN_IDENTITY" "$DMG"
+fi
+
+if [ -n "${NOTARY_APPLE_ID:-}" ] && [ -n "${NOTARY_TEAM_ID:-}" ] && [ -n "${NOTARY_PASSWORD:-}" ]; then
+    echo "==> Notarizing DMG"
+    xcrun notarytool submit "$DMG" \
+        --apple-id "$NOTARY_APPLE_ID" \
+        --team-id "$NOTARY_TEAM_ID" \
+        --password "$NOTARY_PASSWORD" \
+        --wait
     xcrun stapler staple "$DMG"
-    rm -f /tmp/ac_key.p8
 fi
 
 echo "==> Built $DMG"

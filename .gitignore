@@ -21,3 +21,5 @@ scripts/release-local.sh
 
 # Local code-intelligence index data (generated, machine-local)
 .codegraph/
+
+.env
