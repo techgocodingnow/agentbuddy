@@ -41,10 +41,11 @@ struct MenuContentView: View {
 
     private var header: some View {
         HStack(spacing: 10) {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Theme.accent)
+            appIcon
+                .resizable()
+                .interpolation(.high)
                 .frame(width: 28, height: 28)
-                .overlay(Image(systemName: "pawprint.fill").font(.system(size: 13)).foregroundStyle(.white))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             VStack(alignment: .leading, spacing: 1) {
                 Text("AgentBuddy").font(.system(size: 14, weight: .bold)).foregroundStyle(.white)
                 Text(subtitle).font(.system(size: 11)).foregroundStyle(.white.opacity(0.5)).lineLimit(1)
@@ -52,6 +53,15 @@ struct MenuContentView: View {
             Spacer()
         }
         .padding(14)
+    }
+
+    /// The app's own bundle icon. Falls back to a paw glyph when the icon is
+    /// unavailable, e.g. running unbundled via `swift run` in dev.
+    private var appIcon: Image {
+        if let icon = NSApplication.shared.applicationIconImage {
+            return Image(nsImage: icon)
+        }
+        return Image(systemName: "pawprint.fill")
     }
 
     private var subtitle: String {
@@ -107,8 +117,28 @@ struct MenuContentView: View {
             controlRow(icon: "pawprint", label: "Show pet", isOn: $petWindow.isVisible)
             controlRow(icon: "number", label: "Show count on menu bar", isOn: $statusBar.showCount)
             controlRow(icon: "bubble.left", label: "Show chat on menu bar", isOn: $statusBar.showChatOnMenuBar)
+            controlRow(icon: "cpu", label: "Show session stats", isOn: $statusBar.showSessionStats)
+            controlRow(icon: "gauge", label: "Show context usage", isOn: $statusBar.showContextUsage)
+            usageModeRow
             sizeRow
         }
+    }
+
+    private var usageModeRow: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "percent")
+                .foregroundStyle(.white.opacity(0.8)).frame(width: 16)
+            Text("Usage value").font(.system(size: 13)).foregroundStyle(.white)
+            Spacer()
+            Picker("", selection: $statusBar.usageDisplayMode) {
+                Text("Left").tag(UsageDisplayMode.left)
+                Text("Used").tag(UsageDisplayMode.used)
+            }
+            .pickerStyle(.segmented)
+            .controlSize(.mini)
+            .frame(width: 92)
+        }
+        .padding(.horizontal, 14).padding(.vertical, 8)
     }
 
     private var sizeRow: some View {
@@ -182,6 +212,7 @@ private struct AgentRow: View {
     let session: AgentSession
     var onReply: () -> Void = {}
     var onClear: () -> Void = {}
+    @ObservedObject private var statusBar = StatusBarController.shared
     @State private var hovering = false
 
     var body: some View {
@@ -192,9 +223,6 @@ private struct AgentRow: View {
                 Text(subtitle)
                     .font(.system(size: 11)).foregroundStyle(.white.opacity(0.5))
                     .lineLimit(1).truncationMode(.tail)
-                if let usage = session.usage {
-                    UsageBar(usage: usage).padding(.top, 3)
-                }
             }
             Spacer(minLength: 8)
             if session.state == .waiting {
@@ -227,7 +255,7 @@ private struct AgentRow: View {
     }
 
     private var project: String {
-        session.project.map { ($0 as NSString).lastPathComponent } ?? session.id
+        session.displayTitle ?? session.project.map { ($0 as NSString).lastPathComponent } ?? session.id
     }
 
     /// Compact UI-safe status. Raw hook messages can contain tool/workflow
@@ -252,39 +280,6 @@ private struct AgentRow: View {
         default:
             let s = max(0, Int(now.timeIntervalSince(session.stateSince)))
             return s < 60 ? "\(s)s" : "\(s / 60)m \(s % 60)s"
-        }
-    }
-}
-
-/// Compact context-window gauge: a thin capsule whose fill tracks remaining
-/// headroom, plus a "<n>% left" label. Shown only for agents that report usage.
-private struct UsageBar: View {
-    let usage: ContextUsage
-
-    private var percentLeft: Int { usage.percentLeft }
-
-    private var color: Color {
-        switch percentLeft {
-        case ..<15: return .red
-        case 15...40: return .yellow
-        default: return .green
-        }
-    }
-
-    var body: some View {
-        HStack(spacing: 6) {
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    Capsule().fill(Color.white.opacity(0.1))
-                    Capsule().fill(color)
-                        .frame(width: geo.size.width * CGFloat(percentLeft) / 100)
-                }
-            }
-            .frame(height: 3)
-            Text("\(percentLeft)% left")
-                .font(.system(size: 10, design: .monospaced))
-                .foregroundStyle(.white.opacity(0.55))
-                .fixedSize()
         }
     }
 }

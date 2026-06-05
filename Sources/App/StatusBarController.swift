@@ -27,10 +27,31 @@ final class StatusBarController: NSObject, ObservableObject {
             updateStatus(lastSessions)
         }
     }
+    /// Whether to show context-window usage gauges in the menu and pet cards.
+    @Published var showContextUsage: Bool {
+        didSet {
+            UserDefaults.standard.set(showContextUsage, forKey: "agentbuddy.showContextUsage")
+        }
+    }
+    @Published var usageDisplayMode: UsageDisplayMode {
+        didSet {
+            UserDefaults.standard.set(usageDisplayMode.rawValue, forKey: "agentbuddy.usageDisplayMode")
+        }
+    }
+    /// Whether to show model/speed/tier metadata on floating pet cards.
+    @Published var showSessionStats: Bool {
+        didSet {
+            UserDefaults.standard.set(showSessionStats, forKey: "agentbuddy.showSessionStats")
+        }
+    }
 
     override init() {
         showCount = (UserDefaults.standard.object(forKey: "agentbuddy.showCount") as? Bool) ?? true
         showChatOnMenuBar = (UserDefaults.standard.object(forKey: "agentbuddy.showChatMenuBar") as? Bool) ?? false
+        showContextUsage = (UserDefaults.standard.object(forKey: "agentbuddy.showContextUsage") as? Bool) ?? true
+        let usageModeRaw = UserDefaults.standard.string(forKey: "agentbuddy.usageDisplayMode")
+        usageDisplayMode = usageModeRaw.flatMap(UsageDisplayMode.init(rawValue:)) ?? .left
+        showSessionStats = (UserDefaults.standard.object(forKey: "agentbuddy.showSessionStats") as? Bool) ?? true
         super.init()
     }
 
@@ -40,7 +61,9 @@ final class StatusBarController: NSObject, ObservableObject {
     func start() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         item.button?.image = Self.menuBarImage(count: nil, waiting: false)
-        item.button?.imagePosition = .imageLeading
+        item.button?.imagePosition = .imageOnly
+        item.button?.font = .systemFont(ofSize: 13, weight: .semibold)
+        item.button?.title = ""
         item.button?.target = self
         item.button?.action = #selector(toggle)
         statusItem = item
@@ -89,41 +112,45 @@ final class StatusBarController: NSObject, ObservableObject {
 
         let hasAgents = waiting > 0 || running > 0
 
-        button.title = ""
         if showCount, hasAgents {
             let count = waiting > 0 ? waiting : running
             button.image = Self.menuBarImage(count: count, waiting: waiting > 0)
+            button.imagePosition = .imageOnly
+            button.title = ""
+            button.contentTintColor = nil
         } else {
             button.image = Self.menuBarImage(count: nil, waiting: false)
+            button.imagePosition = .imageOnly
+            button.title = ""
+            button.contentTintColor = nil
         }
 
         refreshChatBubble()
     }
 
-    /// Builds the menu bar image: the paw alone, or the paw plus a count laid out
-    /// as a centered row (both centered vertically by their bounding boxes, so the
-    /// digit never sits high or low relative to the icon).
+    /// Builds the menu bar image: the status icon alone, or the icon plus a count
+    /// laid out as a centered row so both read clearly at menu bar size.
     private static func menuBarImage(count: Int?, waiting: Bool) -> NSImage? {
-        guard let paw = NSImage(systemSymbolName: "pawprint.fill", accessibilityDescription: "AgentBuddy") else { return nil }
+        let icon = statusBarIcon()
 
         guard let count else {
-            paw.isTemplate = true
-            return paw
+            icon.isTemplate = true
+            return icon
         }
 
-        let font = NSFont.systemFont(ofSize: 13, weight: .bold)
+        let font = NSFont.systemFont(ofSize: 15, weight: .bold)
         let text = "\(count)" as NSString
         let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: NSColor.black]
         let textSize = text.size(withAttributes: attrs)
-        let pawSize = paw.size
-        let gap: CGFloat = 3
-        let w = ceil(pawSize.width + gap + textSize.width)
-        let h = ceil(max(pawSize.height, textSize.height))
+        let iconSize = icon.size
+        let gap: CGFloat = 5
+        let w = ceil(iconSize.width + gap + textSize.width)
+        let h = ceil(max(iconSize.height, textSize.height))
 
         let img = NSImage(size: NSSize(width: w, height: h))
         img.lockFocus()
-        paw.draw(in: NSRect(x: 0, y: (h - pawSize.height) / 2, width: pawSize.width, height: pawSize.height))
-        text.draw(at: NSPoint(x: pawSize.width + gap, y: (h - textSize.height) / 2), withAttributes: attrs)
+        icon.draw(in: NSRect(x: 0, y: (h - iconSize.height) / 2, width: iconSize.width, height: iconSize.height))
+        text.draw(at: NSPoint(x: iconSize.width + gap, y: (h - textSize.height) / 2), withAttributes: attrs)
         if waiting {
             NSColor.systemOrange.set()
             NSRect(x: 0, y: 0, width: w, height: h).fill(using: .sourceAtop)
@@ -131,6 +158,16 @@ final class StatusBarController: NSObject, ObservableObject {
         img.unlockFocus()
         img.isTemplate = !waiting
         return img
+    }
+
+    private static func statusBarIcon() -> NSImage {
+        let image = NSImage(named: "StatusBarIcon")
+            ?? NSImage(contentsOfFile: "assets/statusbar-icon.png")
+            ?? NSImage(systemSymbolName: "pawprint.fill", accessibilityDescription: "AgentBuddy")
+            ?? NSImage(size: NSSize(width: 22, height: 22))
+        image.size = NSSize(width: 22, height: 22)
+        image.isTemplate = true
+        return image
     }
 
     // MARK: - Chat bubble dropping from the menu bar

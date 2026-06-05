@@ -31,8 +31,10 @@ final class PetController: ObservableObject {
     static let maxFloatingCards = 3
     static let presets: [(String, Double)] = [("S", 84), ("M", 120), ("L", 168)]
     private static let floatingCardWidth: Double = 330
-    private static let floatingCardHeight: Double = 78
-    private static let floatingChatReserve: Double = 80
+    private static let floatingCardHeight: Double = 94
+    private static let floatingCardSpacing: Double = 6
+    private static let floatingOverflowHeight: Double = 24
+    private static let floatingChatReserve: Double = 100
 
     /// Floating window size for a sprite point size (room for the bubble above).
     static func windowSize(forPoint point: Double, activeCount: Int = 0) -> CGSize {
@@ -41,8 +43,9 @@ final class PetController: ObservableObject {
         }
 
         let visibleCards = min(activeCount, maxFloatingCards)
-        let overflowHeight = activeCount > maxFloatingCards ? 30.0 : 0.0
-        let cardStackHeight = (floatingCardHeight * Double(visibleCards)) + overflowHeight + 16
+        let cardSpacing = floatingCardSpacing * Double(max(0, visibleCards - 1))
+        let overflowHeight = activeCount > maxFloatingCards ? floatingCardSpacing + floatingOverflowHeight : 0.0
+        let cardStackHeight = (floatingCardHeight * Double(visibleCards)) + cardSpacing + overflowHeight + 8
         return CGSize(width: max(point + 110, floatingCardWidth + 28), height: point + cardStackHeight + floatingChatReserve)
     }
     var windowSize: CGSize { Self.windowSize(forPoint: petPoint, activeCount: activeSessions.count) }
@@ -140,9 +143,8 @@ final class PetController: ObservableObject {
             StatusBarController.shared.refreshTitle()
             return
         }
-        // Speak the agent's real message when it has finished or needs input;
-        // otherwise use pet-style chat. The compact summary still belongs to
-        // the status cards/menu, not the floating speech bubble.
+        // Speak the active agent's real synced message when available;
+        // otherwise use pet-style chat. AgentBuddy does not generate messages.
         if let spoken = spokenMessage() {
             chatLine = spoken
         } else {

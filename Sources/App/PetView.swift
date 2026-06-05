@@ -47,8 +47,9 @@ struct FloatingPetView: View {
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .frame(width: pet.windowSize.width, height: pet.windowSize.height, alignment: .bottom)
+        .padding(.top, 10)
         .padding(.bottom, 8)
+        .frame(width: pet.windowSize.width, height: pet.windowSize.height, alignment: .bottom)
         .animation(.spring(response: 0.35, dampingFraction: 0.7), value: pet.chatLine)
         .animation(.spring(response: 0.35, dampingFraction: 0.75), value: pet.activeSessions)
         .animation(.easeInOut, value: pet.showChat)
@@ -86,6 +87,7 @@ private struct SessionCardStack: View {
 
 private struct FloatingSessionCard: View {
     let session: AgentSession
+    @ObservedObject private var statusBar = StatusBarController.shared
 
     var body: some View {
         HStack(spacing: 10) {
@@ -103,6 +105,16 @@ private struct FloatingSessionCard: View {
                     .foregroundStyle(.white.opacity(0.76))
                     .lineLimit(session.displayMessage == nil ? 1 : 2)
                     .truncationMode(.tail)
+                if showMetadata {
+                    CompactSessionMetadataView(
+                        stats: compactStats,
+                        contextUsage: session.usage,
+                        quotaUsage: session.quotaUsage,
+                        mode: statusBar.usageDisplayMode,
+                        showUsage: showUsage
+                    )
+                        .padding(.top, 1)
+                }
             }
             Spacer(minLength: 8)
             if session.state == .waiting {
@@ -117,7 +129,7 @@ private struct FloatingSessionCard: View {
                 .background(Capsule().fill(Color.orange.opacity(0.9)))
             }
         }
-        .frame(width: 302, height: session.displayMessage == nil ? 44 : 58)
+        .frame(width: 302, height: cardContentHeight)
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(.black.opacity(0.86)))
@@ -126,11 +138,32 @@ private struct FloatingSessionCard: View {
     }
 
     private var title: String {
-        session.project.map { ($0 as NSString).lastPathComponent } ?? session.id
+        session.displayTitle ?? session.project.map { ($0 as NSString).lastPathComponent } ?? session.id
     }
 
     private var subtitle: String {
         session.displayMessage ?? session.compactStatusText
+    }
+
+    private var showUsage: Bool {
+        statusBar.showContextUsage && (session.usage != nil || session.quotaUsage != nil)
+    }
+
+    private var compactStats: AgentRuntimeStats? {
+        guard statusBar.showSessionStats,
+              let stats = session.stats,
+              stats.compactModelLabel != nil || stats.isFastLike || stats.compactDetailLabel != nil else { return nil }
+        return stats
+    }
+
+    private var showMetadata: Bool {
+        compactStats != nil || showUsage
+    }
+
+    private var cardContentHeight: CGFloat {
+        var height: CGFloat = session.displayMessage == nil ? 44 : 58
+        if showMetadata { height += 16 }
+        return height
     }
 
     private var dotColor: Color {
@@ -139,6 +172,90 @@ private struct FloatingSessionCard: View {
         case .waiting: return .orange
         case .done: return .green
         case .idle: return .gray
+        }
+    }
+}
+
+private struct CompactSessionMetadataView: View {
+    let stats: AgentRuntimeStats?
+    let contextUsage: ContextUsage?
+    let quotaUsage: AgentQuotaUsage?
+    let mode: UsageDisplayMode
+    let showUsage: Bool
+
+    var body: some View {
+        HStack(spacing: 9) {
+            if let stats {
+                CompactStatsView(stats: stats)
+            }
+            if showUsage {
+                CompactUsageMetricsView(
+                    contextUsage: contextUsage,
+                    quotaUsage: quotaUsage,
+                    mode: mode
+                )
+            }
+        }
+        .lineLimit(1)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+private struct CompactStatsView: View {
+    let stats: AgentRuntimeStats
+
+    var body: some View {
+        HStack(spacing: 5) {
+            if stats.isFastLike {
+                Image(systemName: "bolt.fill")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.54))
+            }
+            if let model = stats.compactModelLabel {
+                Text(model)
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.86))
+            }
+            if let detail = stats.compactDetailLabel {
+                Text(detail)
+                    .font(.system(size: 11, weight: .regular, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.5))
+            }
+        }
+        .lineLimit(1)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+private struct CompactUsageMetricsView: View {
+    let contextUsage: ContextUsage?
+    let quotaUsage: AgentQuotaUsage?
+    let mode: UsageDisplayMode
+
+    private var items: [(String, Int)] {
+        var values: [(String, Int)] = []
+        if let session = quotaUsage?.sessionUsedPercent {
+            values.append(("S", AgentQuotaUsage.displayPercent(usedPercent: session, mode: mode)))
+        }
+        if let weekly = quotaUsage?.weeklyUsedPercent {
+            values.append(("W", AgentQuotaUsage.displayPercent(usedPercent: weekly, mode: mode)))
+        }
+        if let contextUsage {
+            let percent = mode == .left ? contextUsage.percentLeft : contextUsage.percentUsed
+            values.append(("C", percent))
+        }
+        return values
+    }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(items, id: \.0) { item in
+                Text("\(item.0):\(item.1)%")
+                    .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                    .foregroundStyle(.white.opacity(0.58))
+                    .lineLimit(1)
+                    .fixedSize()
+            }
         }
     }
 }

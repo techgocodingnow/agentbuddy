@@ -24,6 +24,7 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BINDIR/agentbuddy" "$APP/Contents/MacOS/agentbuddy"
 cp "$ROOT/scripts/AppInfo.plist" "$APP/Contents/Info.plist"
 [ -f "$ROOT/scripts/AppIcon.icns" ] && cp "$ROOT/scripts/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
+[ -f "$ROOT/assets/statusbar-icon.png" ] && cp "$ROOT/assets/statusbar-icon.png" "$APP/Contents/Resources/StatusBarIcon.png"
 
 # Note: SwiftPM emits an empty AgentBuddy_AgentBuddyCore.bundle, but nothing uses
 # Bundle.module, so we deliberately do not copy it (it has no Info.plist and

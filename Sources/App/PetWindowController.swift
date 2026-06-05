@@ -8,8 +8,13 @@ import Combine
 final class PetWindowController: ObservableObject {
     static let shared = PetWindowController()
 
-    @Published var isVisible: Bool = true {
-        didSet { applyVisibility(isVisible) }
+    private static let visibleKey = "agentbuddy.petVisible"
+
+    @Published var isVisible: Bool = (UserDefaults.standard.object(forKey: PetWindowController.visibleKey) as? Bool) ?? true {
+        didSet {
+            UserDefaults.standard.set(isVisible, forKey: Self.visibleKey)
+            applyVisibility(isVisible)
+        }
     }
 
     private var panel: NSPanel?

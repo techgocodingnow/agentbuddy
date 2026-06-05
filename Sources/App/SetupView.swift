@@ -177,6 +177,7 @@ private struct GeneralTab: View {
     @ObservedObject var pet: PetController
     @ObservedObject private var chat = ChatSettings.shared
     @ObservedObject private var sound = SoundSettings.shared
+    @ObservedObject private var hotKey = PetHotKeyController.shared
     // Local mirror of the system login-item state so the toggle re-renders
     // reliably (the SMAppService status isn't observable on its own).
     @State private var launchAtLogin = LoginItem.isEnabled
@@ -198,6 +199,21 @@ private struct GeneralTab: View {
                             launchAtLogin = LoginItem.isEnabled
                         }))
 }
+            }
+
+            Section("Shortcut") {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Show / hide pet")
+                        Text("Press this combo from any app to toggle the pet.")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    HotKeyRecorder(combo: $hotKey.combo)
+                        .frame(width: 130, height: 24)
+                    Button("Reset") { hotKey.resetToDefault() }
+                        .disabled(hotKey.combo == .defaultPetToggle)
+                }
             }
 
             Section("Notifications") {
@@ -273,12 +289,8 @@ private struct GeneralTab: View {
                             }
                         }
                         Spacer()
-                        if agent.isSupported {
-                            Button(model.isInstalled(agent.kind) ? "Remove" : "Install") {
-                                model.toggleInstall(agent.kind)
-                            }
-                        } else {
-                            Text("Coming soon").foregroundStyle(.secondary)
+                        Button(model.isInstalled(agent.kind) ? "Remove" : "Install") {
+                            model.toggleInstall(agent.kind)
                         }
                     }
                 }
