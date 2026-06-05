@@ -58,6 +58,9 @@ public final class SessionStore {
             if stateChanged { existing.stateSince = now }
             existing.state = state
             existing.updatedAt = now
+            // Keep the last known usage when an event carries none (e.g. a
+            // non-Claude event), so the indicator doesn't blink away.
+            if let usage = event.usage { existing.usage = usage }
             if let project = event.project { existing.project = project }
             if let message = event.message {
                 existing.message = message
@@ -79,7 +82,8 @@ public final class SessionStore {
             message: event.message,
             taskSummary: TaskSummary.compact(from: event.message),
             source: .hook,
-            updatedAt: now
+            updatedAt: now,
+            usage: event.usage
         )
         byID[event.sessionId] = session
         return session

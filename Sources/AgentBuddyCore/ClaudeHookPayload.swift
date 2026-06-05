@@ -35,7 +35,8 @@ public struct ClaudeHookPayload: Decodable, Equatable {
     public func makeEvent(
         now: Date,
         kind: AgentKind = .claude,
-        readTranscript: (String) -> String? = { TranscriptReader.lastAssistantText(path: $0) }
+        readTranscript: (String) -> String? = { TranscriptReader.lastAssistantText(path: $0) },
+        readUsage: (String) -> ContextUsage? = { TranscriptReader.lastUsage(path: $0) }
     ) -> AgentEvent? {
         guard let sessionId, let hookEventName else { return nil }
         // Prefer an explicit message; then the agent's final assistant text on a
@@ -44,8 +45,19 @@ public struct ClaudeHookPayload: Decodable, Equatable {
             ?? transcriptMessage(for: hookEventName, kind: kind, readTranscript: readTranscript)
         return AgentEvent(
             sessionId: sessionId, agentKind: kind, eventName: hookEventName,
-            project: cwd, message: context, timestamp: now
+            project: cwd, message: context, timestamp: now,
+            usage: transcriptUsage(kind: kind, readUsage: readUsage)
         )
+    }
+
+    /// Context usage from the transcript, read on every Claude event (not just
+    /// terminal ones) so the usage indicator tracks the live context size.
+    private func transcriptUsage(
+        kind: AgentKind,
+        readUsage: (String) -> ContextUsage?
+    ) -> ContextUsage? {
+        guard kind == .claude, let transcriptPath else { return nil }
+        return readUsage(transcriptPath)
     }
 
     private func transcriptMessage(

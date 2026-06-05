@@ -192,6 +192,9 @@ private struct AgentRow: View {
                 Text(subtitle)
                     .font(.system(size: 11)).foregroundStyle(.white.opacity(0.5))
                     .lineLimit(1).truncationMode(.tail)
+                if let usage = session.usage {
+                    UsageBar(usage: usage).padding(.top, 3)
+                }
             }
             Spacer(minLength: 8)
             if session.state == .waiting {
@@ -249,6 +252,39 @@ private struct AgentRow: View {
         default:
             let s = max(0, Int(now.timeIntervalSince(session.stateSince)))
             return s < 60 ? "\(s)s" : "\(s / 60)m \(s % 60)s"
+        }
+    }
+}
+
+/// Compact context-window gauge: a thin capsule whose fill tracks remaining
+/// headroom, plus a "<n>% left" label. Shown only for agents that report usage.
+private struct UsageBar: View {
+    let usage: ContextUsage
+
+    private var percentLeft: Int { usage.percentLeft }
+
+    private var color: Color {
+        switch percentLeft {
+        case ..<15: return .red
+        case 15...40: return .yellow
+        default: return .green
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: 6) {
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color.white.opacity(0.1))
+                    Capsule().fill(color)
+                        .frame(width: geo.size.width * CGFloat(percentLeft) / 100)
+                }
+            }
+            .frame(height: 3)
+            Text("\(percentLeft)% left")
+                .font(.system(size: 10, design: .monospaced))
+                .foregroundStyle(.white.opacity(0.55))
+                .fixedSize()
         }
     }
 }

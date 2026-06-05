@@ -30,19 +30,20 @@ final class PetController: ObservableObject {
     static let maxPoint: Double = 240
     static let maxFloatingCards = 3
     static let presets: [(String, Double)] = [("S", 84), ("M", 120), ("L", 168)]
+    private static let floatingCardWidth: Double = 330
+    private static let floatingCardHeight: Double = 78
+    private static let floatingChatReserve: Double = 80
 
     /// Floating window size for a sprite point size (room for the bubble above).
     static func windowSize(forPoint point: Double, activeCount: Int = 0) -> CGSize {
         guard activeCount > 0 else {
-            return CGSize(width: point + 110, height: point + 64)
+            return CGSize(width: point + 110, height: point + floatingChatReserve)
         }
 
-        let cardWidth: Double = 330
-        let cardHeight: Double = 78
         let visibleCards = min(activeCount, maxFloatingCards)
         let overflowHeight = activeCount > maxFloatingCards ? 30.0 : 0.0
-        let cardStackHeight = (cardHeight * Double(visibleCards)) + overflowHeight + 16
-        return CGSize(width: max(point + 110, cardWidth + 28), height: point + cardStackHeight + 34)
+        let cardStackHeight = (floatingCardHeight * Double(visibleCards)) + overflowHeight + 16
+        return CGSize(width: max(point + 110, floatingCardWidth + 28), height: point + cardStackHeight + floatingChatReserve)
     }
     var windowSize: CGSize { Self.windowSize(forPoint: petPoint, activeCount: activeSessions.count) }
     var visibleSessions: [AgentSession] { Array(activeSessions.prefix(Self.maxFloatingCards)) }

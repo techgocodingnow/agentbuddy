@@ -25,6 +25,13 @@ public enum TranscriptReader {
         return lastAssistantText(in: data)
     }
 
+    /// The context usage from the last assistant message in the transcript at
+    /// `path`, or `nil` if the file is missing/unreadable or carries no usage.
+    public static func lastUsage(path: String) -> ContextUsage? {
+        guard let data = tailData(path: path) else { return nil }
+        return lastUsage(in: data)
+    }
+
     static func tailData(path: String) -> Data? {
         guard let handle = FileHandle(forReadingAtPath: path) else { return nil }
         defer { try? handle.close() }
@@ -41,6 +48,30 @@ public enum TranscriptReader {
             if let text = assistantText(fromLine: Data(line)) { return truncate(text) }
         }
         return nil
+    }
+
+    static func lastUsage(in data: Data) -> ContextUsage? {
+        // Walk lines bottom-up; the first assistant line carrying usage is the
+        // latest turn. A partial leading line (from the tail cut) fails to decode.
+        for line in data.split(separator: 0x0A, omittingEmptySubsequences: true).reversed() {
+            if let usage = usage(fromLine: Data(line)) { return usage }
+        }
+        return nil
+    }
+
+    private static func usage(fromLine data: Data) -> ContextUsage? {
+        guard let line = try? JSONDecoder().decode(Line.self, from: data),
+              line.type == "assistant",
+              let message = line.message,
+              let usage = message.usage else { return nil }
+        // The live context size is what the next turn will re-send: the prompt
+        // plus cached input. Output tokens of this turn become input next turn,
+        // but are not part of the context window measured here (matching /context).
+        let used = usage.input_tokens
+            + usage.cache_read_input_tokens
+            + usage.cache_creation_input_tokens
+        let limit = ContextWindow.limit(forModel: message.model)
+        return ContextUsage(usedTokens: used, limitTokens: limit)
     }
 
     private static func assistantText(fromLine data: Data) -> String? {
@@ -68,9 +99,29 @@ public enum TranscriptReader {
     }
     private struct Message: Decodable {
         let content: [Block]?
+        let model: String?
+        let usage: Usage?
     }
     private struct Block: Decodable {
         let type: String?
         let text: String?
+    }
+    // Token counts Claude Code records per assistant message. Missing keys
+    // default to 0 so an older/partial transcript still yields a usable total.
+    private struct Usage: Decodable {
+        let input_tokens: Int
+        let cache_read_input_tokens: Int
+        let cache_creation_input_tokens: Int
+
+        enum CodingKeys: String, CodingKey {
+            case input_tokens, cache_read_input_tokens, cache_creation_input_tokens
+        }
+
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            input_tokens = try c.decodeIfPresent(Int.self, forKey: .input_tokens) ?? 0
+            cache_read_input_tokens = try c.decodeIfPresent(Int.self, forKey: .cache_read_input_tokens) ?? 0
+            cache_creation_input_tokens = try c.decodeIfPresent(Int.self, forKey: .cache_creation_input_tokens) ?? 0
+        }
     }
 }

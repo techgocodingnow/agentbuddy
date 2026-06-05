@@ -53,8 +53,35 @@ final class StateMapperTests: XCTestCase {
 final class SessionStoreTests: XCTestCase {
     private let t0 = Date(timeIntervalSince1970: 1_000_000)
 
-    private func event(_ name: String, session: String = "s1", project: String? = "/proj") -> AgentEvent {
-        AgentEvent(sessionId: session, agentKind: .claude, eventName: name, project: project, message: nil, timestamp: t0)
+    private func event(_ name: String, session: String = "s1", project: String? = "/proj",
+                       usage: ContextUsage? = nil) -> AgentEvent {
+        AgentEvent(sessionId: session, agentKind: .claude, eventName: name, project: project,
+                   message: nil, timestamp: t0, usage: usage)
+    }
+
+    func testApplyStoresUsage() {
+        let store = SessionStore()
+        let usage = ContextUsage(usedTokens: 82_720, limitTokens: 200_000)
+        let s = store.apply(event("SessionStart", usage: usage), now: t0)
+        XCTAssertEqual(s?.usage, usage)
+    }
+
+    func testApplyPreservesUsageWhenEventHasNone() {
+        let store = SessionStore()
+        let usage = ContextUsage(usedTokens: 50_000, limitTokens: 200_000)
+        store.apply(event("UserPromptSubmit", usage: usage), now: t0)
+        // A later event carrying no usage must not erase the last known value.
+        let updated = store.apply(event("Stop", usage: nil), now: t0.addingTimeInterval(5))
+        XCTAssertEqual(updated?.state, .done)
+        XCTAssertEqual(updated?.usage, usage)
+    }
+
+    func testApplyUpdatesUsageWhenEventHasNewer() {
+        let store = SessionStore()
+        store.apply(event("UserPromptSubmit", usage: ContextUsage(usedTokens: 50_000, limitTokens: 200_000)), now: t0)
+        let newer = ContextUsage(usedTokens: 120_000, limitTokens: 200_000)
+        let updated = store.apply(event("PreToolUse", usage: newer), now: t0.addingTimeInterval(5))
+        XCTAssertEqual(updated?.usage, newer)
     }
 
     func testApplyCreatesSession() {

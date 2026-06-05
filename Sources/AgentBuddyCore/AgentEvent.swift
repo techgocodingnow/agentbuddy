@@ -10,6 +10,9 @@ public struct AgentEvent: Codable, Sendable, Equatable {
     public var project: String?
     public var message: String?
     public var timestamp: Date
+    /// Context-window usage at the time of the event. Only Claude reports the
+    /// token counts this needs; other agents leave it `nil`.
+    public var usage: ContextUsage?
 
     public init(
         sessionId: String,
@@ -17,7 +20,8 @@ public struct AgentEvent: Codable, Sendable, Equatable {
         eventName: String,
         project: String? = nil,
         message: String? = nil,
-        timestamp: Date
+        timestamp: Date,
+        usage: ContextUsage? = nil
     ) {
         self.sessionId = sessionId
         self.agentKind = agentKind
@@ -25,5 +29,6 @@ public struct AgentEvent: Codable, Sendable, Equatable {
         self.project = project
         self.message = message
         self.timestamp = timestamp
+        self.usage = usage
     }
 }

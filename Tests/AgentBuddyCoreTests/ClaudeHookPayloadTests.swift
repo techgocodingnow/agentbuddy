@@ -64,4 +64,30 @@ final class ClaudeHookPayloadTests: XCTestCase {
         XCTAssertNil(payload(#"{"cwd":"/p"}"#)?.makeEvent(now: now))
         XCTAssertNil(payload("not json"))
     }
+
+    func testPopulatesUsageOnNonTerminalEvent() {
+        // Usage is read on every Claude event, not only Stop/SubagentStop.
+        let p = payload(#"{"session_id":"s","hook_event_name":"PreToolUse","transcript_path":"/x.jsonl"}"#)
+        let event = p?.makeEvent(now: now, kind: .claude, readUsage: { path in
+            path == "/x.jsonl" ? ContextUsage(usedTokens: 82_720, limitTokens: 200_000) : nil
+        })
+        XCTAssertEqual(event?.usage?.usedTokens, 82_720)
+        XCTAssertEqual(event?.usage?.percentLeft, 59)
+    }
+
+    func testUsageNilForNonClaudeKind() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"PreToolUse","transcript_path":"/x.jsonl"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex, readUsage: { _ in
+            ContextUsage(usedTokens: 1, limitTokens: 200_000)
+        })
+        XCTAssertNil(event?.usage)
+    }
+
+    func testUsageNilWhenNoTranscriptPath() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"PreToolUse"}"#)
+        let event = p?.makeEvent(now: now, readUsage: { _ in
+            ContextUsage(usedTokens: 1, limitTokens: 200_000)
+        })
+        XCTAssertNil(event?.usage)
+    }
 }
