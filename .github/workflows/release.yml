@@ -13,6 +13,8 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Select Xcode 16 (Swift 6)
         run: sudo xcode-select -s /Applications/Xcode_16.app
@@ -56,3 +58,50 @@ jobs:
                 --title "AgentBuddy $GITHUB_REF_NAME" \
                 --notes "$RELEASE_NOTES"
           gh release upload "$GITHUB_REF_NAME" build/*.dmg --clobber
+
+      - name: Publish Sparkle appcast
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          if [ -z "${SPARKLE_PRIVATE_KEY:-}" ]; then
+            echo "SPARKLE_PRIVATE_KEY is not configured; skipping appcast update."
+            exit 0
+          fi
+
+          VERSION="${GITHUB_REF_NAME#v}"
+          DMG="build/AgentBuddy-$VERSION.dmg"
+          SIGN_UPDATE="$(find "$PWD/.build/artifacts" -name sign_update -path '*Sparkle*' 2>/dev/null | head -1)"
+          if [ -z "$SIGN_UPDATE" ]; then
+            echo "Sparkle sign_update tool was not found." >&2
+            exit 1
+          fi
+
+          ED_ATTRS="$(printf '%s' "$SPARKLE_PRIVATE_KEY" | "$SIGN_UPDATE" --ed-key-file - "$DMG")"
+          git switch main
+          git pull --ff-only origin main
+          cat > docs/appcast.xml <<EOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+              <channel>
+                  <title>AgentBuddy</title>
+                  <link>https://techgocodingnow.github.io/agentbuddy/appcast.xml</link>
+                  <description>Updates for AgentBuddy</description>
+                  <language>en</language>
+                  <item>
+                      <title>$VERSION</title>
+                      <sparkle:version>$VERSION</sparkle:version>
+                      <sparkle:shortVersionString>$VERSION</sparkle:shortVersionString>
+                      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+                      <enclosure url="https://github.com/techgocodingnow/agentbuddy/releases/download/v$VERSION/AgentBuddy-$VERSION.dmg"
+                                 $ED_ATTRS type="application/octet-stream" />
+                  </item>
+              </channel>
+          </rss>
+          EOF
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/appcast.xml
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: update Sparkle appcast for $GITHUB_REF_NAME"
+          git push origin main
