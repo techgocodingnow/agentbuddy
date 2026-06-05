@@ -22,5 +22,10 @@ let package = Package(
             dependencies: ["AgentBuddyCore"],
             path: "Tests/AgentBuddyCoreTests"
         ),
+        .testTarget(
+            name: "AgentBuddyAppTests",
+            dependencies: ["agentbuddy"],
+            path: "Tests/AgentBuddyAppTests"
+        ),
     ]
 )

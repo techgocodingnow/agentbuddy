@@ -31,7 +31,8 @@ final class PetController: ObservableObject {
     static let maxFloatingCards = 3
     static let presets: [(String, Double)] = [("S", 84), ("M", 120), ("L", 168)]
     private static let floatingCardWidth: Double = 330
-    private static let floatingCardHeight: Double = 94
+    // Mirrors FloatingSessionCard's tallest rendered height: 104 content + 20 vertical padding.
+    private static let floatingCardHeight: Double = 124
     private static let floatingCardSpacing: Double = 6
     private static let floatingOverflowHeight: Double = 24
     private static let floatingChatReserve: Double = 100
