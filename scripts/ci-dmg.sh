@@ -12,14 +12,18 @@ VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' scripts
 
 if [ -n "${SIGN_IDENTITY:-}" ]; then
     echo "==> Signing with Developer ID (inside-out, hardened runtime)"
-    # Sign nested dylibs, XPC services, and sub-apps before the outer bundle.
-    # Sparkle bundles several XPC helpers; they must carry the same identity or
-    # Apple's notary rejects the submission.
-    find "$APP/Contents" -depth \( -name "*.dylib" -o -name "*.xpc" -o -name "*.app" \) \
+    # Pass 1: sign every Mach-O file individually (catches bare binaries like
+    # Sparkle's 'Autoupdate' that have no extension and are missed by name globs).
+    while IFS= read -r f; do
+        if file "$f" 2>/dev/null | grep -q "Mach-O"; then
+            codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$f"
+        fi
+    done < <(find "$APP/Contents" -type f)
+    # Pass 2: sign bundles and frameworks inside-out, then the outer .app.
+    find "$APP/Contents" -depth \( -name "*.xpc" -o -name "*.app" \) \
         -exec codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" {} \;
     find "$APP/Contents" -depth -name "*.framework" \
         -exec codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" {} \;
-    codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP/Contents/MacOS/agentbuddy"
     codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP"
     codesign --verify --strict "$APP"
 fi
@@ -47,7 +51,10 @@ if [ -n "${NOTARY_APPLE_ID:-}" ] && [ -n "${NOTARY_TEAM_ID:-}" ] && [ -n "${NOTA
     NOTARY_EXIT=$?
     set -e
     echo "$NOTARY_JSON"
-    if [ $NOTARY_EXIT -ne 0 ]; then
+    # notarytool exits 0 even for "Invalid" status, so parse the JSON.
+    NOTARY_STATUS=$(echo "$NOTARY_JSON" \
+        | python3 -c "import sys,json; print(json.load(sys.stdin).get('status','unknown'))" 2>/dev/null || echo "unknown")
+    if [ "$NOTARY_STATUS" != "Accepted" ]; then
         SUBMISSION_ID=$(echo "$NOTARY_JSON" \
             | python3 -c "import sys,json; print(json.load(sys.stdin).get('id',''))" 2>/dev/null || true)
         if [ -n "$SUBMISSION_ID" ]; then
@@ -57,7 +64,7 @@ if [ -n "${NOTARY_APPLE_ID:-}" ] && [ -n "${NOTARY_TEAM_ID:-}" ] && [ -n "${NOTA
                 --team-id "$NOTARY_TEAM_ID" \
                 --password "$NOTARY_PASSWORD" || true
         fi
-        echo "ERROR: Notarization failed (exit $NOTARY_EXIT)" >&2
+        echo "ERROR: Notarization status: $NOTARY_STATUS" >&2
         exit 1
     fi
     xcrun stapler staple "$DMG"
