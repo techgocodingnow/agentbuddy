@@ -19,13 +19,10 @@ public struct AgentIntegration: Identifiable, Sendable, Equatable {
 }
 
 public enum AgentCatalog {
+    /// Agents surfaced in the UI. Only Claude Code and Codex are exposed for now;
+    /// other integrations exist in `AgentKind` but are hidden until they're tested.
     public static let all: [AgentIntegration] = [
         AgentIntegration(kind: .claude, displayName: "Claude Code", isSupported: true),
         AgentIntegration(kind: .codex, displayName: "Codex", isSupported: true),
-        AgentIntegration(kind: .gemini, displayName: "Gemini CLI", isSupported: true),
-        AgentIntegration(kind: .cursor, displayName: "Cursor", isSupported: true),
-        AgentIntegration(kind: .opencode, displayName: "opencode", isSupported: true),
-        AgentIntegration(kind: .windsurf, displayName: "Windsurf", isSupported: true,
-                         note: "No \"needs input\" alerts (Windsurf has no such hook)"),
     ]
 }

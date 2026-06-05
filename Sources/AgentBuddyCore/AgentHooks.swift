@@ -34,9 +34,9 @@ public enum AgentHooks {
                 settingsPath: home + "/.claude/settings.json")
         case .codex:
             return AgentHookSpec(
-                kind: .codex, style: .codexToml,
+                kind: .codex, style: .claudeNested,
                 events: ["SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse", "PermissionRequest", "SubagentStart", "SubagentStop", "Stop"],
-                settingsPath: home + "/.codex/config.toml")
+                settingsPath: home + "/.codex/hooks.json")
         case .gemini:
             return AgentHookSpec(
                 kind: .gemini, style: .claudeNested,

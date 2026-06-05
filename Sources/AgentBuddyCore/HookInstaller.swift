@@ -20,7 +20,7 @@ public enum HookInstaller {
     static func isOurs(_ command: String) -> Bool {
         let lowercased = command.lowercased()
         return lowercased.contains("hook")
-            && (lowercased.contains("agentbuddy") || lowercased.contains("agentpet"))
+            && lowercased.contains("agentbuddy")
     }
 
     // MARK: - Claude-nested shape (Claude / Codex / Gemini)
@@ -153,8 +153,6 @@ public enum HookInstaller {
 
     private static let codexStartMarker = "# AgentBuddy Codex hooks (auto-generated; safe to delete)"
     private static let codexEndMarker = "# End AgentBuddy Codex hooks"
-    private static let legacyCodexStartMarker = "# AgentPet Codex hooks (auto-generated; safe to delete)"
-    private static let legacyCodexEndMarker = "# End AgentPet Codex hooks"
 
     static func installCodexToml(into content: String, command: String, events: [String]) -> String {
         var updated = enableCodexHooksFeature(in: uninstallCodexToml(from: content))
@@ -166,29 +164,26 @@ public enum HookInstaller {
 
     static func uninstallCodexToml(from content: String) -> String {
         var remaining = content
-        for markerPair in [(codexStartMarker, codexEndMarker), (legacyCodexStartMarker, legacyCodexEndMarker)] {
-            while let start = remaining.range(of: markerPair.0) {
-                guard let end = remaining.range(of: markerPair.1, range: start.upperBound..<remaining.endIndex) else {
-                    break
-                }
-                var removal = start.lowerBound..<end.upperBound
-                if removal.upperBound < remaining.endIndex,
-                   remaining[removal.upperBound] == "\n" {
-                    removal = removal.lowerBound..<remaining.index(after: removal.upperBound)
-                }
-                if removal.lowerBound > remaining.startIndex,
-                   remaining[remaining.index(before: removal.lowerBound)] == "\n" {
-                    removal = remaining.index(before: removal.lowerBound)..<removal.upperBound
-                }
-                remaining.removeSubrange(removal)
+        while let start = remaining.range(of: codexStartMarker) {
+            guard let end = remaining.range(of: codexEndMarker, range: start.upperBound..<remaining.endIndex) else {
+                break
             }
+            var removal = start.lowerBound..<end.upperBound
+            if removal.upperBound < remaining.endIndex,
+               remaining[removal.upperBound] == "\n" {
+                removal = removal.lowerBound..<remaining.index(after: removal.upperBound)
+            }
+            if removal.lowerBound > remaining.startIndex,
+               remaining[remaining.index(before: removal.lowerBound)] == "\n" {
+                removal = remaining.index(before: removal.lowerBound)..<removal.upperBound
+            }
+            remaining.removeSubrange(removal)
         }
         return remaining
     }
 
     static func isInstalledCodexToml(_ content: String) -> Bool {
-        (content.contains(codexStartMarker) && content.contains(codexEndMarker))
-            || (content.contains(legacyCodexStartMarker) && content.contains(legacyCodexEndMarker))
+        content.contains(codexStartMarker) && content.contains(codexEndMarker)
     }
 
     private static func codexTomlBlock(command: String, events: [String]) -> String {

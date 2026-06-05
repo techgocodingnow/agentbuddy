@@ -128,7 +128,7 @@ final class MultiAgentHookTests: XCTestCase {
     func testDiskRoundTripAllStyles() throws {
         let tmp = NSTemporaryDirectory() + "agentbuddy-test-\(UUID().uuidString)/"
         defer { try? FileManager.default.removeItem(atPath: tmp) }
-        let cases: [(AgentKind, String)] = [(.cursor, "cursor.json"), (.windsurf, "windsurf.json"), (.opencode, "plugin/agentbuddy.js")]
+        let cases: [(AgentKind, String)] = [(.codex, "codex.json"), (.cursor, "cursor.json"), (.windsurf, "windsurf.json"), (.opencode, "plugin/agentbuddy.js")]
         for (kind, file) in cases {
             let spec = AgentHooks.spec(for: kind)!
             let path = tmp + file
