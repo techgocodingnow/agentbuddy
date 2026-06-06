@@ -16,9 +16,15 @@ struct AgentBuddyApp: App {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
+        DefaultPetBootstrap.installIfNeeded()
         ImagePetStore.shared.reload()
-        if PetController.shared.selectedPetID == nil {
-            PetController.shared.selectedPetID = ImagePetStore.shared.packs.first?.id
+        if let selectedPetID = PetController.shared.selectedPetID,
+           ImagePetStore.shared.pack(id: selectedPetID) != nil {
+            // Keep the user's existing choice.
+        } else {
+            PetController.shared.selectedPetID =
+                ImagePetStore.shared.pack(id: DefaultPetBootstrap.defaultPetID)?.id
+                ?? ImagePetStore.shared.packs.first?.id
         }
         PetController.shared.start()
         PetWindowController.shared.start()
@@ -27,7 +33,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         SettingsModel.shared.migrateInstalledHooksIfNeeded()
         _ = UpdaterController.shared
         StatusBarController.shared.start()
-        DefaultPetBootstrap.installIfNeeded()
         SettingsWindowController.shared.showOnFirstLaunch()
     }
 }

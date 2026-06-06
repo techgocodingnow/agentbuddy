@@ -59,7 +59,7 @@ struct BrowsePetsView: View {
     }
 
     @ViewBuilder private var content: some View {
-        if browser.isLoading {
+        if browser.isLoading && browser.pets.isEmpty {
             VStack(spacing: 10) {
                 ProgressView()
                 Text("Loading pets…").font(.caption).foregroundStyle(.secondary)
@@ -81,6 +81,17 @@ struct BrowsePetsView: View {
                             previewPet = pet
                         }
                         Divider()
+                    }
+                    if browser.isLoading {
+                        HStack(spacing: 8) {
+                            ProgressView()
+                                .controlSize(.small)
+                            Text("Loading more pets…")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
                     }
                 }
             }

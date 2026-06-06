@@ -100,64 +100,54 @@ enum PetInstaller {
 /// Installs a starter pet on the very first launch so the app isn't empty.
 @MainActor
 enum DefaultPetBootstrap {
-    private static let triedKey = "agentbuddy.defaultPetTried"
-    private static let catalogPageURL = URL(string: "https://openpets.dev/pets/catalog.v3/page-000.json")!
-    /// Preferred starter (a non-franchise original); falls back to any pet.
-    private static let preferredSlug = "boba"
+    static let defaultPetID = "super-piglet"
+    private static let installedKey = "agentbuddy.bundledDefaultPetInstalled"
 
-    struct Entry: Decodable {
-        let slug: String
-        let displayName: String?
-        let description: String?
-        let spritesheetUrl: String
+    @discardableResult
+    static func installIfNeeded() -> Bool {
+        let petsDirectory = URL(fileURLWithPath: AgentBuddyPaths.baseDir).appendingPathComponent("pets")
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: installedKey) else { return false }
 
-        enum CodingKeys: String, CodingKey {
-            case id, slug, displayName, description, spritesheet, spritesheetUrl
+        let installed = installIfNeeded(
+            sourceDirectory: Bundle.module.url(forResource: defaultPetID, withExtension: nil),
+            petsDirectory: petsDirectory
+        )
+        if installed || hasInstalledDefault(in: petsDirectory, fileManager: .default) {
+            defaults.set(true, forKey: installedKey)
         }
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            slug = try container.decodeIfPresent(String.self, forKey: .slug)
-                ?? container.decode(String.self, forKey: .id)
-            displayName = try container.decodeIfPresent(String.self, forKey: .displayName)
-            description = try container.decodeIfPresent(String.self, forKey: .description)
-            spritesheetUrl = try container.decodeIfPresent(String.self, forKey: .spritesheetUrl)
-                ?? container.decode(String.self, forKey: .spritesheet)
-        }
+        return installed
     }
-    private struct Page: Decodable { let pets: [Lenient<Entry>] }
 
-    static func installIfNeeded() {
-        let d = UserDefaults.standard
-        guard !d.bool(forKey: triedKey) else { return }
-        guard ImagePetStore.shared.packs.isEmpty, PetController.shared.selectedPetID == nil else {
-            d.set(true, forKey: triedKey)
-            return
+    @discardableResult
+    static func installIfNeeded(sourceDirectory: URL?,
+                                petsDirectory: URL,
+                                fileManager: FileManager = .default) -> Bool {
+        guard let sourceDirectory else { return false }
+
+        let destination = petsDirectory.appendingPathComponent(defaultPetID)
+        if hasInstalledDefault(in: petsDirectory, fileManager: fileManager) {
+            return false
         }
-        d.set(true, forKey: triedKey)   // attempt once, even if offline
 
-        Task {
-            guard let data = try? await PetdexAssets.data(catalogPageURL),
-                  let page = try? JSONDecoder().decode(Page.self, from: data) else { return }
-            let pets = page.pets.compactMap(\.value)
-            let pick = pets.first { $0.slug == preferredSlug } ?? pets.first
-            guard let pick,
-                  let sheetURL = URL(string: pick.spritesheetUrl) else { return }
-
-            let id = try? await PetInstaller.download(slug: pick.slug,
-                                                       displayName: pick.displayName ?? pick.slug,
-                                                       description: pick.description,
-                                                       spritesheetURL: sheetURL)
-            ImagePetStore.shared.reload()
-            if let id, PetController.shared.selectedPetID == nil {
-                PetController.shared.selectedPetID = id
+        do {
+            try fileManager.createDirectory(at: petsDirectory, withIntermediateDirectories: true)
+            if fileManager.fileExists(atPath: destination.path) {
+                try fileManager.removeItem(at: destination)
             }
+            try fileManager.copyItem(at: sourceDirectory, to: destination)
+            return true
+        } catch {
+            return false
         }
     }
-}
 
-/// Tolerant decode wrapper: a malformed element yields nil instead of failing.
-private struct Lenient<T: Decodable>: Decodable {
-    let value: T?
-    init(from decoder: Decoder) { value = try? T(from: decoder) }
+    private static func hasInstalledDefault(in petsDirectory: URL,
+                                            fileManager: FileManager) -> Bool {
+        let destination = petsDirectory.appendingPathComponent(defaultPetID)
+        let manifest = destination.appendingPathComponent("pet.json")
+        let spritesheet = destination.appendingPathComponent("spritesheet.webp")
+        return fileManager.fileExists(atPath: manifest.path)
+            && fileManager.fileExists(atPath: spritesheet.path)
+    }
 }

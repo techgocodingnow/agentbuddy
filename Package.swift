@@ -15,7 +15,10 @@ let package = Package(
         .executableTarget(
             name: "agentbuddy",
             dependencies: ["AgentBuddyCore", .product(name: "Sparkle", package: "Sparkle")],
-            path: "Sources/App"
+            path: "Sources/App",
+            resources: [
+                .copy("../../assets/super-piglet"),
+            ]
         ),
         .testTarget(
             name: "AgentBuddyCoreTests",

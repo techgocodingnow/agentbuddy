@@ -147,14 +147,23 @@ final class PetBrowser: ObservableObject {
                 var pets: [RemotePet] = []
                 var lastError: Error?
 
-                do { pets.append(contentsOf: try await Self.loadOpenPets()) }
+                do {
+                    try await Self.loadOpenPets { pagePets in
+                        pets.append(contentsOf: pagePets)
+                        self.pets = pets
+                    }
+                }
                 catch { lastError = error }
 
-                do { pets.append(contentsOf: try await Self.loadCodexPets()) }
+                do {
+                    try await Self.loadCodexPets { pagePets in
+                        pets.append(contentsOf: pagePets)
+                        self.pets = pets
+                    }
+                }
                 catch { lastError = error }
 
                 guard !pets.isEmpty else { throw lastError ?? PageLoadError() }
-                self.pets = pets
             } catch {
                 self.errorText = "Couldn't load the pet library. Check your connection."
             }
@@ -194,30 +203,27 @@ final class PetBrowser: ObservableObject {
         }
     }
 
-    private static func loadOpenPets() async throws -> [RemotePet] {
+    private static func loadOpenPets(onPage: ([RemotePet]) -> Void) async throws {
         let catalogData = try await PetdexAssets.data(catalogURL)
         let catalog = try JSONDecoder().decode(Catalog.self, from: catalogData)
-        var pets: [RemotePet] = []
         for pageURL in catalog.pages {
             let pageData = try await PetdexAssets.data(pageURL)
-            pets.append(contentsOf: try JSONDecoder().decode(Page.self, from: pageData).pets)
+            onPage(try JSONDecoder().decode(Page.self, from: pageData).pets)
         }
-        return pets
     }
 
-    private static func loadCodexPets() async throws -> [RemotePet] {
+    private static func loadCodexPets(onPage: ([RemotePet]) -> Void) async throws {
         let firstPageData = try await PetdexAssets.data(codexPetsURL(page: 1))
         let firstPage = try JSONDecoder().decode(Page.self, from: firstPageData)
-        var pets = firstPage.pets
+        onPage(firstPage.pets)
 
         let totalPages = firstPage.totalPages ?? 1
-        guard totalPages > 1 else { return pets }
+        guard totalPages > 1 else { return }
 
         for page in 2...totalPages {
             let pageData = try await PetdexAssets.data(codexPetsURL(page: page))
-            pets.append(contentsOf: try JSONDecoder().decode(Page.self, from: pageData).pets)
+            onPage(try JSONDecoder().decode(Page.self, from: pageData).pets)
         }
-        return pets
     }
 
     private static func codexPetsURL(page: Int) -> URL {
