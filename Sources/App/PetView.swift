@@ -107,7 +107,7 @@ private struct FloatingSessionCard: View {
                         Text(subtitle)
                             .font(.system(size: 12))
                             .foregroundStyle(.white.opacity(0.76))
-                            .lineLimit(session.displayMessage == nil ? 1 : 2)
+                            .lineLimit(hasDetailedSubtitle ? 2 : 1)
                             .truncationMode(.tail)
                     }
                     Spacer(minLength: 0)
@@ -163,7 +163,11 @@ private struct FloatingSessionCard: View {
     }
 
     private var subtitle: String {
-        session.displayMessage ?? session.compactStatusText
+        session.pendingRequest?.prompt ?? session.displayMessage ?? session.compactStatusText
+    }
+
+    private var hasDetailedSubtitle: Bool {
+        session.pendingRequest?.prompt != nil || session.displayMessage != nil
     }
 
     private var showUsage: Bool {
@@ -182,7 +186,7 @@ private struct FloatingSessionCard: View {
     }
 
     private var cardContentHeight: CGFloat {
-        var height: CGFloat = session.displayMessage == nil ? 44 : 58
+        var height: CGFloat = hasDetailedSubtitle ? 58 : 44
         if showMetadata { height += 16 }
         if !actions.isEmpty { height += 30 }
         return height

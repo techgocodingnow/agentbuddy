@@ -20,6 +20,7 @@ final class AppDaemon: ObservableObject {
         try? FileManager.default.createDirectory(
             atPath: AgentBuddyPaths.baseDir, withIntermediateDirectories: true
         )
+        PendingAgentResponseStore.removeStaleResponses()
 
         // Replay queued events with their original timestamps (not "now"), so
         // sessions that ended while the app was closed look stale and get

@@ -117,3 +117,29 @@ final class EventSenderTests: XCTestCase {
         var value: AgentEvent?
     }
 }
+
+final class PendingAgentResponseStoreTests: XCTestCase {
+    func testRemoveStaleResponsesDeletesOnlyOldJSONFiles() throws {
+        let directory = NSTemporaryDirectory() + "agentbuddy-responses-\(UUID().uuidString)"
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+
+        let old = PendingAgentResponseStore.responsePath(id: "old", baseDir: directory)
+        let fresh = PendingAgentResponseStore.responsePath(id: "fresh", baseDir: directory)
+        let note = (directory as NSString).appendingPathComponent("note.txt")
+
+        try PendingAgentResponseStore.write(PendingAgentResponse(action: .allow), to: old)
+        try PendingAgentResponseStore.write(PendingAgentResponse(action: .deny), to: fresh)
+        try "keep".write(toFile: note, atomically: true, encoding: .utf8)
+
+        let now = Date(timeIntervalSince1970: 10_000)
+        try FileManager.default.setAttributes([.modificationDate: now.addingTimeInterval(-3_600)], ofItemAtPath: old)
+        try FileManager.default.setAttributes([.modificationDate: now.addingTimeInterval(-60)], ofItemAtPath: fresh)
+        try FileManager.default.setAttributes([.modificationDate: now.addingTimeInterval(-3_600)], ofItemAtPath: note)
+
+        PendingAgentResponseStore.removeStaleResponses(olderThan: 1_800, now: now, baseDir: directory)
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: old))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: fresh))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: note))
+    }
+}

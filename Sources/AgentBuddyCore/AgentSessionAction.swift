@@ -85,6 +85,29 @@ public enum PendingAgentResponseStore {
         (baseDir as NSString).appendingPathComponent("\(id).json")
     }
 
+    public static func removeStaleResponses(
+        olderThan age: TimeInterval = 1_800,
+        now: Date = Date(),
+        baseDir: String = AgentBuddyPaths.pendingResponseDir
+    ) {
+        let directory = URL(fileURLWithPath: baseDir)
+        let keys: Set<URLResourceKey> = [.contentModificationDateKey, .isRegularFileKey]
+        guard let urls = try? FileManager.default.contentsOfDirectory(
+            at: directory,
+            includingPropertiesForKeys: Array(keys),
+            options: [.skipsHiddenFiles]
+        ) else { return }
+
+        let cutoff = now.addingTimeInterval(-age)
+        for url in urls where url.pathExtension == "json" {
+            guard let values = try? url.resourceValues(forKeys: keys),
+                  values.isRegularFile == true,
+                  let modified = values.contentModificationDate,
+                  modified < cutoff else { continue }
+            try? FileManager.default.removeItem(at: url)
+        }
+    }
+
     public static func write(_ response: PendingAgentResponse, to path: String) throws {
         let url = URL(fileURLWithPath: path)
         try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
