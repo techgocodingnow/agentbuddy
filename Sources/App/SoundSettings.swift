@@ -8,13 +8,16 @@ import AgentBuddyCore
 final class SoundSettings: ObservableObject {
     static let shared = SoundSettings()
 
-    enum Event: String { case waiting, done }
+    enum Event: String { case waiting, done, hatch }
 
     @Published var waitingEnabled: Bool { didSet { save() } }
     @Published var doneEnabled: Bool { didSet { save() } }
+    @Published var hatchEnabled: Bool { didSet { save() } }
+    @Published var hatchHapticsEnabled: Bool { didSet { save() } }
     /// "" means use the built-in default; otherwise a custom file path.
     @Published var waitingCustomPath: String { didSet { save() } }
     @Published var doneCustomPath: String { didSet { save() } }
+    @Published var hatchCustomPath: String { didSet { save() } }
 
     /// Built-in macOS system sounds used as defaults.
     static let defaultWaiting = "Submarine"
@@ -28,16 +31,27 @@ final class SoundSettings: ObservableObject {
         let d = UserDefaults.standard
         waitingEnabled = (d.object(forKey: "agentbuddy.sound.waiting.on") as? Bool) ?? true
         doneEnabled = (d.object(forKey: "agentbuddy.sound.done.on") as? Bool) ?? true
+        hatchEnabled = (d.object(forKey: "agentbuddy.sound.hatch.on") as? Bool) ?? true
+        hatchHapticsEnabled = (d.object(forKey: "agentbuddy.haptics.hatch.on") as? Bool) ?? true
         waitingCustomPath = d.string(forKey: "agentbuddy.sound.waiting.path") ?? ""
         doneCustomPath = d.string(forKey: "agentbuddy.sound.done.path") ?? ""
+        hatchCustomPath = d.string(forKey: "agentbuddy.sound.hatch.path") ?? ""
     }
 
     func isEnabled(_ event: Event) -> Bool {
-        event == .waiting ? waitingEnabled : doneEnabled
+        switch event {
+        case .waiting: return waitingEnabled
+        case .done: return doneEnabled
+        case .hatch: return hatchEnabled
+        }
     }
 
     func customPath(_ event: Event) -> String {
-        event == .waiting ? waitingCustomPath : doneCustomPath
+        switch event {
+        case .waiting: return waitingCustomPath
+        case .done: return doneCustomPath
+        case .hatch: return hatchCustomPath
+        }
     }
 
     /// Plays the configured sound for an event, if enabled.
@@ -47,11 +61,27 @@ final class SoundSettings: ObservableObject {
         let path = customPath(event)
         if !path.isEmpty, FileManager.default.fileExists(atPath: path) {
             sound = NSSound(contentsOfFile: path, byReference: true)
+        } else if event == .hatch,
+                  let url = Bundle.module.url(forResource: "hatch-chime", withExtension: "wav") {
+            sound = NSSound(contentsOf: url, byReference: true)
         } else {
             sound = NSSound(named: event == .waiting ? Self.defaultWaiting : Self.defaultDone)
         }
         sound?.stop()
         sound?.play()
+    }
+
+    func playHatchFeedback() {
+        play(.hatch)
+        guard hatchHapticsEnabled else { return }
+        let performer = NSHapticFeedbackManager.defaultPerformer
+        performer.perform(.generic, performanceTime: .now)
+        Timer.scheduledTimer(withTimeInterval: 0.45, repeats: false) { _ in
+            NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .now)
+        }
+        Timer.scheduledTimer(withTimeInterval: 1.05, repeats: false) { _ in
+            NSHapticFeedbackManager.defaultPerformer.perform(.generic, performanceTime: .now)
+        }
     }
 
     /// Prompts for an audio file and sets it as the custom sound for an event.
@@ -81,14 +111,21 @@ final class SoundSettings: ObservableObject {
     }
 
     private func setCustomPath(_ path: String, for event: Event) {
-        if event == .waiting { waitingCustomPath = path } else { doneCustomPath = path }
+        switch event {
+        case .waiting: waitingCustomPath = path
+        case .done: doneCustomPath = path
+        case .hatch: hatchCustomPath = path
+        }
     }
 
     private func save() {
         let d = UserDefaults.standard
         d.set(waitingEnabled, forKey: "agentbuddy.sound.waiting.on")
         d.set(doneEnabled, forKey: "agentbuddy.sound.done.on")
+        d.set(hatchEnabled, forKey: "agentbuddy.sound.hatch.on")
+        d.set(hatchHapticsEnabled, forKey: "agentbuddy.haptics.hatch.on")
         d.set(waitingCustomPath, forKey: "agentbuddy.sound.waiting.path")
         d.set(doneCustomPath, forKey: "agentbuddy.sound.done.path")
+        d.set(hatchCustomPath, forKey: "agentbuddy.sound.hatch.path")
     }
 }

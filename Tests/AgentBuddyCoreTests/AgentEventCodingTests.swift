@@ -9,6 +9,7 @@ final class AgentEventCodingTests: XCTestCase {
             sessionId: "s", agentKind: .claude, eventName: "Stop",
             project: "/p", message: "done", timestamp: now,
             usage: ContextUsage(usedTokens: 82_720, limitTokens: 200_000),
+            tokenProgress: TokenProgress(totalTokens: 84_173),
             quotaUsage: AgentQuotaUsage(sessionUsedPercent: 10, weeklyUsedPercent: 20),
             stats: AgentRuntimeStats(model: "claude-opus-4-8", speed: "standard", serviceTier: "standard", effort: "high")
         )
@@ -16,6 +17,7 @@ final class AgentEventCodingTests: XCTestCase {
         let decoded = try EventCoding.decoder.decode(AgentEvent.self, from: data)
         XCTAssertEqual(decoded, event)
         XCTAssertEqual(decoded.usage?.percentLeft, 59)
+        XCTAssertEqual(decoded.tokenProgress?.totalTokens, 84_173)
         XCTAssertEqual(decoded.quotaUsage?.weeklyUsedPercent, 20)
         XCTAssertEqual(decoded.stats?.model, "claude-opus-4-8")
         XCTAssertEqual(decoded.stats?.effort, "high")
@@ -26,6 +28,7 @@ final class AgentEventCodingTests: XCTestCase {
         let json = #"{"sessionId":"s","agentKind":"claude","eventName":"Stop","timestamp":100}"#
         let decoded = try EventCoding.decoder.decode(AgentEvent.self, from: Data(json.utf8))
         XCTAssertNil(decoded.usage)
+        XCTAssertNil(decoded.tokenProgress)
         XCTAssertNil(decoded.quotaUsage)
         XCTAssertNil(decoded.stats)
         XCTAssertEqual(decoded.sessionId, "s")

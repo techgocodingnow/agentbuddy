@@ -263,6 +263,21 @@ private struct GeneralTab: View {
             }
 
             Section("Sounds") {
+                SoundRow(title: "When a pet hatches",
+                         enabled: $sound.hatchEnabled,
+                         customPath: sound.hatchCustomPath,
+                         onPlay: { sound.playHatchFeedback() },
+                         onUpload: { sound.upload(for: .hatch) },
+                         onReset: { sound.resetToDefault(.hatch) })
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Hatch haptics")
+                        Text("Pulse the Force Touch trackpad during the hatch.")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    ColorSwitch(isOn: $sound.hatchHapticsEnabled)
+                }
                 SoundRow(title: "When an agent finishes",
                          enabled: $sound.doneEnabled,
                          customPath: sound.doneCustomPath,
@@ -366,6 +381,8 @@ private struct PetTab: View {
     @ObservedObject var imagePets: ImagePetStore
     @ObservedObject var model: SettingsModel
     let selectedPack: ImagePetPack?
+    @ObservedObject private var progressStore = PetProgressStore.shared
+    @ObservedObject private var gameStore = PetGameStore.shared
     @State private var browsing = false
     @State private var petQuery = ""
 
@@ -373,6 +390,14 @@ private struct PetTab: View {
         guard !petQuery.isEmpty else { return imagePets.packs }
         let q = petQuery.lowercased()
         return imagePets.packs.filter { $0.displayName.lowercased().contains(q) }
+    }
+
+    private var selectedProgress: PetProgress {
+        progressStore.progress(for: selectedPack?.id)
+    }
+
+    private var selectedGameProfile: PetGameProfile {
+        gameStore.profile(for: selectedPack?.id)
     }
 
     var body: some View {
@@ -391,6 +416,57 @@ private struct PetTab: View {
                         }
                     }
                     Spacer()
+                }
+            }
+
+            if selectedPack != nil {
+                Section("Growth") {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Label(selectedProgress.isHatched ? "Level \(selectedProgress.level)" : "Egg",
+                                  systemImage: selectedProgress.isHatched ? "sparkles" : "circle.fill")
+                            Spacer()
+                            Text("\(selectedProgress.totalTokens.formatted()) tokens")
+                                .foregroundStyle(.secondary)
+                        }
+                        ProgressView(value: growthProgressValue, total: growthProgressTotal)
+                        Text(growthDetail)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Section("Game") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Daily quests")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        ForEach(PetGameRules.quests) { quest in
+                            questRow(quest)
+                        }
+                    }
+
+                    Picker("Equipped cosmetic", selection: equippedCosmeticSelection) {
+                        Text("None").tag("")
+                        ForEach(gameStore.unlockedCosmetics(for: selectedPack?.id)) { cosmetic in
+                            Text(cosmetic.name).tag(cosmetic.id)
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Badges")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        let unlocked = PetGameRules.achievements.filter { selectedGameProfile.achievementIDs.contains($0.id) }
+                        if unlocked.isEmpty {
+                            Text("No badges yet")
+                                .foregroundStyle(.secondary)
+                        } else {
+                            ForEach(unlocked) { achievement in
+                                Label(achievement.title, systemImage: "seal.fill")
+                            }
+                        }
+                    }
                 }
             }
 
@@ -440,9 +516,56 @@ private struct PetTab: View {
 
     @ViewBuilder private var petPreview: some View {
         if let pack = selectedPack {
-            ImageSpriteView(frames: pack.clip(0), mood: .idle, size: 78)
+            if selectedProgress.isHatched {
+                ImageSpriteView(frames: pack.clip(0), mood: .idle, size: 78)
+            } else {
+                PetEggView(size: 78, progress: selectedProgress)
+            }
         } else {
             Image(systemName: "pawprint.fill").font(.system(size: 40)).foregroundStyle(.secondary)
+        }
+    }
+
+    private var growthDetail: String {
+        if selectedProgress.isHatched {
+            return "\(selectedProgress.tokensUntilNextLevel.formatted()) tokens to level \(selectedProgress.level + 1)"
+        }
+        return "\(selectedProgress.tokensUntilHatch.formatted()) tokens to hatch"
+    }
+
+    private var growthProgressValue: Double {
+        if selectedProgress.isHatched {
+            return Double(selectedProgress.tokensIntoCurrentLevel)
+        }
+        return Double(min(selectedProgress.totalTokens, PetProgressRules.hatchTokens))
+    }
+
+    private var growthProgressTotal: Double {
+        Double(selectedProgress.isHatched ? selectedProgress.tokensRequiredForCurrentLevel : PetProgressRules.hatchTokens)
+    }
+
+    private var equippedCosmeticSelection: Binding<String> {
+        Binding(
+            get: { selectedGameProfile.equippedCosmeticID ?? "" },
+            set: { value in
+                gameStore.setEquippedCosmeticID(value.isEmpty ? nil : value, for: selectedPack?.id)
+            }
+        )
+    }
+
+    @ViewBuilder private func questRow(_ quest: PetQuest) -> some View {
+        let value = PetGameRules.questProgress(quest.id, in: selectedGameProfile)
+        let target = PetGameRules.questTarget(quest.id)
+        let done = selectedGameProfile.daily.completedQuestIDs.contains(quest.id)
+        VStack(alignment: .leading, spacing: 5) {
+            HStack {
+                Label(quest.title, systemImage: done ? "checkmark.seal.fill" : "target")
+                Spacer()
+                Text("\(value.formatted())/\(target.formatted())")
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+            }
+            ProgressView(value: Double(value), total: Double(target))
         }
     }
 }

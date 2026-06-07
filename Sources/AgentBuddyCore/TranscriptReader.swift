@@ -39,6 +39,20 @@ public enum TranscriptReader {
         return lastUsage(in: data)
     }
 
+    /// Cumulative token progress for hatching/leveling, derived from the full
+    /// local transcript so it can account for every reported turn in a session.
+    public static func tokenProgress(path: String, agentKind: AgentKind) -> TokenProgress? {
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: path)) else { return nil }
+        switch agentKind {
+        case .claude:
+            return claudeTokenProgress(in: data)
+        case .codex:
+            return codexTokenProgress(in: data)
+        default:
+            return nil
+        }
+    }
+
     /// Agent quota/rate-limit usage from the latest token-count event.
     public static func lastQuotaUsage(path: String) -> AgentQuotaUsage? {
         guard let data = tailData(path: path) else { return nil }
@@ -145,6 +159,31 @@ public enum TranscriptReader {
             if let usage = usage(fromLine: Data(line)) { return usage }
         }
         return nil
+    }
+
+    static func claudeTokenProgress(in data: Data) -> TokenProgress? {
+        var total = 0
+        var sawUsage = false
+        for line in data.split(separator: 0x0A, omittingEmptySubsequences: true) {
+            guard let entry = try? JSONDecoder().decode(Line.self, from: Data(line)),
+                  entry.type == "assistant",
+                  let usage = entry.message?.usage else { continue }
+            total += usage.progressTokens
+            sawUsage = true
+        }
+        return sawUsage ? TokenProgress(totalTokens: total) : nil
+    }
+
+    static func codexTokenProgress(in data: Data) -> TokenProgress? {
+        var latest: Int?
+        for line in data.split(separator: 0x0A, omittingEmptySubsequences: true) {
+            guard let entry = try? JSONDecoder().decode(Line.self, from: Data(line)),
+                  entry.type == "event_msg",
+                  entry.payload?.type == "token_count",
+                  let total = entry.payload?.info?.total_token_usage?.total_tokens else { continue }
+            latest = total
+        }
+        return latest.map(TokenProgress.init(totalTokens:))
     }
 
     static func lastQuotaUsage(in data: Data) -> AgentQuotaUsage? {
@@ -445,12 +484,17 @@ public enum TranscriptReader {
         let input_tokens: Int
         let cache_read_input_tokens: Int
         let cache_creation_input_tokens: Int
+        let output_tokens: Int
         let speed: String?
         let service_tier: String?
         let effort: String?
 
+        var progressTokens: Int {
+            input_tokens + cache_read_input_tokens + cache_creation_input_tokens + output_tokens
+        }
+
         enum CodingKeys: String, CodingKey {
-            case input_tokens, cache_read_input_tokens, cache_creation_input_tokens
+            case input_tokens, cache_read_input_tokens, cache_creation_input_tokens, output_tokens
             case speed, service_tier, effort
         }
 
@@ -459,6 +503,7 @@ public enum TranscriptReader {
             input_tokens = try c.decodeIfPresent(Int.self, forKey: .input_tokens) ?? 0
             cache_read_input_tokens = try c.decodeIfPresent(Int.self, forKey: .cache_read_input_tokens) ?? 0
             cache_creation_input_tokens = try c.decodeIfPresent(Int.self, forKey: .cache_creation_input_tokens) ?? 0
+            output_tokens = try c.decodeIfPresent(Int.self, forKey: .output_tokens) ?? 0
             speed = try c.decodeIfPresent(String.self, forKey: .speed)
             service_tier = try c.decodeIfPresent(String.self, forKey: .service_tier)
             effort = try c.decodeIfPresent(String.self, forKey: .effort)

@@ -27,6 +27,13 @@ final class AppDaemon: ObservableObject {
         // pruned immediately instead of resurrecting as "working".
         EventSocketServer.drainQueue(directory: AgentBuddyPaths.queueDir) { [store] event in
             store.apply(event, now: event.timestamp)
+            let progressUpdate = PetProgressStore.shared.ingest(event)
+            let gameUpdate = PetGameStore.shared.ingest(
+                event: event,
+                progressUpdate: progressUpdate,
+                now: event.timestamp
+            )
+            handleProgress(progressUpdate, gameUpdate: gameUpdate)
         }
         store.prune(now: Date())
         refresh()
@@ -64,7 +71,18 @@ final class AppDaemon: ObservableObject {
         if let updated = store.apply(event, now: Date()) {
             notifyIfNeeded(before: before, session: updated)
         }
+        let progressUpdate = PetProgressStore.shared.ingest(event)
+        let gameUpdate = PetGameStore.shared.ingest(event: event, progressUpdate: progressUpdate)
         refresh()
+        handleProgress(progressUpdate, gameUpdate: gameUpdate)
+    }
+
+    private func handleProgress(_ update: PetProgressUpdate?, gameUpdate: PetGameUpdate?) {
+        if update?.didHatch == true {
+            PetController.shared.celebrateHatch()
+            return
+        }
+        PetController.shared.celebrateGameUpdate(gameUpdate)
     }
 
     private func notifyIfNeeded(before: AgentState?, session: AgentSession) {

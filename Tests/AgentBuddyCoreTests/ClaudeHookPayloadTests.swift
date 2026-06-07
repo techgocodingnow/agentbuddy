@@ -155,6 +155,15 @@ final class ClaudeHookPayloadTests: XCTestCase {
         XCTAssertEqual(event?.usage?.percentLeft, 59)
     }
 
+    func testPopulatesTokenProgressForClaudeAndCodexEvents() {
+        let p = payload(#"{"session_id":"s","hook_event_name":"PreToolUse","transcript_path":"/x.jsonl"}"#)
+        let event = p?.makeEvent(now: now, kind: .codex, readTokenProgress: { path, kind in
+            path == "/x.jsonl" && kind == .codex ? TokenProgress(totalTokens: 25_000) : nil
+        })
+
+        XCTAssertEqual(event?.tokenProgress?.totalTokens, 25_000)
+    }
+
     func testPopulatesRuntimeStatsOnClaudeEvent() {
         let p = payload(#"{"session_id":"s","hook_event_name":"PreToolUse","transcript_path":"/x.jsonl"}"#)
         let event = p?.makeEvent(now: now, kind: .claude, readStats: { path in

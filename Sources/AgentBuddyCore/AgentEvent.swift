@@ -14,6 +14,9 @@ public struct AgentEvent: Codable, Sendable, Equatable {
     /// Context-window usage at the time of the event. Only Claude reports the
     /// token counts this needs; other agents leave it `nil`.
     public var usage: ContextUsage?
+    /// Cumulative local token progress for this session, when the agent exposes
+    /// enough transcript data to account for it.
+    public var tokenProgress: TokenProgress?
     /// Agent quota/rate-limit usage when exposed by the agent transcript.
     public var quotaUsage: AgentQuotaUsage?
     /// Optional runtime metadata such as model, speed mode, or service tier.
@@ -31,6 +34,7 @@ public struct AgentEvent: Codable, Sendable, Equatable {
         message: String? = nil,
         timestamp: Date,
         usage: ContextUsage? = nil,
+        tokenProgress: TokenProgress? = nil,
         quotaUsage: AgentQuotaUsage? = nil,
         stats: AgentRuntimeStats? = nil,
         pendingRequest: PendingAgentRequest? = nil
@@ -43,6 +47,7 @@ public struct AgentEvent: Codable, Sendable, Equatable {
         self.message = message
         self.timestamp = timestamp
         self.usage = usage
+        self.tokenProgress = tokenProgress
         self.quotaUsage = quotaUsage?.isEmpty == true ? nil : quotaUsage
         self.stats = stats?.isEmpty == true ? nil : stats
         self.pendingRequest = pendingRequest

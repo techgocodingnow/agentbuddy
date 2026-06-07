@@ -6,6 +6,7 @@ struct OnboardingView: View {
     @ObservedObject private var model = SettingsModel.shared
     @ObservedObject private var pet = PetController.shared
     @ObservedObject private var imagePets = ImagePetStore.shared
+    @ObservedObject private var progress = PetProgressStore.shared
     var onFinish: () -> Void
 
     @State private var browsing = false
@@ -62,7 +63,11 @@ struct OnboardingView: View {
                     RoundedRectangle(cornerRadius: 16).fill(.white.opacity(0.05))
                         .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(Color.systemAccent.opacity(0.3)))
                     if let pack = selectedPack {
-                        ImageSpriteView(frames: pack.clip(0), mood: .idle, size: 90)
+                        if progress.isHatched(pack.id) {
+                            ImageSpriteView(frames: pack.clip(0), mood: .idle, size: 90)
+                        } else {
+                            PetEggView(size: 90, progress: progress.progress(for: pack.id))
+                        }
                     } else {
                         Image(systemName: "pawprint.fill").font(.system(size: 40)).foregroundStyle(.white.opacity(0.3))
                     }

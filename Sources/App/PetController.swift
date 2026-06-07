@@ -11,6 +11,10 @@ final class PetController: ObservableObject {
     @Published private(set) var chatLine: String = ""
     @Published private(set) var compactSummary: String = ""
     @Published private(set) var activeSessions: [AgentSession] = []
+    @Published private(set) var hatchAnimationStartedAt: Date?
+    @Published private(set) var levelUpStartedAt: Date?
+    @Published private(set) var rewardLabel: String = ""
+    @Published private(set) var cosmeticEffect: String?
 
     @Published var selectedPetID: String? {
         didSet { UserDefaults.standard.set(selectedPetID, forKey: Self.petKey) }
@@ -57,11 +61,17 @@ final class PetController: ObservableObject {
     private var latestSessions: [AgentSession] = []
     private var celebrateTimer: Timer?
     private var chatTimer: Timer?
+    private var hatchTimer: Timer?
+    private var levelUpTimer: Timer?
+    private var rewardTimer: Timer?
 
     private static let petKey = "agentbuddy.selectedPetID"
     private static let chatKey = "agentbuddy.showChat"
     private static let sizeKey = "agentbuddy.petSize"
     private static let celebrateDuration: TimeInterval = 3
+    private static let hatchAnimationDuration: TimeInterval = 2.4
+    private static let levelUpAnimationDuration: TimeInterval = 1.8
+    private static let rewardLabelDuration: TimeInterval = 2.2
 
     init() {
         selectedPetID = UserDefaults.standard.string(forKey: Self.petKey)
@@ -126,6 +136,48 @@ final class PetController: ObservableObject {
         }
         celebrateTimer?.invalidate()
         setMood(resolved)
+    }
+
+    func celebrateHatch() {
+        hatchAnimationStartedAt = Date()
+        SoundSettings.shared.playHatchFeedback()
+        hatchTimer?.invalidate()
+        hatchTimer = Timer.scheduledTimer(withTimeInterval: Self.hatchAnimationDuration, repeats: false) { _ in
+            Task { @MainActor [weak self] in self?.hatchAnimationStartedAt = nil }
+        }
+        setMood(.celebrate)
+        celebrateTimer?.invalidate()
+        celebrateTimer = Timer.scheduledTimer(withTimeInterval: Self.celebrateDuration, repeats: false) { _ in
+            Task { @MainActor [weak self] in self?.settleAfterCelebrate() }
+        }
+    }
+
+    func celebrateGameUpdate(_ update: PetGameUpdate?) {
+        guard let update else { return }
+        if update.didLevelUp {
+            levelUpStartedAt = Date()
+            levelUpTimer?.invalidate()
+            levelUpTimer = Timer.scheduledTimer(withTimeInterval: Self.levelUpAnimationDuration, repeats: false) { _ in
+                Task { @MainActor [weak self] in self?.levelUpStartedAt = nil }
+            }
+            setMood(.celebrate)
+            celebrateTimer?.invalidate()
+            celebrateTimer = Timer.scheduledTimer(withTimeInterval: Self.celebrateDuration, repeats: false) { _ in
+                Task { @MainActor [weak self] in self?.settleAfterCelebrate() }
+            }
+        }
+
+        if let reward = update.reward {
+            rewardLabel = reward.title
+            cosmeticEffect = update.unlockedCosmeticIDs.first
+            rewardTimer?.invalidate()
+            rewardTimer = Timer.scheduledTimer(withTimeInterval: Self.rewardLabelDuration, repeats: false) { _ in
+                Task { @MainActor [weak self] in
+                    self?.rewardLabel = ""
+                    self?.cosmeticEffect = nil
+                }
+            }
+        }
     }
 
     private func settleAfterCelebrate() {

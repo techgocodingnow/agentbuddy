@@ -79,6 +79,7 @@ public struct ClaudeHookPayload: Decodable, Equatable {
         kind: AgentKind = .claude,
         readTranscript: (String) -> String? = { TranscriptReader.lastAssistantText(path: $0) },
         readUsage: (String) -> ContextUsage? = { TranscriptReader.lastUsage(path: $0) },
+        readTokenProgress: (String, AgentKind) -> TokenProgress? = { TranscriptReader.tokenProgress(path: $0, agentKind: $1) },
         readQuotaUsage: (String) -> AgentQuotaUsage? = { TranscriptReader.lastQuotaUsage(path: $0) },
         readStats: (String) -> AgentRuntimeStats? = { TranscriptReader.lastRuntimeStats(path: $0) },
         readSessionTitle: (String) -> String? = { TranscriptReader.indexedSessionTitle(sessionId: $0) },
@@ -99,6 +100,7 @@ public struct ClaudeHookPayload: Decodable, Equatable {
             sessionId: sessionId, agentKind: kind, eventName: hookEventName,
             project: cwd, title: resolvedTitle, message: context, timestamp: now,
             usage: transcriptUsage(kind: kind, readUsage: readUsage),
+            tokenProgress: transcriptTokenProgress(kind: kind, readTokenProgress: readTokenProgress),
             quotaUsage: transcriptQuotaUsage(kind: kind, readQuotaUsage: readQuotaUsage),
             stats: transcriptStats(kind: kind, readStats: readStats),
             pendingRequest: pendingRequest(kind: kind, responsePath: pendingResponsePath)
@@ -190,6 +192,14 @@ public struct ClaudeHookPayload: Decodable, Equatable {
     ) -> AgentQuotaUsage? {
         guard kind == .codex, let transcriptPath else { return nil }
         return readQuotaUsage(transcriptPath)
+    }
+
+    private func transcriptTokenProgress(
+        kind: AgentKind,
+        readTokenProgress: (String, AgentKind) -> TokenProgress?
+    ) -> TokenProgress? {
+        guard (kind == .claude || kind == .codex), let transcriptPath else { return nil }
+        return readTokenProgress(transcriptPath, kind)
     }
 
     private func transcriptStats(

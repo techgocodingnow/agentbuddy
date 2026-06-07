@@ -146,6 +146,31 @@ final class TranscriptReaderTests: XCTestCase {
         XCTAssertEqual(stats?.compactDetailLabel, "Medium")
     }
 
+    func testClaudeTokenProgressSumsAllUsageIncludingOutputTokens() {
+        let jsonl = """
+        {"type":"assistant","message":{"model":"claude-opus-4-8","usage":{"input_tokens":5,"cache_read_input_tokens":1000,"cache_creation_input_tokens":10,"output_tokens":20}}}
+        {"type":"assistant","message":{"model":"claude-opus-4-8","usage":{"input_tokens":2,"cache_creation_input_tokens":762,"cache_read_input_tokens":81956,"output_tokens":418}}}
+        """
+
+        let progress = TranscriptReader.tokenProgress(path: writeTemp(jsonl), agentKind: .claude)
+        XCTAssertEqual(progress?.totalTokens, 84_173)
+    }
+
+    func testCodexTokenProgressReadsLatestTokenCountTotal() {
+        let jsonl = """
+        {"type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"total_tokens":12000},"model_context_window":100000}}}
+        {"type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"total_tokens":25000},"model_context_window":100000}}}
+        """
+
+        let progress = TranscriptReader.tokenProgress(path: writeTemp(jsonl), agentKind: .codex)
+        XCTAssertEqual(progress?.totalTokens, 25_000)
+    }
+
+    func testTokenProgressNilForUnsupportedAgent() {
+        let jsonl = #"{"type":"assistant","message":{"usage":{"input_tokens":3}}}"#
+        XCTAssertNil(TranscriptReader.tokenProgress(path: writeTemp(jsonl), agentKind: .cursor))
+    }
+
     func testLastUsageReadsCodexTokenCountContextWindow() {
         let jsonl = """
         {"type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"total_tokens":25000},"model_context_window":100000},"rate_limits":{"primary":{"used_percent":10.0},"secondary":{"used_percent":20.0}}}}

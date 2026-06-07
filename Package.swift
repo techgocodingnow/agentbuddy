@@ -17,6 +17,11 @@ let package = Package(
             dependencies: ["AgentBuddyCore", .product(name: "Sparkle", package: "Sparkle")],
             path: "Sources/App",
             resources: [
+                .copy("../../assets/pet-egg.png"),
+                .copy("../../assets/pet-egg-crack-small.png"),
+                .copy("../../assets/pet-egg-crack-large.png"),
+                .copy("../../assets/pet-egg-fragment.png"),
+                .copy("../../assets/hatch-chime.wav"),
                 .copy("../../assets/super-piglet"),
             ]
         ),
