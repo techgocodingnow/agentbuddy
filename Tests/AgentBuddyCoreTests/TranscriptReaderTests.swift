@@ -131,6 +131,19 @@ final class TranscriptReaderTests: XCTestCase {
         let usage = TranscriptReader.lastUsage(path: writeTemp(jsonl))
         XCTAssertEqual(usage?.usedTokens, 82_720) // 2 + 81956 + 762; output excluded
         XCTAssertEqual(usage?.limitTokens, 200_000)
+        XCTAssertEqual(usage?.modelName, "claude-opus-4-8")
+        XCTAssertNil(usage?.effort)
+    }
+
+    func testLastUsageReadsEffortMetadata() {
+        let jsonl = """
+        {"type":"assistant","message":{"model":"claude-opus-4-8","thinking":{"effort":"medium"},"usage":{"input_tokens":2,"cache_creation_input_tokens":762,"cache_read_input_tokens":81956}}}
+        """
+        let usage = TranscriptReader.lastUsage(path: writeTemp(jsonl))
+        XCTAssertEqual(usage?.statsLabel, "Opus 4.8 Medium")
+        let stats = TranscriptReader.lastRuntimeStats(path: writeTemp(jsonl))
+        XCTAssertEqual(stats?.compactModelLabel, "Opus 4.8")
+        XCTAssertEqual(stats?.compactDetailLabel, "Medium")
     }
 
     func testLastUsageReadsCodexTokenCountContextWindow() {
@@ -165,7 +178,7 @@ final class TranscriptReaderTests: XCTestCase {
         XCTAssertEqual(stats?.speed, "standard")
         XCTAssertEqual(stats?.serviceTier, "extra_credits")
         XCTAssertEqual(stats?.displayParts, ["opus-4-8", "speed standard", "tier extra_credits"])
-        XCTAssertEqual(stats?.compactModelLabel, "4.8")
+        XCTAssertEqual(stats?.compactModelLabel, "Opus 4.8")
         XCTAssertEqual(stats?.compactModeLabel, "Standard")
         XCTAssertEqual(stats?.compactDetailLabel, "Extra Credits")
     }

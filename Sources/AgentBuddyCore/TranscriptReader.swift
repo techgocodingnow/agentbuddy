@@ -193,7 +193,12 @@ public enum TranscriptReader {
             + usage.cache_read_input_tokens
             + usage.cache_creation_input_tokens
         let limit = ContextWindow.limit(forModel: message.model)
-        return ContextUsage(usedTokens: used, limitTokens: limit)
+        return ContextUsage(
+            usedTokens: used,
+            limitTokens: limit,
+            modelName: message.model,
+            effort: message.effortLabel
+        )
     }
 
     private static func runtimeStats(fromLine data: Data) -> AgentRuntimeStats? {
@@ -205,7 +210,7 @@ public enum TranscriptReader {
             model: message.model,
             speed: message.usage?.speed,
             serviceTier: message.usage?.service_tier,
-            effort: message.usage?.effort
+            effort: message.usage?.effort ?? message.effortLabel
         )
         return stats.isEmpty ? nil : stats
     }
@@ -370,6 +375,20 @@ public enum TranscriptReader {
         let content: [Block]?
         let model: String?
         let usage: Usage?
+        let effort: String?
+        let reasoningEffort: String?
+        let thinkingEffort: String?
+        let thinking: Thinking?
+
+        enum CodingKeys: String, CodingKey {
+            case content, model, usage, effort, thinking
+            case reasoningEffort = "reasoning_effort"
+            case thinkingEffort = "thinking_effort"
+        }
+
+        var effortLabel: String? {
+            effort ?? reasoningEffort ?? thinkingEffort ?? thinking?.effort
+        }
     }
     private struct Payload: Decodable {
         let type: String?
@@ -416,6 +435,9 @@ public enum TranscriptReader {
     private struct Block: Decodable {
         let type: String?
         let text: String?
+    }
+    private struct Thinking: Decodable {
+        let effort: String?
     }
     // Token counts Claude Code records per assistant message. Missing keys
     // default to 0 so an older/partial transcript still yields a usable total.

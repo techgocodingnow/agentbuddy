@@ -69,6 +69,21 @@ public struct AgentRuntimeStats: Codable, Sendable, Equatable {
         let lowered = model.lowercased()
         let stripped = shortModelName(lowered)
         let parts = stripped.split(separator: "-").map(String.init)
+        if let familyIndex = parts.firstIndex(where: { ["opus", "sonnet", "haiku"].contains($0) }) {
+            let family = titleCase(parts[familyIndex])
+            let afterFamily = parts[(familyIndex + 1)...]
+                .prefix { $0.range(of: #"^\d+$"#, options: .regularExpression) != nil && $0.count <= 2 }
+            let versionParts: ArraySlice<String>
+            if afterFamily.isEmpty {
+                versionParts = parts[..<familyIndex]
+                    .filter { $0.range(of: #"^\d+$"#, options: .regularExpression) != nil && $0.count <= 2 }
+                    .suffix(2)
+            } else {
+                versionParts = afterFamily.prefix(2)
+            }
+            guard !versionParts.isEmpty else { return family }
+            return "\(family) \(versionParts.joined(separator: "."))"
+        }
         let numeric = parts.filter { $0.range(of: #"^\d+(\.\d+)?$"#, options: .regularExpression) != nil }
         if numeric.count >= 2 {
             return numeric.prefix(2).joined(separator: ".")

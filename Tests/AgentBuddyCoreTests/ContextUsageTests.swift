@@ -25,4 +25,26 @@ final class ContextUsageTests: XCTestCase {
         XCTAssertEqual(ContextWindow.limit(forModel: "claude-opus-4-8"), 200_000)
         XCTAssertEqual(ContextWindow.limit(forModel: nil), 200_000)
     }
+
+    func testStatsLabelFormatsClaudeModelAndEffort() {
+        let usage = ContextUsage(
+            usedTokens: 82_720,
+            limitTokens: 200_000,
+            modelName: "claude-opus-4-8",
+            effort: "medium"
+        )
+
+        XCTAssertEqual(usage.statsLabel, "Opus 4.8 Medium")
+    }
+
+    func testStatsLabelFormatsOlderClaudeModelNames() {
+        let usage = ContextUsage(
+            usedTokens: 82_720,
+            limitTokens: 200_000,
+            modelName: "claude-3-5-sonnet-20241022",
+            effort: nil
+        )
+
+        XCTAssertEqual(usage.statsLabel, "Sonnet 3.5")
+    }
 }

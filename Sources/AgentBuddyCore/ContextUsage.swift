@@ -9,10 +9,14 @@ import Foundation
 public struct ContextUsage: Codable, Sendable, Equatable {
     public let usedTokens: Int
     public let limitTokens: Int
+    public let modelName: String?
+    public let effort: String?
 
-    public init(usedTokens: Int, limitTokens: Int) {
+    public init(usedTokens: Int, limitTokens: Int, modelName: String? = nil, effort: String? = nil) {
         self.usedTokens = usedTokens
         self.limitTokens = limitTokens
+        self.modelName = modelName
+        self.effort = effort
     }
 
     /// Percentage of the context window still free, `0...100`.
@@ -28,6 +32,47 @@ public struct ContextUsage: Codable, Sendable, Equatable {
     /// Percentage of the context window already used, `0...100`.
     public var percentUsed: Int {
         max(0, min(100, 100 - percentLeft))
+    }
+
+    public var modelDisplayName: String? {
+        Self.displayName(forModel: modelName)
+    }
+
+    public var effortDisplayName: String? {
+        guard let effort = effort?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !effort.isEmpty else { return nil }
+        return effort
+            .split(separator: "_")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
+            .joined(separator: " ")
+    }
+
+    public var statsLabel: String? {
+        let parts = [modelDisplayName, effortDisplayName].compactMap { $0 }
+        return parts.isEmpty ? nil : parts.joined(separator: " ")
+    }
+
+    private static func displayName(forModel model: String?) -> String? {
+        guard let model = model?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !model.isEmpty else { return nil }
+        let parts = model.lowercased().split(separator: "-").map(String.init)
+        guard let familyIndex = parts.firstIndex(where: { ["opus", "sonnet", "haiku"].contains($0) }) else {
+            return model
+        }
+
+        let family = parts[familyIndex].prefix(1).uppercased() + parts[familyIndex].dropFirst()
+        let afterFamily = parts[(familyIndex + 1)...]
+            .prefix { $0.allSatisfy(\.isNumber) && $0.count <= 2 }
+        let versionParts: ArraySlice<String>
+        if afterFamily.isEmpty {
+            versionParts = parts[..<familyIndex]
+                .filter { $0 != "claude" && $0.allSatisfy(\.isNumber) && $0.count <= 2 }
+                .suffix(2)
+        } else {
+            versionParts = afterFamily.prefix(2)
+        }
+        guard !versionParts.isEmpty else { return String(family) }
+        return "\(family) \(versionParts.joined(separator: "."))"
     }
 }
 
